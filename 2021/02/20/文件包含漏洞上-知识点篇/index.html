@@ -149,16 +149,14 @@
 <p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/10.png" alt="10"></p>
 <h4 id="data-协议"><a href="#data-协议" class="headerlink" title="data://协议"></a><strong>data://协议</strong></h4><ul>
 <li><p>直接写入代码</p>
-<p>data: text/plain,<?php 执行内容 ?></p>
-</li>
-</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data: text/plain,&lt;?php 执行内容 ?&gt;</span><br></pre></td></tr></table></figure>
 <p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/11.png" alt="11"></p>
-<ul>
+</li>
 <li><p>使用base64编码</p>
-<p>data:text/plain;(注意是分号不是逗号，与前面不同)base64,编码后的php代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data:text/plain;(注意是分号不是逗号，与前面不同)base64,编码后的php代码</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/12.png" alt="12"></p>
 </li>
 </ul>
-<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/12.png" alt="12"></p>
 <p>有一点要注意的问题，base64编码后的加号和等号要手动的url编码，否则无法识别。</p>
 <p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/13.png" alt="13"></p>
 <p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/14.png" alt="14"></p>
