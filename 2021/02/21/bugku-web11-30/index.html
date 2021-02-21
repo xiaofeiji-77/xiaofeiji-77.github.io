@@ -76,7 +76,7 @@ E,">
 
         </div>
         <div class="content markdown">
-            <h4 id="web11-网站被黑了-黑客会不会留下后门"><a href="#web11-网站被黑了-黑客会不会留下后门" class="headerlink" title="web11-网站被黑了,黑客会不会留下后门"></a>web11-网站被黑了,黑客会不会留下后门</h4><ul>
+            <h4 id="web11-网站被黑了-黑客会不会留下后门"><a href="#web11-网站被黑了-黑客会不会留下后门" class="headerlink" title="web11-网站被黑了,黑客会不会留下后门"></a><strong>web11-网站被黑了,黑客会不会留下后门</strong></h4><ul>
 <li>解法一：御剑</li>
 </ul>
 <p>在下面可以选择扫描线程以及扫描超时间，还有文件类型等</p>
@@ -105,17 +105,17 @@ E,">
 </ul>
 <p><img src="/2021/02/21/bugku-web11-30/4.png" alt="4"></p>
 <p><img src="/2021/02/21/bugku-web11-30/5.png" alt="5"></p>
-<h4 id="web12-本地管理员"><a href="#web12-本地管理员" class="headerlink" title="web12-本地管理员"></a>web12-本地管理员</h4><p>​         一开始看到登录界面是想到输入之后进行抓包爆破，同时爆破账号密码的时候又觉得这个过程好像有点漫长，就去看了一下源码，一开始看到那个注释里的base64字样还没在意，后来翻看了一下评论里的做法，还要伪造IP，联系了一下题目本地管理员，那就是伪造XFF了，然后就代理关了，尝试登陆，随便输入后登陆，发现IP被禁止访问:</p>
+<h4 id="web12-本地管理员"><a href="#web12-本地管理员" class="headerlink" title="web12-本地管理员"></a><strong>web12-本地管理员</strong></h4><p>​         一开始看到登录界面是想到输入之后进行抓包爆破，同时爆破账号密码的时候又觉得这个过程好像有点漫长，就去看了一下源码，一开始看到那个注释里的base64字样还没在意，后来翻看了一下评论里的做法，还要伪造IP，联系了一下题目本地管理员，那就是伪造XFF了，然后就代理关了，尝试登陆，随便输入后登陆，发现IP被禁止访问:</p>
 <p><img src="/2021/02/21/bugku-web11-30/6.png" alt="6"></p>
 <p>那么就和题目本地管理员联系上了，伪造XFF为自身IP进行访问。</p>
 <p>将源码里的base64字样进行解码，得到 test123，盲猜应该是密码，随便输入用户名和这个密码，抓包伪造IP进行用户名的爆破，这里是必须先在proxy模块伪造了IP后才能进行爆破，否则的话得不到用户名，得到admin</p>
 <p><img src="/2021/02/21/bugku-web11-30/7.png" alt="7"></p>
 <p>输入用户名和密码，伪造IP，得到flag。</p>
 <p><img src="/2021/02/21/bugku-web11-30/8.png" alt="8"></p>
-<h4 id="web13-看看源代码？"><a href="#web13-看看源代码？" class="headerlink" title="web13-看看源代码？"></a>web13-看看源代码？</h4><p><img src="/2021/02/21/bugku-web11-30/9.png" alt="9"></p>
+<h4 id="web13-看看源代码？"><a href="#web13-看看源代码？" class="headerlink" title="web13-看看源代码？"></a><strong>web13-看看源代码？</strong></h4><p><img src="/2021/02/21/bugku-web11-30/9.png" alt="9"></p>
 <p>采用url解码之后根据eval函数的提示，将URL解码得到的三个字符串拼接得到的假flag提交得到真flag。</p>
 <p><img src="/2021/02/21/bugku-web11-30/10.png" alt="10"></p>
-<h4 id="web14"><a href="#web14" class="headerlink" title="web14"></a>web14</h4><p><img src="/2021/02/21/bugku-web11-30/11.png" alt="11"></p>
+<h4 id="web14"><a href="#web14" class="headerlink" title="web14"></a><strong>web14</strong></h4><p><img src="/2021/02/21/bugku-web11-30/11.png" alt="11"></p>
 <ol>
 <li>点击查看：</li>
 </ol>
@@ -132,12 +132,12 @@ E,">
 <li>进行base64的解码得到flag：</li>
 </ol>
 <p><img src="/2021/02/21/bugku-web11-30/15.png" alt="15"></p>
-<h4 id="web15-好像需要密码"><a href="#web15-好像需要密码" class="headerlink" title="web15-好像需要密码"></a>web15-好像需要密码</h4><p>进行burp抓包，五位纯数字的密码爆破。</p>
+<h4 id="web15-好像需要密码"><a href="#web15-好像需要密码" class="headerlink" title="web15-好像需要密码"></a><strong>web15-好像需要密码</strong></h4><p>进行burp抓包，五位纯数字的密码爆破。</p>
 <p><img src="/2021/02/21/bugku-web11-30/16.png" alt="16"></p>
-<h4 id="web16-备份是个好习惯"><a href="#web16-备份是个好习惯" class="headerlink" title="web16-备份是个好习惯"></a>web16-备份是个好习惯</h4><p>​        一看备份嘛就猜测是.bak  index.php.bak,输入发现可以下载到备份文件，打开查看代码，md5的弱比较，采用md5缺陷绕过，构造数组，也可以采用0e开头的md5相同的两组值，这里采用数组绕过，还要注意的就是代码中对key进行了过滤，考虑双写绕过：kkeyey 或者kekeyy的形式都可以，构造时一定记得是kkeyey1[]和kkeyey2[],不然就会像我一开始一样在想，这构造挺对的吧，咋没结果呢，哦~忘记1和2了。(这种错误我也真的是)</p>
+<h4 id="web16-备份是个好习惯"><a href="#web16-备份是个好习惯" class="headerlink" title="web16-备份是个好习惯"></a><strong>web16-备份是个好习惯</strong></h4><p>​        一看备份嘛就猜测是.bak  index.php.bak,输入发现可以下载到备份文件，打开查看代码，md5的弱比较，采用md5缺陷绕过，构造数组，也可以采用0e开头的md5相同的两组值，这里采用数组绕过，还要注意的就是代码中对key进行了过滤，考虑双写绕过：kkeyey 或者kekeyy的形式都可以，构造时一定记得是kkeyey1[]和kkeyey2[],不然就会像我一开始一样在想，这构造挺对的吧，咋没结果呢，哦~忘记1和2了。(这种错误我也真的是)</p>
 <p>评论里的做法有的使用御剑进行扫描的，这个过程有点漫长，还在等待ing。所以就盲猜了一下下。</p>
 <p><img src="/2021/02/21/bugku-web11-30/17.png" alt="17"></p>
-<h4 id="web17"><a href="#web17" class="headerlink" title="web17"></a>web17</h4><ol>
+<h4 id="web17"><a href="#web17" class="headerlink" title="web17"></a><strong>web17</strong></h4><ol>
 <li>进入页面：</li>
 </ol>
 <p><img src="/2021/02/21/bugku-web11-30/18.png" alt="18"></p>
@@ -166,7 +166,7 @@ E,">
 <li>爆字段内容：id=0’ union select 1,2,3,select skctf_flag from fl4g#</li>
 </ul>
 <p><img src="/2021/02/21/bugku-web11-30/20.png" alt="20"></p>
-<h4 id="web18-秋名山车神"><a href="#web18-秋名山车神" class="headerlink" title="web18-秋名山车神"></a>web18-秋名山车神</h4><p>多次刷新得到post提交的变量 value，而且每次要提交计算的表达式是会变化的：</p>
+<h4 id="web18-秋名山车神"><a href="#web18-秋名山车神" class="headerlink" title="web18-秋名山车神"></a><strong>web18-秋名山车神</strong></h4><p>多次刷新得到post提交的变量 value，而且每次要提交计算的表达式是会变化的：</p>
 <p><img src="/2021/02/21/bugku-web11-30/21.png" alt="21"></p>
 <p>使用脚本运行：(网上的wp里的脚本)得到flag。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests <span class="comment">//引入request库</span></span><br><span class="line"><span class="keyword">import</span> re 		<span class="comment">//引入re库</span></span><br><span class="line"></span><br><span class="line">url = <span class="string">&#x27;&#x27;</span><span class="string">&#x27;http://114.67.246.176:11510/&#x27;</span><span class="string">&#x27;&#x27;</span></span><br><span class="line">s = requests.session()  <span class="comment">//用session会话保持表达式是同一个</span></span><br><span class="line">retuen = s.get(url)</span><br><span class="line">equation = re.search(r<span class="string">&#x27;(\d+[+\-*])+(\d+)&#x27;</span>, retuen.text).group()</span><br><span class="line"></span><br><span class="line">result = eval(equation)	<span class="comment">//eval() 函数用来执行一个字符串表达式，并返回表达式的值。</span></span><br><span class="line">key = &#123;<span class="string">&#x27;value&#x27;</span>:result&#125;</span><br><span class="line">print(s.post(url, data = key).text)</span><br></pre></td></tr></table></figure>
@@ -178,12 +178,12 @@ E,">
 <li>group()返回字符串</li>
 </ul>
 <p>​    原文传送门：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43578492/article/details/101701339">https://blog.csdn.net/weixin_43578492/article/details/101701339</a></p>
-<h4 id="web19-速度要快"><a href="#web19-速度要快" class="headerlink" title="web19-速度要快"></a>web19-速度要快</h4><p>​      一开始是查看了一下源码发现需要用post方式上传margin变量，在消息头中发现一段base64加密的flag。双重解码后传值给margin进行上传，发现：</p>
+<h4 id="web19-速度要快"><a href="#web19-速度要快" class="headerlink" title="web19-速度要快"></a><strong>web19-速度要快</strong></h4><p>​      一开始是查看了一下源码发现需要用post方式上传margin变量，在消息头中发现一段base64加密的flag。双重解码后传值给margin进行上传，发现：</p>
 <p><img src="/2021/02/21/bugku-web11-30/22.png" alt="22"></p>
 <p>查看wp发现其实flag是动态的，每次刷新网页都会变化，所以就用脚本进行获取flag。(脚本还是先收集下来吧.)</p>
 <p>脚本：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"> </span><br><span class="line">url= <span class="string">&quot;http://120.24.86.145:8002/web6/&quot;</span></span><br><span class="line">s = requests.Session()</span><br><span class="line">headers = s.get(url).headers #获得消息头</span><br><span class="line"> </span><br><span class="line">str1 = base64.b64decode(headers[&#x27;flag&#x27;]) #解密消息头键名flag的键值</span><br><span class="line">str2 = base64.b64decode(repr(str1).split(&#x27;:&#x27;)[1]) #解密str1中flag:后的值</span><br><span class="line"> </span><br><span class="line">key = &#123;&#x27;margin&#x27;:str2&#125; #创建一个字典类型用于传参</span><br><span class="line">flag = s.post(url,data=key) #post方法传上去</span><br><span class="line"> </span><br><span class="line">print(flag.text)</span><br></pre></td></tr></table></figure>
-<h4 id="web20-cookie欺骗"><a href="#web20-cookie欺骗" class="headerlink" title="web20-cookie欺骗"></a>web20-cookie欺骗</h4><p>​    url处有一个是“a2V5cy50eHQ=”base64解码后是“keys.txt”，line的功能是行数，这时就想看看index.php（base64后为aW5kZXgucGhwCg==）</p>
+<h4 id="web20-cookie欺骗"><a href="#web20-cookie欺骗" class="headerlink" title="web20-cookie欺骗"></a><strong>web20-cookie欺骗</strong></h4><p>​    <strong>url处有一个是“a2V5cy50eHQ=”base6</strong>4解码后是“keys.txt”，line的功能是行数，这时就想看看index.php（base64后为aW5kZXgucGhwCg==）</p>
 <p>然后给file参数1,2,3……发现出现了代码。使用脚本来收集代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="function"><span class="keyword">for</span> i in <span class="title">range</span><span class="params">(<span class="number">20</span>)</span>:</span></span><br><span class="line"><span class="function">	url</span>=<span class="string">&quot;http://114.67.246.176:14549/index.php?line=&#123;&#125;&amp;filename=aW5kZXgucGhw&quot;</span>.format(i)</span><br><span class="line">	ht=requests.get(url)</span><br><span class="line">	print(ht.text)</span><br></pre></td></tr></table></figure>
 <p>得到源码：</p>
@@ -191,7 +191,7 @@ E,">
 <p>代码审计发现只要访问key.php并且需要在http请求中，传递一个Cookies，内容为margin的键值对。</p>
 <p>使用脚本就能跑出flag。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="function">def <span class="title">fun</span><span class="params">(num)</span>:</span></span><br><span class="line"><span class="function">    session </span>= requests.Session()</span><br><span class="line">    headers = &#123;<span class="string">&quot;Accept&quot;</span>:<span class="string">&quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8&quot;</span>,<span class="string">&quot;Cache-Control&quot;</span>:<span class="string">&quot;max-age=0&quot;</span>,<span class="string">&quot;Upgrade-Insecure-Requests&quot;</span>:<span class="string">&quot;1&quot;</span>,<span class="string">&quot;User-Agent&quot;</span>:<span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0&quot;</span>,<span class="string">&quot;Connection&quot;</span>:<span class="string">&quot;keep-alive&quot;</span>,<span class="string">&quot;Accept-Language&quot;</span>:<span class="string">&quot;zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&quot;</span>,<span class="string">&quot;Accept-Encoding&quot;</span>:<span class="string">&quot;gzip, deflate&quot;</span>&#125;</span><br><span class="line">    cookies = &#123;<span class="string">&quot;PHPSESSID&quot;</span>:<span class="string">&quot;ldo37io8vtliadt76v2bv8mf43&quot;</span>,<span class="string">&quot;margin&quot;</span>:<span class="string">&quot;margin&quot;</span>&#125;</span><br><span class="line">    paramsGet = &#123;<span class="string">&quot;line&quot;</span>:num,<span class="string">&quot;filename&quot;</span>:<span class="string">&quot;a2V5cy5waHA=&quot;</span>&#125; <span class="comment">//keys.php的base64密文</span></span><br><span class="line">    response = session.get(<span class="string">&quot;http://114.67.246.176:17939/index.php&quot;</span>, params=paramsGet, headers=headers, cookies=cookies)</span><br><span class="line">    print(response.text)</span><br><span class="line"><span class="function"><span class="keyword">for</span> i in <span class="title">range</span><span class="params">(<span class="number">0</span>,<span class="number">30</span>)</span>:</span></span><br><span class="line"><span class="function">    <span class="title">fun</span><span class="params">(i)</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="web21"><a href="#web21" class="headerlink" title="web21"></a>web21</h4><p><img src="/2021/02/21/bugku-web11-30/24.png" alt="24"></p>
+<h4 id="web21"><a href="#web21" class="headerlink" title="web21"></a><strong>web21</strong></h4><p><img src="/2021/02/21/bugku-web11-30/24.png" alt="24"></p>
 <ul>
 <li>查看源码发现有一个1p.html：</li>
 </ul>
@@ -258,7 +258,7 @@ E,">
 <p>构造payload如下：</p>
 <p><img src="/2021/02/21/bugku-web11-30/28.png" alt="28"></p>
 <p>参考原文：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41333578/article/details/92759619">https://blog.csdn.net/qq_41333578/article/details/92759619</a></p>
-<h4 id="web24"><a href="#web24" class="headerlink" title="web24"></a>web24</h4><ul>
+<h4 id="web24"><a href="#web24" class="headerlink" title="web24"></a><strong>web24</strong></h4><ul>
 <li>查看一下源码发现链接处指向code.txt，进行访问:</li>
 </ul>
 <p><img src="/2021/02/21/bugku-web11-30/29.png" alt="29"></p>
@@ -283,7 +283,7 @@ E,">
 <p>构造payload：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?v1[]=<span class="number">1</span>&amp;v2[]=<span class="number">2</span>&amp;v3[]=blag</span><br></pre></td></tr></table></figure>
 <p><img src="/2021/02/21/bugku-web11-30/31.png" alt="31"></p>
-<h4 id="we25-SQL约束攻击"><a href="#we25-SQL约束攻击" class="headerlink" title="we25-SQL约束攻击"></a>we25-SQL约束攻击</h4><p><img src="/2021/02/21/bugku-web11-30/32.png" alt="32"></p>
+<h4 id="we25-SQL约束攻击"><a href="#we25-SQL约束攻击" class="headerlink" title="we25-SQL约束攻击"></a><strong>we25-SQL约束攻击</strong></h4><p><img src="/2021/02/21/bugku-web11-30/32.png" alt="32"></p>
 <p><strong>基础知识：基于约束的SQL注入</strong></p>
 <ol>
 <li>数据库字符串比较:在数据库对字符串进行比较时,如果两个字符的长度不一样,则会将较短的字符串末尾填充空格,使两个字符串的长度一致.</li>
@@ -317,7 +317,7 @@ E,">
 </ul>
 <p><img src="/2021/02/21/bugku-web11-30/34.png" alt="34"></p>
 <p> 转载自：<a target="_blank" rel="noopener" href="https://blog.csdn.net/kongzhian/article/details/112030256">https://blog.csdn.net/kongzhian/article/details/112030256</a></p>
-<h4 id="web26-google"><a href="#web26-google" class="headerlink" title="web26-google"></a>web26-google</h4><ul>
+<h4 id="web26-google"><a href="#web26-google" class="headerlink" title="web26-google"></a><strong>web26-google</strong></h4><ul>
 <li>考察referer的伪造</li>
 </ul>
 <p><img src="/2021/02/21/bugku-web11-30/35.png" alt="35"></p>
@@ -325,7 +325,7 @@ E,">
 <li>Referer的作用是告诉服务器请求是从哪里来的，所以只需要用BP在请求头加个Referer: <a target="_blank" rel="noopener" href="https://www.google.com/">https://www.google.com</a></li>
 </ul>
 <p><img src="/2021/02/21/bugku-web11-30/36.png" alt="36"></p>
-<h4 id="xxx二手交易市场"><a href="#xxx二手交易市场" class="headerlink" title="xxx二手交易市场"></a>xxx二手交易市场</h4><p>​         一 开始进入到网站要注册的时候还以为是SQL注入漏洞，也尝试着注册后登陆抓包，但是也没有发现什么存在的注入点。查看了一些wp，是在上传头像照片的时候存在一个文件上传漏洞。</p>
+<h4 id="xxx二手交易市场"><a href="#xxx二手交易市场" class="headerlink" title="xxx二手交易市场"></a><strong>xxx二手交易市场</strong></h4><p>​         一 开始进入到网站要注册的时候还以为是SQL注入漏洞，也尝试着注册后登陆抓包，但是也没有发现什么存在的注入点。查看了一些wp，是在上传头像照片的时候存在一个文件上传漏洞。</p>
 <ul>
 <li>上传头像照片，进行抓包，发现图片是转换成base64上传的，将内容换成一句话木马的base64 编码形式，修改</li>
 </ul>
