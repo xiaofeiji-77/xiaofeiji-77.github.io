@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SSRF漏洞篇 - Xiaofeiji&#39;Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="SSRF(Server-Side Request Forgery，服务器端请求伪造)漏洞，是一种由攻击者构造请求，由服务器端发起请求的安全漏洞，本质上是属于信息泄露漏洞。
+对外发起网络请求的地方都可,"> 
+    <meta name="author" content="Xiaofeiji"> 
+    <link rel="alternative" href="atom.xml" title="Xiaofeiji&#39;Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">Xiaofeiji&#39;Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="https://xiaofeiji-77.github.io"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">SSRF漏洞篇</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">SSRF漏洞篇</h1>
+        <div class="stuff">
+            <span>三月 03, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/SSRF/" rel="tag">SSRF</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p><strong>SSRF</strong>(Server-Side Request Forgery，服务器端请求伪造)漏洞，是一种由攻击者构造请求，由服务器端发起请求的安全漏洞，本质上是属于信息泄露漏洞。</p>
+<p>对外发起网络请求的地方都可能存在SSRF漏洞，利用漏洞可以发起网络请求来攻击内网服务。</p>
+<p><img src="/2021/03/03/SSRF%E6%BC%8F%E6%B4%9E%E7%AF%87/1.png" alt="1"></p>
+<p>一般情况下，SSRF攻击的应用是无法通过外网访问的，所以需要借助目标服务端进行发起，目标服务器可以链接内网和外网，攻击者便可以通过目标主机攻击内网应用。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><strong>SSRF漏洞原理</strong>：很多web应用都提供了从其他的服务器上获取数据的功能。使用用户指定的URL，web应用可以获取图片，下载文件，读取文件内容等。这个功能如果被恶意使用，可以利用存在缺陷的web应用作为代理攻击远程和本地的服务器。</p>
+<p>一般情况下， SSRF攻击的目标是外网无法访问的内部系统，黑客可以利用SSRF漏洞获取内部系统的一些信息 。（ 正是因为它是由服务端发起的，所以它能够请求到与它相连而与外网隔离的内部系统 ）</p>
+<p>SSRF 形成的原因大都是由于服务端提供了从其他服务器应用获取数据的功能且没有对目标地址做过滤与限制 。比如从指定URL地址获取网页文本内容，加载指定地址的图片，下载等等。</p>
+<p><strong>如：</strong></p>
+<p>攻击者想要访问主机B上的服务，但是由于存在防火墙或者主机B是属于内网主机等原因导致攻击者无法直接访问主机B。而主机A存在SSRF漏洞，这时攻击者可以借助主机A来发起SSRF攻击，通过主机A向主机B发起请求，从而获取主机B的一些信息。</p>
+<p><img src="/2021/03/03/SSRF%E6%BC%8F%E6%B4%9E%E7%AF%87/2.png" alt="2"></p>
+<p>SSRF 漏洞就是通过篡改获取资源的请求 ，将它发送给服务器，但是服务器并没有检测这个请求是否合法的，然后服务器以他的身份来访问其他服务器的资源。 </p>
+<h3 id="攻击方式"><a href="#攻击方式" class="headerlink" title="攻击方式"></a>攻击方式</h3><p>ssrf 可以实现的攻击主要有 5 种:</p>
+<ol>
+<li><p>可以对外网、服务器所在内网、本地进行端口扫描，获取一些服务的 banner 信息;</p>
+</li>
+<li><p>攻击运行在内网或本地的应用程序（比如溢出）;</p>
+</li>
+<li><p>对内网 web 应用进行指纹识别，通过访问默认文件实现;</p>
+</li>
+<li><p>攻击内外网的 web 应用，主要是使用 get 参数就可以实现的攻击（比如 struts2，sqli等）;</p>
+</li>
+<li><p>利用 file 协议读取本地文件等。</p>
+</li>
+</ol>
+<h3 id="出没位置"><a href="#出没位置" class="headerlink" title="出没位置"></a>出没位置</h3><p>ssrf漏洞出没的位置：</p>
+<ul>
+<li><p>从WEB功能上寻找</p>
+</li>
+<li><ul>
+<li>分享：通过URL地址分享网页内容</li>
+<li>转码服务：通过URL地址吧原地址的网页内容调优使其适合手机屏幕浏览</li>
+<li>在线翻译：通过URL地址翻译对应文本的内容。</li>
+<li>图片加载与下载：通过URL地址加载或下载图片</li>
+<li>未公开的api实现以及其他调用URL的功能</li>
+</ul>
+</li>
+<li><p>从URL关键字中寻找</p>
+</li>
+<li><ul>
+<li>share、wap、url、link、src、source、target、u、3g、display、sourceURL、imageURL、domain</li>
+</ul>
+</li>
+<li><p><img src="/2021/03/03/SSRF%E6%BC%8F%E6%B4%9E%E7%AF%87/3.png" alt="3"></p>
+</li>
+<li><h3 id="检验方法"><a href="#检验方法" class="headerlink" title="检验方法"></a>检验方法</h3></li>
+</ul>
+<p>1.基本判断（排除法）</p>
+<p>　　如：<a target="_blank" rel="noopener" href="http://www.douban.com/***/service?image=http://www.baidu.com/img/bd_logo1.png">http://www.douban.com/***/service?image=http://www.baidu.com/img/bd_logo1.png</a></p>
+<p>　　排除法一：直接右键图片，在新窗口打开图片，如果是浏览器上URL地址栏是<a target="_blank" rel="noopener" href="http://www.baidu.com/img/bd_logo1.png%EF%BC%8C%E8%AF%B4%E6%98%8E%E4%B8%8D%E5%AD%98%E5%9C%A8SSRF%E6%BC%8F%E6%B4%9E%E3%80%82">http://www.baidu.com/img/bd_logo1.png，说明不存在SSRF漏洞。</a></p>
+<p>　　排除法二：可以在burpsuite等抓包工具，查看请求数据包中是否包含<a target="_blank" rel="noopener" href="http://www.baidu.com/img/bd_logo1.png%E8%BF%99%E4%B8%AA%E8%AF%B7%E6%B1%82%E3%80%82%E7%94%B1%E4%BA%8ESSRF%E6%98%AF%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%8F%91%E8%B5%B7%E7%9A%84%E8%AF%B7%E6%B1%82%EF%BC%8C%E5%9B%A0%E6%AD%A4%E5%9C%A8%E5%8A%A0%E8%BD%BD%E8%BF%99%E5%BC%A0%E5%9B%BE%E7%89%87%E7%9A%84%E6%97%B6%E5%80%99%E6%9C%AC%E5%9C%B0%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%AD%E4%B8%8D%E5%BA%94%E8%AF%A5%E5%AD%98%E5%9C%A8%E5%9B%BE%E7%89%87%E7%9A%84%E8%AF%B7%E6%B1%82%E3%80%82">http://www.baidu.com/img/bd_logo1.png这个请求。由于SSRF是服务端发起的请求，因此在加载这张图片的时候本地浏览器中不应该存在图片的请求。</a></p>
+<h3 id="相关函数"><a href="#相关函数" class="headerlink" title="相关函数"></a>相关函数</h3><p><strong>file_get_contents</strong></p>
+<p>从用户指定的 url 获取图片，然后把它用一个随机文 件名保存在硬盘上，并展示给用户。</p>
+<p><strong>fsockopen()</strong></p>
+<p>实现获取用户制定 url 的数据（文件或者 html）。这个函数会 使用 socket 跟服务器建立 tcp 连接，传输原始数据。</p>
+<p><strong>curl_exec()</strong></p>
+<p>用来获取数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    $location=$_GET[<span class="string">&#x27;path&#x27;</span>]; </span><br><span class="line">    $curl = curl_init();</span><br><span class="line">    curl_setopt ($curl, CURLOPT_URL, $location); </span><br><span class="line">    curl_exec ($curl); </span><br><span class="line">    curl_close ($curl);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<p>这个 php 文件就是一个 curl 使用的经典过程，初始化，然后设置访问的地址，随后执行，最后关闭。</p>
+<h3 id="关于绕过"><a href="#关于绕过" class="headerlink" title="关于绕过"></a>关于绕过</h3><ol>
+<li>正则表达式：192.168.0.1，10.0.0.1全部为服务器端的内网地址</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">^<span class="number">10</span>(\.([<span class="number">2</span>][<span class="number">0</span>-<span class="number">4</span>]\d|[<span class="number">2</span>][<span class="number">5</span>][<span class="number">0</span>-<span class="number">5</span>]|[<span class="number">01</span>]?\d?\d))&#123;<span class="number">3</span>&#125;$</span><br><span class="line"></span><br><span class="line">^<span class="number">172</span>\.([<span class="number">1</span>][<span class="number">6</span>-<span class="number">9</span>]|[<span class="number">2</span>]\d|<span class="number">3</span>[<span class="number">01</span>])(\.([<span class="number">2</span>][<span class="number">0</span>-<span class="number">4</span>]\d|[<span class="number">2</span>][<span class="number">5</span>][<span class="number">0</span>-<span class="number">5</span>]|[<span class="number">01</span>]?\d?\d))&#123;<span class="number">2</span>&#125;$</span><br><span class="line"></span><br><span class="line">^<span class="number">192</span>\<span class="number">.168</span>(\.([<span class="number">2</span>][<span class="number">0</span>-<span class="number">4</span>]\d|[<span class="number">2</span>][<span class="number">5</span>][<span class="number">0</span>-<span class="number">5</span>]|[<span class="number">01</span>]?\d?\d))&#123;<span class="number">2</span>&#125;$</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>@</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">　http:<span class="comment">//abc.com@127.0.0.1——&gt;以abc.com的身份访问127.0.0.1</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>添加端口号</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//127.0.0.1:8080</span></span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li><p>短地址(可以直接在线生成)　如：　<a target="_blank" rel="noopener" href="https://0x9.me/cuGfD">https://0x9.me/cuGfD</a></p>
+</li>
+<li><p>可以指向任意ip的域名(xip.io) </p>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">xip.io127<span class="number">.0</span><span class="number">.0</span><span class="number">.1</span>.xip.io --&gt;<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">www<span class="number">.127</span><span class="number">.0</span><span class="number">.0</span><span class="number">.1</span>.xip.io --&gt;<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">Haha<span class="number">.127</span><span class="number">.0</span><span class="number">.0</span><span class="number">.1</span>.xip.io --&gt;<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">Haha.xixi<span class="number">.127</span><span class="number">.0</span><span class="number">.0</span><span class="number">.1</span>.xip.io --&gt;<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li><p>ip地址转换成进制来访问 192.168.0.1=3232235521（十进制）</p>
+<p>8进制</p>
+<p>16进制</p>
+<p>10进制整数格式</p>
+<p>16进制整数格式</p>
+<p>进制转换的脚本：</p>
+</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;IP转换进制&lt;/title&gt;</span><br><span class="line">    &lt;script&gt;</span><br><span class="line">        <span class="function">function <span class="title">ip</span><span class="params">()</span></span>&#123;</span><br><span class="line">            <span class="keyword">var</span> ipvalue = document.getElementById(<span class="string">&quot;ipvalue&quot;</span>).value;</span><br><span class="line">            <span class="keyword">var</span> arr = ipvalue.split(<span class="string">&quot;.&quot;</span>);</span><br><span class="line">            <span class="keyword">var</span> decm = parseInt(arr[<span class="number">0</span>])*<span class="number">256</span>*<span class="number">256</span>*<span class="number">256</span>+parseInt(arr[<span class="number">1</span>])*<span class="number">256</span>*<span class="number">256</span>+parseInt(arr[<span class="number">2</span>])*<span class="number">256</span>+parseInt(arr[<span class="number">3</span>]);</span><br><span class="line">            <span class="keyword">var</span> hex = parseInt(decm).toString(<span class="number">16</span>).toUpperCase();</span><br><span class="line">            <span class="keyword">var</span> binary = parseInt(decm).toString(<span class="number">2</span>).toUpperCase();</span><br><span class="line">            document.getElementById(<span class="string">&quot;result&quot;</span>).innerHTML = <span class="string">&#x27;十六进制 = &#x27;</span>+hex+<span class="string">&#x27;&lt;br&gt; 十进制 = &#x27;</span>+decm+<span class="string">&quot;&lt;br&gt; 二进制 = &quot;</span>+binary;</span><br><span class="line">        &#125;</span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;input type=<span class="string">&quot;text&quot;</span> name=<span class="string">&quot;ip&quot;</span> id=<span class="string">&quot;ipvalue&quot;</span> /&gt;</span><br><span class="line">    &lt;button type=&quot;button&quot; onclick=&quot;ip()&quot;&gt;转换&lt;/button&gt;</span><br><span class="line">    &lt;div id=&quot;result&quot;&gt;&lt;/div&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="/2021/03/03/SSRF%E6%BC%8F%E6%B4%9E%E7%AF%87/4.png" alt="4"></p>
+<ol start="7">
+<li><p>非HTTP协议</p>
+<pre><code> 8. DNS Rebinding</code></pre>
+</li>
+</ol>
+<h3 id="关于ssrf修复"><a href="#关于ssrf修复" class="headerlink" title="关于ssrf修复"></a>关于ssrf修复</h3><ol>
+<li>统一错误信息，避免用户可以根据错误信息来判断远程服务器端口状态</li>
+<li>限制请求的端口为HTTP常用的端口，比如 80,443,8080,8088等</li>
+<li>黑名单内网IP。</li>
+<li>禁用不需要的协议，仅仅允许HTTP和HTTPS.</li>
+</ol>
+<h3 id="关于ctf中的SSRF"><a href="#关于ctf中的SSRF" class="headerlink" title="关于ctf中的SSRF"></a>关于ctf中的SSRF</h3><p>首先要知道出现ssrf的函数基本就这几个file_get_contents()、curl()、fsocksopen()、fopen()，如果获取到题目源码了，源码中存在这些个函数就大致可以判断是否有ssrf，如果没有题目的源码，ssrf的入口一般是出现在调用外部资源的地方，比如url有个参数让你传或者是在html中的输入框，然后就用http://，file://，dict://协议读取一下。</p>
+<h3 id="Gopher协议"><a href="#Gopher协议" class="headerlink" title="Gopher协议"></a>Gopher协议</h3><p><strong>gopher是Internet上一个非常有名的信息查找系统，它将Internet上的文件组织成某种索引，很方便地将用户从Internet的一处带到另一处。在WWW出现之前，gopher是Internet上最主要的信息检索工具，gopher站点也是最主要的站点，使用tcp70端口。</strong></p>
+<p><strong>gopher协议支持发出GET、POST请求</strong></p>
+<p><strong>可以先截获get请求包和post请求包，在构成符合gopher协议的请求。gopher协议是ssrf利用中最强大的协议</strong></p>
+<p><strong>gopher协议格式</strong></p>
+<p><strong>URL:gopher://<host>:<port>/<gopher-path>_后接TCP数据流</gopher-path></port></host></strong></p>
+<p><strong>·</strong> <strong>gopher的默认端口是70</strong></p>
+<p><strong>·</strong> <strong>如果发起post请求，回车换行需要使用%0d%0a，如果存在多个参数，参数之间的&amp;也需要进行URL编码</strong></p>
+<p><strong>注意%0d%0a是\r\n的URL编码。</strong></p>
+<h4 id="gopher发送请求HTTP-GET请求"><a href="#gopher发送请求HTTP-GET请求" class="headerlink" title="gopher发送请求HTTP GET请求"></a><strong>gopher发送请求HTTP GET请求</strong></h4><p><strong>新建一个get.php文件，内容</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php    echo <span class="string">&quot;Hello &quot;</span>.$_GET[<span class="string">&quot;name&quot;</span>].<span class="string">&quot;\n&quot;</span>?&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>传递?name=purplet，利用BurpSuite抓包可以看到报文头</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /tes/get.php?name=purplet HTTP/<span class="number">1.</span>1Host: <span class="number">192.168</span><span class="number">.194</span><span class="number">.1</span></span><br></pre></td></tr></table></figure>
+<p><strong>URL编码后为：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl gopher:<span class="comment">//192.168.194.1:80/_GET%20/tes/get.php%3fname=purplet%20HTTP/1.1%0d%0aHost:%20192.168.194.1%0d%0a</span></span><br></pre></td></tr></table></figure>
+<p><strong>注意：</strong></p>
+<ol>
+<li><p>问号（？）需要转码为URL编码，也就是%3f</p>
+</li>
+<li><p>回车换行要变为%0d%0a,但如果直接用工具转，可能只会有%0a*</p>
+</li>
+<li><p>在HTTP包的最后要加%0d%0a，代表消息结束（具体可研究HTTP包结束）</p>
+</li>
+<li><p>gopher协议后的IP一定要接端口</p>
+</li>
+</ol>
+<h4 id="gopher发送请求HTTP-POST请求"><a href="#gopher发送请求HTTP-POST请求" class="headerlink" title="gopher发送请求HTTP POST请求"></a><strong>gopher发送请求HTTP POST请求</strong></h4><p><strong>POST与GET传参的区别：它有4个参数为必要参数：</strong>Content-Type,Content-Length,host,post的参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POST /tes/post.php HTTP/<span class="number">1.</span>1host:<span class="number">192.168</span><span class="number">.194</span>.1Content-Type:application/x-www-form-urlencodedContent-Length:12name=purplet</span><br></pre></td></tr></table></figure>
+<p><strong>如下构造：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl gopher:<span class="comment">//192.168.194.1:80/_POST%20/tes/post.php%20HTTP/1.1%0d%0AHost:192.168.194.1%0d%0AContent-Type:application/x-www-form-urlencoded%0d%0AContent-Length:12%0d%0A%0d%0Aname=purplet%0d%0A</span></span><br></pre></td></tr></table></figure>
+
+
+<p><strong>SSRF 漏洞参考文章</strong>：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/csnd/p/11807726.html">https://www.cnblogs.com/csnd/p/11807726.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37133717/article/details/94647789">https://blog.csdn.net/qq_37133717/article/details/94647789</a></p>
+<p><strong>gopher 协议原文</strong>：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Konmu/p/12984891.html">https://www.cnblogs.com/Konmu/p/12984891.html</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%BB%E5%87%BB%E6%96%B9%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">攻击方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%BA%E6%B2%A1%E4%BD%8D%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text">出没位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A3%80%E9%AA%8C%E6%96%B9%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">检验方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0"><span class="toc-number">5.</span> <span class="toc-text">相关函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E7%BB%95%E8%BF%87"><span class="toc-number">6.</span> <span class="toc-text">关于绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8Essrf%E4%BF%AE%E5%A4%8D"><span class="toc-number">7.</span> <span class="toc-text">关于ssrf修复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8Ectf%E4%B8%AD%E7%9A%84SSRF"><span class="toc-number">8.</span> <span class="toc-text">关于ctf中的SSRF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Gopher%E5%8D%8F%E8%AE%AE"><span class="toc-number">9.</span> <span class="toc-text">Gopher协议</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#gopher%E5%8F%91%E9%80%81%E8%AF%B7%E6%B1%82HTTP-GET%E8%AF%B7%E6%B1%82"><span class="toc-number">9.1.</span> <span class="toc-text">gopher发送请求HTTP GET请求</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#gopher%E5%8F%91%E9%80%81%E8%AF%B7%E6%B1%82HTTP-POST%E8%AF%B7%E6%B1%82"><span class="toc-number">9.2.</span> <span class="toc-text">gopher发送请求HTTP POST请求</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/sakura.js"></script>
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+</html>
