@@ -13,12 +13,10 @@
     <meta name="description" content="饭前一杯柠檬水关于flask和session伪造：
 
 session 数据是保存到后端的数据库中
-
 session中的从狭义和广义上分：
 
-
 （1） session，广义上 :
-​     是一种机,"> 
+​     是一种机制：,"> 
     <meta name="author" content="Xiaofeiji"> 
     <link rel="alternative" href="atom.xml" title="Xiaofeiji&#39;Blog" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.jpg"> 
@@ -76,10 +74,8 @@ session中的从狭义和广义上分：
         <div class="content markdown">
             <h3 id="饭前一杯柠檬水"><a href="#饭前一杯柠檬水" class="headerlink" title="饭前一杯柠檬水"></a>饭前一杯柠檬水</h3><p>关于flask和session伪造：</p>
 <ol>
-<li><p>session 数据是保存到后端的数据库中</p>
-</li>
-<li><p>session中的从狭义和广义上分：</p>
-</li>
+<li>session 数据是保存到后端的数据库中</li>
+<li>session中的从狭义和广义上分：</li>
 </ol>
 <p>（1） session，广义上 :</p>
 <p>​     是一种机制：在前端当中存一个session_id ,在后端当中去保存</p>
@@ -93,8 +89,9 @@ session中的从狭义和广义上分：
 <p>即 flask的session中需要用到的秘钥字符串，可以是任意值</p>
 <p>app.config[“SECRET_KEY”] = “任意的字符串”</p>
 </li>
-<li><p>如果没有设置session时，获取到的session就是None</p>
-</li>
+</ol>
+<ol start="4">
+<li>如果没有设置session时，获取到的session就是None</li>
 </ol>
 <p>flask 是非常轻量级的 Web框架 ，其 session 存储在客户端中，也就是说其实只是将相关内容进行了加密保存到session中，容易造成安全漏洞。和服务端的session不同，服务端的session保存在服务端中，依靠客户端cookie值中的sessionId来进行识别。</p>
 <h3 id="恰饭恰饭"><a href="#恰饭恰饭" class="headerlink" title="恰饭恰饭"></a>恰饭恰饭</h3><p>​         其实一开始看到注册和登录的话想到的是SQL注入，但是抓包也观察了一下也并没有看到什么值得怀疑的注入点。到这其实就已经没有什么方向了，没有接触过session伪造的xiaofeiji，也就只能跟着大佬的wp做了。</p>
