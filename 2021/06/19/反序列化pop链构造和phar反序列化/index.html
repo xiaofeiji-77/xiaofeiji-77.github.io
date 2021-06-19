@@ -208,20 +208,30 @@
 <p><strong>phar结构</strong></p>
 <p>由四部分组成:</p>
 <p><strong>phar文件结构：</strong></p>
-<p>1.stub</p>
+<ul>
+<li>stub</li>
+</ul>
 <p><strong>一个供phar扩展用于识别的标志，格式为xxx<?php xxx; __HALT_COMPILER();?>，注意此处必须以__HALT_COMPILER();?&gt;结尾，但前面的内容没有限制，也就是说我们可以在前面轻易伪造一个图片文件的头如GIF98a来绕过一些上传限制；</strong></p>
-<p>2.manifest</p>
+<ul>
+<li>manifest</li>
+</ul>
 <p>phar文件本质上是一种压缩文件，每个被压缩文件的权限、属性等信息都放在这部分。另外，这部分还会以序列化的形式存储用户自定义的meta-data，这就是触发反序列化的点，当file_exists()，fopen()，file_get_contents()，file()等文件操作函数通过phar://伪协议解析phar文件时就会将数据反序列化。最核心的点。</p>
 <p><img src="/2021/06/19/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96pop%E9%93%BE%E6%9E%84%E9%80%A0%E5%92%8Cphar%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/phar.png"></p>
-<p>3.the file contents</p>
+<ul>
+<li>the file contents</li>
+</ul>
 <p>被压缩文件的内容</p>
-<p>4.signature for verifying Phar integrity</p>
+<ul>
+<li>signature for verifying Phar integrity</li>
+</ul>
 <p>可选项，即签名。</p>
 <p>根据phar文件结构我们来自己构建一个phar文件，php内置了一个Phar类来处理相关操作。</p>
 <p><strong>注意：要将php.ini中的phar.readonly选项设置为Off，否则无法生成phar文件。</strong></p>
 <p><img src="/2021/06/19/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96pop%E9%93%BE%E6%9E%84%E9%80%A0%E5%92%8Cphar%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/phar1.png"></p>
 <p><strong>把前面的分号去掉，将On改成Off.</strong></p>
-<p>5.利用条件：</p>
+<ul>
+<li>利用条件：</li>
+</ul>
 <p>phar文件要能够上传到服务器端。</p>
 <p>要有可用的魔术方法作为“跳板”。</p>
 <p>文件操作函数的参数可控，且: / phar等特殊字符没有被过滤。</p>
