@@ -111,7 +111,7 @@
 <li>例子：</li>
 </ul>
 <p><a target="_blank" rel="noopener" href="http://127.0.0.1/DVWA/vulnerabilities/fi/?page=file://D:/phpstudy_pro/WWW/1.txt"><strong>http://127.0.0.1/DVWA/vulnerabilities/fi/?page=file://D:\phpstudy_pro\WWW\DVWA\phpinfo.php</strong></a></p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/1.png" alt="1"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/1.png" alt="1"></p>
 <h4 id="【php-协议】"><a href="#【php-协议】" class="headerlink" title="【php://协议】"></a>【php://协议】</h4><p>php:// 访问各个输入/输出流（I/O streams），在CTF中经常使用的是php://filter和php://input，php://filter用于读取源码，php://input用于执行php代码。</p>
 <h4 id="php-filter（本地磁盘文件进行读取）"><a href="#php-filter（本地磁盘文件进行读取）" class="headerlink" title="php://filter（本地磁盘文件进行读取）"></a><strong>php://filter（本地磁盘文件进行读取）</strong></h4><ul>
 <li><p>元封装器，设计用于”数据流打开”时的”筛选过滤”应用，对本地磁盘文件进行读写。</p>
@@ -122,7 +122,7 @@
    <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?filename=php:<span class="comment">//filter/convert.base64-encode/resource=xxx.php </span></span><br></pre></td></tr></table></figure>
 <p>?filename=php://filter/read=convert.base64-encode/resource=xxx.php </p>
    <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">如果想要读取运行php文件的源码，可以先base64编码，再传入include函数，这样就不会被认为是php文件，不会执行，会输出文件的base64编码，再解码即可。</span><br><span class="line"></span><br><span class="line">（2.txt文件的内容被进行了base64的编码）</span><br><span class="line"></span><br><span class="line">![2](2.png)</span><br><span class="line"></span><br><span class="line">![3](3.png)</span><br><span class="line"></span><br><span class="line">- 若采用rot13编码，对php文件中的&lt;?是无效的，仍会被认为是php文件去执行，但其中的内容是乱码的，是没有输出效果的。</span><br><span class="line"></span><br><span class="line">#### **php:&#x2F;&#x2F;input**</span><br><span class="line"></span><br><span class="line">- **php:&#x2F;&#x2F;input** 是个可以访问请求的原始数据的只读流,可以读取到post没有解析的原始数据, 将post请求中的数据作为PHP代码执行。</span><br><span class="line"></span><br><span class="line">  这个协议的利用方法是 将要执行的语法php代码写在post中提交，不用键与值的形式，只写代码即可。</span><br><span class="line"></span><br><span class="line">![4](4.png)</span><br><span class="line"></span><br><span class="line">![5](5.png)</span><br><span class="line"></span><br><span class="line">#### **phar:&#x2F;&#x2F;协议**</span><br><span class="line"></span><br><span class="line">- phar:&#x2F;&#x2F; 可以查找指定压缩包内的文件</span><br><span class="line"></span><br><span class="line">![6](6.png)</span><br><span class="line"></span><br><span class="line">![7](7.png)</span><br><span class="line"></span><br><span class="line">#### **zip:&#x2F;&#x2F;协议**</span><br><span class="line"></span><br><span class="line">- 注意：只能传入绝对路径；要用#分隔压缩包和压缩包里的内容，并且#要用url编码%23。</span><br><span class="line">- 使用方法</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;.pngjava</span><br><span class="line">zip:&#x2F;&#x2F;archive.zip#dir&#x2F;file.txt</span><br><span class="line">zip:&#x2F;&#x2F; [压缩文件绝对路径]#[压缩文件内的子文件名]</span><br></pre></td></tr></table></figure>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/8.png" alt="8"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/8.png" alt="8"></p>
 </li>
 </ul>
 <h4 id="bzip2-协议"><a href="#bzip2-协议" class="headerlink" title="bzip2://协议"></a><strong>bzip2://协议</strong></h4><ul>
@@ -135,7 +135,7 @@
 <p><a target="_blank" rel="noopener" href="http://127.0.0.1/cmd.php?file=compress.bzip2://D:/soft/phpStudy/WWW/file.jpg">http://127.0.0.1/cmd.php?file=compress.bzip2://D:/soft/phpStudy/WWW/file.jpg</a></p>
 <p>or</p>
 <p><a target="_blank" rel="noopener" href="http://127.0.0.1/cmd.php?file=compress.bzip2://./file.jpg">http://127.0.0.1/cmd.php?file=compress.bzip2://./file.jpg</a></p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/9.png" alt="9"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/9.png" alt="9"></p>
 <h4 id="zlib-协议"><a href="#zlib-协议" class="headerlink" title="zlib://协议"></a><strong>zlib://协议</strong></h4><ul>
 <li>使用方法</li>
 </ul>
@@ -146,21 +146,21 @@
 <p><a target="_blank" rel="noopener" href="http://127.0.0.1/cmd.php?file=compress.zlib://D:/soft/phpStudy/WWW/file.jpg">http://127.0.0.1/cmd.php?file=compress.zlib://D:/soft/phpStudy/WWW/file.jpg</a></p>
 <p>or</p>
 <p><a target="_blank" rel="noopener" href="http://127.0.0.1/cmd.php?file=compress.zlib://./file.jpg">http://127.0.0.1/cmd.php?file=compress.zlib://./file.jpg</a></p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/10.png" alt="10"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/10.png" alt="10"></p>
 <h4 id="data-协议"><a href="#data-协议" class="headerlink" title="data://协议"></a><strong>data://协议</strong></h4><ul>
 <li><p>直接写入代码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data: text/plain,&lt;?php 执行内容 ?&gt;</span><br></pre></td></tr></table></figure>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/11.png" alt="11"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/11.png" alt="11"></p>
 </li>
 <li><p>使用base64编码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data:text/plain;(注意是分号不是逗号，与前面不同)base64,编码后的php代码</span><br></pre></td></tr></table></figure>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/12.png" alt="12"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/12.png" alt="12"></p>
 </li>
 </ul>
 <p>有一点要注意的问题，base64编码后的加号和等号要手动的url编码，否则无法识别。</p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/13.png" alt="13"></p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/14.png" alt="14"></p>
-<h5 id="php伪协议总结小表格："><a href="#php伪协议总结小表格：" class="headerlink" title="php伪协议总结小表格："></a>php伪协议总结小表格：</h5><p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/15.png" alt="15"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/13.png" alt="13"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/14.png" alt="14"></p>
+<h5 id="php伪协议总结小表格："><a href="#php伪协议总结小表格：" class="headerlink" title="php伪协议总结小表格："></a>php伪协议总结小表格：</h5><p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/15.png" alt="15"></p>
 <h4 id="参考文章："><a href="#参考文章：" class="headerlink" title="参考文章："></a><strong>参考文章：</strong></h4><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zpy1998zpy/article/details/80598768"><strong>https://blog.csdn.net/zpy1998zpy/article/details/80598768</strong></a></p>
 <h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><p>00截断、长度截断（windows:256,linux：4096）、包含日志文件、包含session</p>
 <h3 id="文件包含漏洞的防御"><a href="#文件包含漏洞的防御" class="headerlink" title="文件包含漏洞的防御"></a>文件包含漏洞的防御</h3><p>1.PHP中使用open_basedir配置限制访问在指定的区域；</p>
@@ -174,7 +174,7 @@
 <h4 id="将DVWA的级别设置为low"><a href="#将DVWA的级别设置为low" class="headerlink" title="将DVWA的级别设置为low"></a><strong>将DVWA的级别设置为low</strong></h4><ol>
 <li>首先先到DVWA security处选择security level，先选择low进行提交，再回到对应模块，分析源码，可以看到没有对page参数做任何过滤。</li>
 </ol>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/16.png" alt="16"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/16.png" alt="16"></p>
 <ol start="2">
 <li>尝试进行文件包含：</li>
 </ol>
@@ -182,54 +182,54 @@
 <li>本地文件包含</li>
 </ul>
 <p>采用绝对路径：</p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/17.png" alt="17"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/17.png" alt="17"></p>
 <p>相对路径：</p>
 <p>“./”：代表目前所在的目录。</p>
 <p>“../”：代表上一层目录。</p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/18.png" alt="18"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/18.png" alt="18"></p>
 <ul>
 <li>远程文件包含</li>
 </ul>
 <p>通过http协议包含本地服务器上的文件</p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/19.png" alt="19"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/19.png" alt="19"></p>
 <p>通过http协议包含远程服务器上的文件</p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/20.png" alt="20"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/20.png" alt="20"></p>
 <h4 id="将DVWA的级别设置为medium"><a href="#将DVWA的级别设置为medium" class="headerlink" title="将DVWA的级别设置为medium"></a><strong>将DVWA的级别设置为medium</strong></h4><ol>
 <li>分析源码,可以看到使用str_replace函数对http://、https://、../ 、..\进行了过滤,但可以通过双写来绕过，或者使用绝对路径来绕过。</li>
 </ol>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/21.png" alt="21"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/21.png" alt="21"></p>
 <ol start="2">
 <li><strong>进行绕过</strong></li>
 </ol>
 <ul>
 <li>双写绕过：<strong>htt<a target="_blank" rel="noopener" href="http://p//%E6%88%96ht">http://p://或ht</a></strong><a target="_blank" rel="noopener" href="http://tp//"><strong>http://tp://</strong></a></li>
 </ul>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/22.png" alt="22"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/22.png" alt="22"></p>
 <ul>
 <li>绝对路径绕过</li>
 </ul>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/23.png" alt="23"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/23.png" alt="23"></p>
 <h4 id="将DVWA的级别设置为High"><a href="#将DVWA的级别设置为High" class="headerlink" title="将DVWA的级别设置为High"></a><strong>将DVWA的级别设置为High</strong></h4><ul>
 <li>分析源码可以看到,如果$file变量中不含有file并且$file不等于include.php，此时服务器才不会去包含文件，两个条件只要不满足其中任意一个,就能达到文件包含的目的,可以用file协议来绕过。</li>
 </ul>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/24.png" alt="24"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/24.png" alt="24"></p>
 <h4 id="将DVWA的级别设置为Impossible"><a href="#将DVWA的级别设置为Impossible" class="headerlink" title="将DVWA的级别设置为Impossible"></a><strong>将DVWA的级别设置为Impossible</strong></h4><ul>
 <li>分析源码可以看到,使用白名单,page只能为include.php”、“file1.php”、“file2.php”、“file3.php”之一，只允许包含include.php、file1.php、file2.php、file3.php，不能包含别的文件，彻底杜绝文件包含漏洞</li>
 </ul>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/25.png" alt="25"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/25.png" alt="25"></p>
 <h4 id="DVWA-文件包含漏洞笔记参考原文："><a href="#DVWA-文件包含漏洞笔记参考原文：" class="headerlink" title="DVWA-文件包含漏洞笔记参考原文："></a><strong>DVWA-文件包含漏洞笔记参考原文</strong>：</h4><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yuzly/p/10799486.html"><strong>https://www.cnblogs.com/yuzly/p/10799486.html</strong></a></p>
 <h3 id="pikachu靶场"><a href="#pikachu靶场" class="headerlink" title="pikachu靶场"></a><strong>pikachu靶场</strong></h3><h4 id="pikachu–file-inclusion"><a href="#pikachu–file-inclusion" class="headerlink" title="pikachu–file inclusion"></a><strong>pikachu–file inclusion</strong></h4><ol>
 <li>本地文件包含：</li>
 </ol>
 <p>在此处只能使用相对路径而不能使用绝对路径进行包含。</p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/26.png" alt="26"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/26.png" alt="26"></p>
 <ol start="2">
 <li>远程文件包含：</li>
 </ol>
 <p>输入每个球员的名字之后也可以看到URL处filename参数的变化：</p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/27.png" alt="27"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/27.png" alt="27"></p>
 <p>进行远程文件包含：</p>
-<p><img src="/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/28.png" alt="28"></p>
+<p><img src="/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/28.png" alt="28"></p>
 <p>也可以使用file协议以及data协议进行绕过。</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->

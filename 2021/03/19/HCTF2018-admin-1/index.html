@@ -98,13 +98,13 @@ session中的从狭义和广义上分：
 <h4 id="食谱一：session欺骗"><a href="#食谱一：session欺骗" class="headerlink" title="食谱一：session欺骗"></a>食谱一：session欺骗</h4><ul>
 <li>首先是查看一下源代码，发现：</li>
 </ul>
-<p><img src="/child/2021/03/19/HCTF2018-admin-1/1.png" alt="1"></p>
+<p><img src="/2021/03/19/HCTF2018-admin-1/1.png" alt="1"></p>
 <p>提示不是admin用户，当我们去注册admin用户时发现是注册不成功的，随便注册一个账户进行登录成功之后在更改密码的选项框的源代码处也有一个提示：</p>
-<p><img src="/child/2021/03/19/HCTF2018-admin-1/2.png" alt="2"></p>
+<p><img src="/2021/03/19/HCTF2018-admin-1/2.png" alt="2"></p>
 <ul>
 <li>下载一下看看，是一个项目，在 app\templates\index的代码下可以看到：</li>
 </ul>
-<p><img src="/child/2021/03/19/HCTF2018-admin-1/3.png" alt="3"></p>
+<p><img src="/2021/03/19/HCTF2018-admin-1/3.png" alt="3"></p>
 <p>意思是只要session中得到的name的值等于admin的时候，就会输出flag。</p>
 <ul>
 <li>这个时候就想到了session伪造。</li>
@@ -121,15 +121,15 @@ session中的从狭义和广义上分：
 <li>我们需要将name的值改为admin，再进行session的加密，进行session的替换，应该就能得到成功登录admin账户得到flag了。</li>
 </ul>
 <p>所以接下来进行更换加密操作：这里加密伪造需要知道secret_key.</p>
-<p><img src="/child/2021/03/19/HCTF2018-admin-1/4.png" alt="4"></p>
+<p><img src="/2021/03/19/HCTF2018-admin-1/4.png" alt="4"></p>
 <ul>
 <li>加密脚本：<a target="_blank" rel="noopener" href="https://github.com/noraj/flask-session-cookie-manager">https://github.com/noraj/flask-session-cookie-manager</a></li>
 </ul>
-<p><img src="/child/2021/03/19/HCTF2018-admin-1/5.png" alt="5"></p>
+<p><img src="/2021/03/19/HCTF2018-admin-1/5.png" alt="5"></p>
 <ul>
 <li>将运行得到的session换到cookie中，进行放包：</li>
 </ul>
-<p><img src="/child/2021/03/19/HCTF2018-admin-1/6.png" alt="6"></p>
+<p><img src="/2021/03/19/HCTF2018-admin-1/6.png" alt="6"></p>
 <ul>
 <li>在index页面得到flag。</li>
 </ul>
@@ -137,7 +137,7 @@ session中的从狭义和广义上分：
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/NineOne/p/14033379.html">https://www.cnblogs.com/NineOne/p/14033379.html</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42271850/article/details/104932723">https://blog.csdn.net/weixin_42271850/article/details/104932723</a></p>
 <hr>
-<h4 id="食谱二：unicode欺骗"><a href="#食谱二：unicode欺骗" class="headerlink" title="食谱二：unicode欺骗"></a>食谱二：unicode欺骗</h4><p><img src="/child/2021/03/19/HCTF2018-admin-1/7.png" alt="7"></p>
+<h4 id="食谱二：unicode欺骗"><a href="#食谱二：unicode欺骗" class="headerlink" title="食谱二：unicode欺骗"></a>食谱二：unicode欺骗</h4><p><img src="/2021/03/19/HCTF2018-admin-1/7.png" alt="7"></p>
 <p>然后我们发现在使用nodeprep.prepare函数转换时过程如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ᴬᴰᴹᴵᴺ -&gt; ADMIN -&gt; admin</span><br></pre></td></tr></table></figure>
 <pre><code>- 假如我们注册ᴬᴰᴹᴵᴺ用户，然后在用ᴬᴰᴹᴵᴺ用户登录，因为在login函数里使用了一次nodeprep.prepare函数，因此我们登录上去看到的用户名为ADMIN，此时我们再修改密码，又调用了一次nodeprep.prepare函数将name转换为admin，然后我们就可以改掉admin的密码，最后利用admin账号登录即可拿到flag。</code></pre>
