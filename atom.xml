@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Xiaofeiji&#39;Blog</title>
-  <icon>https://xiaofeiji-77.github.io/icon.png</icon>
+  <icon>https://xiaofeiji-77.github.io/child/icon.png</icon>
   <subtitle>理想细碎，要勇敢出航。</subtitle>
-  <link href="https://xiaofeiji-77.github.io/atom.xml" rel="self"/>
+  <link href="https://xiaofeiji-77.github.io/child/atom.xml" rel="self"/>
   
-  <link href="https://xiaofeiji-77.github.io/"/>
+  <link href="https://xiaofeiji-77.github.io/child/"/>
   <updated>2021-06-10T04:22:48.248Z</updated>
-  <id>https://xiaofeiji-77.github.io/</id>
+  <id>https://xiaofeiji-77.github.io/child/</id>
   
   <author>
     <name>Xiaofeiji</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>2021NEWSCTF6.1萌新赛wp-misc</title>
-    <link href="https://xiaofeiji-77.github.io/2021/06/10/2021NEWSCTF6-1%E8%90%8C%E6%96%B0%E8%B5%9Bwp-misc/"/>
-    <id>https://xiaofeiji-77.github.io/2021/06/10/2021NEWSCTF6-1%E8%90%8C%E6%96%B0%E8%B5%9Bwp-misc/</id>
+    <link href="https://xiaofeiji-77.github.io/child/2021/06/10/2021NEWSCTF6-1%E8%90%8C%E6%96%B0%E8%B5%9Bwp-misc/"/>
+    <id>https://xiaofeiji-77.github.io/child/2021/06/10/2021NEWSCTF6-1%E8%90%8C%E6%96%B0%E8%B5%9Bwp-misc/</id>
     <published>2021-06-10T04:13:30.000Z</published>
     <updated>2021-06-10T04:22:48.248Z</updated>
     
@@ -35,14 +35,14 @@
     
     
     
-    <category term="比赛wp" scheme="https://xiaofeiji-77.github.io/tags/%E6%AF%94%E8%B5%9Bwp/"/>
+    <category term="比赛wp" scheme="https://xiaofeiji-77.github.io/child/tags/%E6%AF%94%E8%B5%9Bwp/"/>
     
   </entry>
   
   <entry>
     <title>HCTF2018-admin 1</title>
-    <link href="https://xiaofeiji-77.github.io/2021/03/19/HCTF2018-admin-1/"/>
-    <id>https://xiaofeiji-77.github.io/2021/03/19/HCTF2018-admin-1/</id>
+    <link href="https://xiaofeiji-77.github.io/child/2021/03/19/HCTF2018-admin-1/"/>
+    <id>https://xiaofeiji-77.github.io/child/2021/03/19/HCTF2018-admin-1/</id>
     <published>2021-03-19T05:58:40.000Z</published>
     <updated>2021-03-19T09:22:35.698Z</updated>
     
@@ -59,17 +59,17 @@
     
     
     
-    <category term="刷题--web" scheme="https://xiaofeiji-77.github.io/categories/%E5%88%B7%E9%A2%98-web/"/>
+    <category term="刷题--web" scheme="https://xiaofeiji-77.github.io/child/categories/%E5%88%B7%E9%A2%98-web/"/>
     
     
-    <category term="buuctf刷题之旅" scheme="https://xiaofeiji-77.github.io/tags/buuctf%E5%88%B7%E9%A2%98%E4%B9%8B%E6%97%85/"/>
+    <category term="buuctf刷题之旅" scheme="https://xiaofeiji-77.github.io/child/tags/buuctf%E5%88%B7%E9%A2%98%E4%B9%8B%E6%97%85/"/>
     
   </entry>
   
   <entry>
     <title>bugku web11-30</title>
-    <link href="https://xiaofeiji-77.github.io/2021/02/21/bugku-web11-30/"/>
-    <id>https://xiaofeiji-77.github.io/2021/02/21/bugku-web11-30/</id>
+    <link href="https://xiaofeiji-77.github.io/child/2021/02/21/bugku-web11-30/"/>
+    <id>https://xiaofeiji-77.github.io/child/2021/02/21/bugku-web11-30/</id>
     <published>2021-02-21T08:42:26.000Z</published>
     <updated>2021-02-21T09:45:23.402Z</updated>
     
@@ -84,17 +84,17 @@
     
     
     
-    <category term="刷题--web" scheme="https://xiaofeiji-77.github.io/categories/%E5%88%B7%E9%A2%98-web/"/>
+    <category term="刷题--web" scheme="https://xiaofeiji-77.github.io/child/categories/%E5%88%B7%E9%A2%98-web/"/>
     
     
-    <category term="bugku刷题之旅" scheme="https://xiaofeiji-77.github.io/tags/bugku%E5%88%B7%E9%A2%98%E4%B9%8B%E6%97%85/"/>
+    <category term="bugku刷题之旅" scheme="https://xiaofeiji-77.github.io/child/tags/bugku%E5%88%B7%E9%A2%98%E4%B9%8B%E6%97%85/"/>
     
   </entry>
   
   <entry>
     <title>文件包含漏洞下-几道题目篇</title>
-    <link href="https://xiaofeiji-77.github.io/2021/02/21/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8B-%E5%87%A0%E9%81%93%E9%A2%98%E7%9B%AE%E7%AF%87/"/>
-    <id>https://xiaofeiji-77.github.io/2021/02/21/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8B-%E5%87%A0%E9%81%93%E9%A2%98%E7%9B%AE%E7%AF%87/</id>
+    <link href="https://xiaofeiji-77.github.io/child/2021/02/21/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8B-%E5%87%A0%E9%81%93%E9%A2%98%E7%9B%AE%E7%AF%87/"/>
+    <id>https://xiaofeiji-77.github.io/child/2021/02/21/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8B-%E5%87%A0%E9%81%93%E9%A2%98%E7%9B%AE%E7%AF%87/</id>
     <published>2021-02-21T04:13:57.000Z</published>
     <updated>2021-02-21T09:47:51.831Z</updated>
     
@@ -109,17 +109,17 @@
     
     
     
-    <category term="web-漏洞篇" scheme="https://xiaofeiji-77.github.io/categories/web-%E6%BC%8F%E6%B4%9E%E7%AF%87/"/>
+    <category term="web-漏洞篇" scheme="https://xiaofeiji-77.github.io/child/categories/web-%E6%BC%8F%E6%B4%9E%E7%AF%87/"/>
     
     
-    <category term="文件包含漏洞" scheme="https://xiaofeiji-77.github.io/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/"/>
+    <category term="文件包含漏洞" scheme="https://xiaofeiji-77.github.io/child/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/"/>
     
   </entry>
   
   <entry>
     <title>文件包含漏洞上-知识点篇</title>
-    <link href="https://xiaofeiji-77.github.io/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/"/>
-    <id>https://xiaofeiji-77.github.io/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/</id>
+    <link href="https://xiaofeiji-77.github.io/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/"/>
+    <id>https://xiaofeiji-77.github.io/child/2021/02/20/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E4%B8%8A-%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AF%87/</id>
     <published>2021-02-20T12:24:34.000Z</published>
     <updated>2021-02-26T13:37:24.399Z</updated>
     
@@ -134,17 +134,17 @@
     
     
     
-    <category term="web-漏洞篇" scheme="https://xiaofeiji-77.github.io/categories/web-%E6%BC%8F%E6%B4%9E%E7%AF%87/"/>
+    <category term="web-漏洞篇" scheme="https://xiaofeiji-77.github.io/child/categories/web-%E6%BC%8F%E6%B4%9E%E7%AF%87/"/>
     
     
-    <category term="文件包含漏洞" scheme="https://xiaofeiji-77.github.io/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/"/>
+    <category term="文件包含漏洞" scheme="https://xiaofeiji-77.github.io/child/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/"/>
     
   </entry>
   
   <entry>
     <title>MD5的弱类型比较和强碰撞and md5()函数的原始二进制数据探究</title>
-    <link href="https://xiaofeiji-77.github.io/2021/02/16/MD5%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B%E6%AF%94%E8%BE%83%E5%92%8C%E5%BC%BA%E7%A2%B0%E6%92%9Eand-md5-%E5%87%BD%E6%95%B0%E7%9A%84%E5%8E%9F%E5%A7%8B%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E6%8D%AE%E6%8E%A2%E7%A9%B6/"/>
-    <id>https://xiaofeiji-77.github.io/2021/02/16/MD5%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B%E6%AF%94%E8%BE%83%E5%92%8C%E5%BC%BA%E7%A2%B0%E6%92%9Eand-md5-%E5%87%BD%E6%95%B0%E7%9A%84%E5%8E%9F%E5%A7%8B%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E6%8D%AE%E6%8E%A2%E7%A9%B6/</id>
+    <link href="https://xiaofeiji-77.github.io/child/2021/02/16/MD5%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B%E6%AF%94%E8%BE%83%E5%92%8C%E5%BC%BA%E7%A2%B0%E6%92%9Eand-md5-%E5%87%BD%E6%95%B0%E7%9A%84%E5%8E%9F%E5%A7%8B%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E6%8D%AE%E6%8E%A2%E7%A9%B6/"/>
+    <id>https://xiaofeiji-77.github.io/child/2021/02/16/MD5%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B%E6%AF%94%E8%BE%83%E5%92%8C%E5%BC%BA%E7%A2%B0%E6%92%9Eand-md5-%E5%87%BD%E6%95%B0%E7%9A%84%E5%8E%9F%E5%A7%8B%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E6%8D%AE%E6%8E%A2%E7%A9%B6/</id>
     <published>2021-02-16T12:34:54.000Z</published>
     <updated>2021-02-21T09:45:49.460Z</updated>
     
@@ -161,17 +161,17 @@
     
     
     
-    <category term="MD5" scheme="https://xiaofeiji-77.github.io/categories/MD5/"/>
+    <category term="MD5" scheme="https://xiaofeiji-77.github.io/child/categories/MD5/"/>
     
     
-    <category term="MD5强弱类型" scheme="https://xiaofeiji-77.github.io/tags/MD5%E5%BC%BA%E5%BC%B1%E7%B1%BB%E5%9E%8B/"/>
+    <category term="MD5强弱类型" scheme="https://xiaofeiji-77.github.io/child/tags/MD5%E5%BC%BA%E5%BC%B1%E7%B1%BB%E5%9E%8B/"/>
     
   </entry>
   
   <entry>
     <title>博客打开之后是空白页该怎么办咧——xiaofeiji踩过的坑</title>
-    <link href="https://xiaofeiji-77.github.io/2021/01/20/%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5/"/>
-    <id>https://xiaofeiji-77.github.io/2021/01/20/%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5/</id>
+    <link href="https://xiaofeiji-77.github.io/child/2021/01/20/%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5/"/>
+    <id>https://xiaofeiji-77.github.io/child/2021/01/20/%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5/</id>
     <published>2021-01-20T15:33:23.000Z</published>
     <updated>2021-02-21T09:46:13.075Z</updated>
     
@@ -187,10 +187,10 @@
     
     
     
-    <category term="关于Hexo" scheme="https://xiaofeiji-77.github.io/categories/%E5%85%B3%E4%BA%8EHexo/"/>
+    <category term="关于Hexo" scheme="https://xiaofeiji-77.github.io/child/categories/%E5%85%B3%E4%BA%8EHexo/"/>
     
     
-    <category term="关于博客" scheme="https://xiaofeiji-77.github.io/tags/%E5%85%B3%E4%BA%8E%E5%8D%9A%E5%AE%A2/"/>
+    <category term="关于博客" scheme="https://xiaofeiji-77.github.io/child/tags/%E5%85%B3%E4%BA%8E%E5%8D%9A%E5%AE%A2/"/>
     
   </entry>
   
