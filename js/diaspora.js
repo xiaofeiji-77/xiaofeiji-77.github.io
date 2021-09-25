@@ -105,8 +105,6 @@ var Diaspora = {
                     comment.click();
                 }
             }, 0)
-            var math = document.getElementById("single")
-            MathJax.Hub.Queue(["Typeset", MathJax.Hub, math])
         })
     },
     preview: function() {
@@ -545,7 +543,7 @@ $(function() {
                 }else{
                   hash = $(e.target).attr('href')
                 }
-                to  = $(decodeURI(hash))
+                to  = $("a.headerlink[href='" + hash + "']")
                 $("html,body").animate({
                   scrollTop: to.offset().top - 50
                 }, 300);
