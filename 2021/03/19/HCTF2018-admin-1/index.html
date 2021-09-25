@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HCTF2018-admin 1 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="饭前一杯柠檬水关于flask和session伪造：
+
+session 数据是保存到后端的数据库中
+session中的从狭义和广义上分：
+
+（1） session，广义上 :
+​     是一种机制：,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">HCTF2018-admin 1</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">HCTF2018-admin 1</h1>
+        <div class="stuff">
+            <span>三月 19, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/buuctf%E5%88%B7%E9%A2%98%E4%B9%8B%E6%97%85/" rel="tag">buuctf刷题之旅</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="饭前一杯柠檬水"><a href="#饭前一杯柠檬水" class="headerlink" title="饭前一杯柠檬水"></a>饭前一杯柠檬水</h3><p>关于flask和session伪造：</p>
+<ol>
+<li>session 数据是保存到后端的数据库中</li>
+<li>session中的从狭义和广义上分：</li>
+</ol>
+<p>（1） session，广义上 :</p>
+<p>​     是一种机制：在前端当中存一个session_id ,在后端当中去保存</p>
+<p>​     这份session的属性值，然后访问的时候只要能够带上这份session_id</p>
+<p>​     的值，就可以知道之前保存的数据是什么。</p>
+<p>​     整个的这种机制，是一种session机制</p>
+<p> （2）session，狭义上 ：</p>
+<p>​     只是仅仅保存到后端的session数据</p>
+<ol start="3">
+<li><p>在设置使用session时,必须要做一个配置：</p>
+<p>即 flask的session中需要用到的秘钥字符串，可以是任意值</p>
+</li>
+</ol>
+<p>  app.config[“SECRET_KEY”] = “任意的字符串”</p>
+<ol start="4">
+<li>如果没有设置session时，获取到的session就是None</li>
+</ol>
+<p>flask 是非常轻量级的 Web框架 ，其 session 存储在客户端中，也就是说其实只是将相关内容进行了加密保存到session中，容易造成安全漏洞。和服务端的session不同，服务端的session保存在服务端中，依靠客户端cookie值中的sessionId来进行识别。</p>
+<h3 id="恰饭恰饭"><a href="#恰饭恰饭" class="headerlink" title="恰饭恰饭"></a>恰饭恰饭</h3><p>​         其实一开始看到注册和登录的话想到的是SQL注入，但是抓包也观察了一下也并没有看到什么值得怀疑的注入点。到这其实就已经没有什么方向了，没有接触过session伪造的xiaofeiji，也就只能跟着大佬的wp做了。</p>
+<h4 id="食谱一：session欺骗"><a href="#食谱一：session欺骗" class="headerlink" title="食谱一：session欺骗"></a>食谱一：session欺骗</h4><ul>
+<li>首先是查看一下源代码，发现：</li>
+</ul>
+<p><img src="1.png" alt="1"></p>
+<p>提示不是admin用户，当我们去注册admin用户时发现是注册不成功的，随便注册一个账户进行登录成功之后在更改密码的选项框的源代码处也有一个提示：</p>
+<p><img src="2.png" alt="2"></p>
+<ul>
+<li>下载一下看看，是一个项目，在 app\templates\index的代码下可以看到：</li>
+</ul>
+<p><img src="3.png" alt="3"></p>
+<p>意思是只要session中得到的name的值等于admin的时候，就会输出flag。</p>
+<ul>
+<li>这个时候就想到了session伪造。</li>
+</ul>
+<p>​         对于flask框架，其session是以cookie的形式存储在客户端的，所以造成了session可读，我们只要用网上的session解密脚本就可实现读取，解密读取之后我们知道了它的格式。</p>
+<p>所以得到一个网上找的解密脚本文件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python3</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line">from base64 <span class="keyword">import</span> b64decode</span><br><span class="line">from flask.<span class="function">sessions <span class="keyword">import</span> session_json_serializer</span></span><br><span class="line"><span class="function">from itsdangerous <span class="keyword">import</span> base64_decode</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">def <span class="title">decryption</span><span class="params">(payload)</span>:</span></span><br><span class="line"><span class="function">    payload, sig </span>= payload.rsplit(b<span class="string">&#x27;.&#x27;</span>, <span class="number">1</span>)</span><br><span class="line">    payload, timestamp = payload.rsplit(b<span class="string">&#x27;.&#x27;</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    decompress = False</span><br><span class="line">    <span class="keyword">if</span> payload.startswith(b<span class="string">&#x27;.&#x27;</span>):</span><br><span class="line">        payload = payload[<span class="number">1</span>:]</span><br><span class="line">        decompress = True</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        payload = base64_decode(payload)</span><br><span class="line">    except Exception as e:</span><br><span class="line">        <span class="function">raise <span class="title">Exception</span><span class="params">(<span class="string">&#x27;Could not base64 decode the payload because of &#x27;</span></span></span></span><br><span class="line"><span class="params"><span class="function">                         <span class="string">&#x27;an exception&#x27;</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    <span class="keyword">if</span> decompress:</span></span><br><span class="line"><span class="function">        <span class="keyword">try</span>:</span></span><br><span class="line"><span class="function">            payload </span>= zlib.decompress(payload)</span><br><span class="line">        except Exception as e:</span><br><span class="line">            <span class="function">raise <span class="title">Exception</span><span class="params">(<span class="string">&#x27;Could not zlib decompress the payload before &#x27;</span></span></span></span><br><span class="line"><span class="params"><span class="function">                             <span class="string">&#x27;decoding the payload&#x27;</span>)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">    return session_json_serializer.<span class="title">loads</span><span class="params">(payload)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">if</span> __name__ </span>== <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    print(decryption(sys.argv[<span class="number">1</span>].encode()))</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>运行： python .py </li>
+</ul>
+<p>得到所登录的admin3的session值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.eJw9kEGLwjAUhP_K8s4ebLWHFTwIqWWFvJDd2PJyEVdr06RxoSrRiP99uy54nRk-ZuYOm0NfnwzMzv2lHsGm3cPsDm_fMANRYMfjOiIrDbcy08oFjHngqrmiMp1Q6LUqrajkGP3KYaQgWJ5qry332iCTN8GaoCvdol11vBh0pg1VZYt_rEJ32qLThQyi4Deyi4koVo4qtEItMoryxtN15Mo4Um7KU57wmEdSNCa79KQWAdnSCLWbw2MEu1N_2Jx_XH18TUCbj1GhpepjyoeoZk2GnidaUeS29ILtrWDyOhSLZCkj--lIzp-41m-b-kX6St-jDP_OcesHA7Z73x4nMILLqe6fx0GSwOMXhxBvEw.YEitRw.m5gcaKeeM283A5I3MCojlN_Pyok</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>我们需要将name的值改为admin，再进行session的加密，进行session的替换，应该就能得到成功登录admin账户得到flag了。</li>
+</ul>
+<p>所以接下来进行更换加密操作：这里加密伪造需要知道secret_key.</p>
+<p><img src="4.png" alt="4"></p>
+<ul>
+<li>加密脚本：<a target="_blank" rel="noopener" href="https://github.com/noraj/flask-session-cookie-manager">https://github.com/noraj/flask-session-cookie-manager</a></li>
+</ul>
+<p><img src="5.png" alt="5"></p>
+<ul>
+<li>将运行得到的session换到cookie中，进行放包：</li>
+</ul>
+<p><img src="6.png" alt="6"></p>
+<ul>
+<li>在index页面得到flag。</li>
+</ul>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/wei18791957243/article/details/85237246">https://blog.csdn.net/wei18791957243/article/details/85237246</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/NineOne/p/14033379.html">https://www.cnblogs.com/NineOne/p/14033379.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42271850/article/details/104932723">https://blog.csdn.net/weixin_42271850/article/details/104932723</a></p>
+<hr>
+<h4 id="食谱二：unicode欺骗"><a href="#食谱二：unicode欺骗" class="headerlink" title="食谱二：unicode欺骗"></a>食谱二：unicode欺骗</h4><p><img src="7.png" alt="7"></p>
+<p>然后我们发现在使用nodeprep.prepare函数转换时过程如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ᴬᴰᴹᴵᴺ -&gt; ADMIN -&gt; admin</span><br></pre></td></tr></table></figure>
+
+<pre><code>- 假如我们注册ᴬᴰᴹᴵᴺ用户，然后在用ᴬᴰᴹᴵᴺ用户登录，因为在login函数里使用了一次nodeprep.prepare函数，因此我们登录上去看到的用户名为ADMIN，此时我们再修改密码，又调用了一次nodeprep.prepare函数将name转换为admin，然后我们就可以改掉admin的密码，最后利用admin账号登录即可拿到flag。
+</code></pre>
+<h4 id="参考-HCTF-2018-admin-三种解法"><a href="#参考-HCTF-2018-admin-三种解法" class="headerlink" title="参考[HCTF-2018-admin]三种解法"></a>参考[HCTF-2018-admin]三种解法</h4><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44677409/article/details/100733581">https://blog.csdn.net/weixin_44677409/article/details/100733581</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A5%AD%E5%89%8D%E4%B8%80%E6%9D%AF%E6%9F%A0%E6%AA%AC%E6%B0%B4"><span class="toc-number">1.</span> <span class="toc-text">饭前一杯柠檬水</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%81%B0%E9%A5%AD%E6%81%B0%E9%A5%AD"><span class="toc-number">2.</span> <span class="toc-text">恰饭恰饭</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A3%9F%E8%B0%B1%E4%B8%80%EF%BC%9Asession%E6%AC%BA%E9%AA%97"><span class="toc-number">2.1.</span> <span class="toc-text">食谱一：session欺骗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">2.2.</span> <span class="toc-text">参考</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A3%9F%E8%B0%B1%E4%BA%8C%EF%BC%9Aunicode%E6%AC%BA%E9%AA%97"><span class="toc-number">2.3.</span> <span class="toc-text">食谱二：unicode欺骗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83-HCTF-2018-admin-%E4%B8%89%E7%A7%8D%E8%A7%A3%E6%B3%95"><span class="toc-number">2.4.</span> <span class="toc-text">参考[HCTF-2018-admin]三种解法</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

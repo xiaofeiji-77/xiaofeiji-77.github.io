@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>中间件解析漏洞配合文件上传 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="中间件解析漏洞+配合文件上传测试
+IIS上传-解析      
+
+Apache上传-解析
+
+Nginx上传-解析
+
+
+IIS6.0
+文件夹
+
+image/qq.jpg
+image.sap/qq.jp,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">中间件解析漏洞配合文件上传</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">中间件解析漏洞配合文件上传</h1>
+        <div class="stuff">
+            <span>八月 15, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" rel="tag">文件上传</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="中间件解析漏洞-配合文件上传测试"><a href="#中间件解析漏洞-配合文件上传测试" class="headerlink" title="中间件解析漏洞+配合文件上传测试"></a>中间件解析漏洞+配合文件上传测试</h2><ol>
+<li><p>IIS上传-解析      </p>
+</li>
+<li><p>Apache上传-解析</p>
+</li>
+<li><p>Nginx上传-解析</p>
+</li>
+</ol>
+<h3 id="IIS6-0"><a href="#IIS6-0" class="headerlink" title="IIS6.0"></a>IIS6.0</h3><ol>
+<li>文件夹</li>
+</ol>
+<p>image/qq.jpg</p>
+<p>image.sap/qq.jpg    qq.jpg 就会被当做asp解析</p>
+<ol start="2">
+<li>文件</li>
+</ol>
+<p>image.jpg</p>
+<p>image.asp;.jpg或xxx.asp;xxx.jpg 此文件会被当做asp执行</p>
+<p>asp可以换成php  如果换了php就当php执行</p>
+<h3 id="apache"><a href="#apache" class="headerlink" title="apache"></a>apache</h3><p><strong>总结：</strong></p>
+<ol>
+<li><p>test.php.php123  是从右到左开始判断解析</p>
+</li>
+<li><p>addhandler php5-script.php   test2.php.jpg</p>
+</li>
+<li><p>addtype application/x-httpd-php .jpg    即使拓展名是jpg，一样能以PHP方式执行</p>
+</li>
+</ol>
+<h4 id="Apache解析漏洞"><a href="#Apache解析漏洞" class="headerlink" title="Apache解析漏洞"></a>Apache解析漏洞</h4><p><strong>低版本漏洞</strong></p>
+<ol>
+<li>apache 版本：2.x</li>
+</ol>
+<ol start="2">
+<li>解释</li>
+</ol>
+<p>x.php.xxx.yyy</p>
+<p>识别最后的yyy xxx，不能识别，则向前解析，直到识别。</p>
+<p>利用场景：</p>
+<p>如果对方中间件Apache是低版本，可以利用文件上传，上传一个不识别的文件后缀，利用解析漏洞规则成功解析文件，其中后门代码被触发。</p>
+<h4 id="Apache配置安全（Apache-HTTPD-多后缀解析漏洞）"><a href="#Apache配置安全（Apache-HTTPD-多后缀解析漏洞）" class="headerlink" title="Apache配置安全（Apache HTTPD 多后缀解析漏洞）"></a>Apache配置安全（Apache HTTPD 多后缀解析漏洞）</h4><ol>
+<li>版本</li>
+</ol>
+<p>该漏洞与Apache、php版本无关，属于用户配置不当造成的解析漏洞。</p>
+<ol start="2">
+<li>漏洞原理：</li>
+</ol>
+<p>如果运维人员给.php后缀增加了处理器：</p>
+<p><strong>AddHandler application/x-httpd-php .php</strong></p>
+<p>那么，在有多个后缀的情况下，只要一个文件含有.php后缀的文件即将被识别成PHP文件，没必要是最后一个后缀。利用这个特性，将会造成一个可以绕过上传白名单的解析漏洞。</p>
+<p>即：xxx.php.jpg会被当做php文件解析。</p>
+<ol start="3">
+<li>复现过程</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="http://your-ip/index.php%E4%B8%AD%E6%98%AF%E4%B8%80%E4%B8%AA%E7%99%BD%E5%90%8D%E5%8D%95%E6%A3%80%E6%9F%A5%E6%96%87%E4%BB%B6%E5%90%8E%E7%BC%80%E7%9A%84%E4%B8%8A%E4%BC%A0%E7%BB%84%E4%BB%B6%EF%BC%8C%E4%B8%8A%E4%BC%A0%E5%AE%8C%E6%88%90%E5%90%8E%E5%B9%B6%E6%9C%AA%E9%87%8D%E5%91%BD%E5%90%8D%E3%80%82%E6%88%91%E4%BB%AC%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E5%90%8D%E4%B8%BAxxx.php.jpg%E6%88%96xxx.php.jpeg%E7%9A%84%E6%96%87%E4%BB%B6%EF%BC%8C%E5%88%A9%E7%94%A8Apache%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E%E8%BF%9B%E8%A1%8Cgetshell%E3%80%82">http://your-ip/index.php中是一个白名单检查文件后缀的上传组件，上传完成后并未重命名。我们可以通过上传文件名为xxx.php.jpg或xxx.php.jpeg的文件，利用Apache解析漏洞进行getshell。</a></p>
+<p>启动环境</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">cd  /vulhub/httpd/apache_parsing_vulnerability</span><br><span class="line"></span><br><span class="line">docker-compose build</span><br><span class="line"></span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>访问ip:80端口</p>
+<p>上传一个1.php文件，不能上传成功，抓包进行后缀修改：</p>
+<p><img src="1.png"></p>
+<p>利用该漏洞，添加.jpg后缀，成功上传：1.php.jpg：</p>
+<p><img src="2.png"></p>
+<p>访问1.php.jpg：发现代码以PHP形式进行解析：</p>
+<p><img src="3.png"></p>
+<h4 id="Apache-HTTPD-换行解析漏洞（CVE-2017-15715）"><a href="#Apache-HTTPD-换行解析漏洞（CVE-2017-15715）" class="headerlink" title="Apache HTTPD 换行解析漏洞（CVE-2017-15715）"></a>Apache HTTPD 换行解析漏洞（CVE-2017-15715）</h4><ol>
+<li><p>影响版本</p>
+<p>2.4.0~2.4.29</p>
+</li>
+</ol>
+<ol start="2">
+<li><p>原理</p>
+<p>在解析PHP时，1.php\x0A 将被按照PHP后缀进行解析，导致绕过一些服务器的安全策略。</p>
+</li>
+<li><p>复现过程</p>
+</li>
+</ol>
+<p>正常上传PHP文件，发现不能上传成功：</p>
+<p><img src="4.png"></p>
+<p>在1.php后面插入一个\x0A（注意，不能是\x0D\x0A，只能是一个\x0A），不再拦截：</p>
+<p><img src="5.png"></p>
+<p><img src="6.png"></p>
+<h3 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h3><h4 id="nginx解析漏洞复现"><a href="#nginx解析漏洞复现" class="headerlink" title="nginx解析漏洞复现"></a>nginx解析漏洞复现</h4><ol>
+<li>受影响版本</li>
+</ol>
+<p>该漏洞与Nginx、php版本无关，属于用户配置不当造成的解析漏洞。</p>
+<ol start="2">
+<li>漏洞原理参照：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/renhaoblog/p/12874603.html">https://www.cnblogs.com/renhaoblog/p/12874603.html</a></li>
+</ol>
+<ol start="3">
+<li>复现过程</li>
+</ol>
+<p>在一个图片的末尾加上一句话木马：<?php phpinfo(); ?>,制作成图片马：</p>
+<p><img src="7.png"></p>
+<p>对其进行上传，返回图片的路径：</p>
+<p><img src="8.png"></p>
+<p>访问路径正常解析图片，但是放进去的一句话木马没有执行。</p>
+<p><img src="9.png"></p>
+<p>因为存在相关解析漏洞，解析出现混乱，因此在后面添加1.php时，会把图片也当做PHP代码进行解析，出现乱码，而图片中的一句话木马也成功被解析了。</p>
+<p><img src="10.png"></p>
+<h4 id="nginx文件名逻辑漏洞（CVE-2013-4547）"><a href="#nginx文件名逻辑漏洞（CVE-2013-4547）" class="headerlink" title="nginx文件名逻辑漏洞（CVE-2013-4547）"></a>nginx文件名逻辑漏洞（CVE-2013-4547）</h4><ol>
+<li>原理</li>
+</ol>
+<p>其主要原因是错误地解析了请求的URI，错误地获取到用户请求的文件名，导致出现权限绕过、代码执行的连带影响。</p>
+<ol start="2">
+<li>影响版本</li>
+</ol>
+<p>Nginx 0.8.41 ~ 1.4.3 / 1.5.0 ~ 1.5.7</p>
+<ol start="3">
+<li>成因</li>
+</ol>
+<p>存在CVE-2013-4547的情况下，会将请求的1.gif[0x20][0x00].php，错误地以为请求的文件是1.gif[0x20]，因此将文件当做PHP代码解析。</p>
+<p>具体可见：<a target="_blank" rel="noopener" href="https://vulhub.org/#/environments/nginx/CVE-2013-4547/">https://vulhub.org/#/environments/nginx/CVE-2013-4547/</a></p>
+<ol start="4">
+<li>复现过程</li>
+</ol>
+<p>启动环境：</p>
+<p><img src="11.png"></p>
+<p>上传一个.jpg文件，内容为**<?php phpinfo();?>**</p>
+<p>抓包进行修改：</p>
+<p>在jpg后面啊添加空格发现也能成功上传，构造CVE-2013-4547解析漏洞，使用1.jpg[0x20][0x00].php，使1.jpg被当做PHP执行。</p>
+<p>添加两个空格，修改hex值，使得：</p>
+<p><strong>[0x20][0x20]——&gt;[0x20][0x00]</strong></p>
+<p><img src="12.png"></p>
+<p><img src="13.png"></p>
+<p>访问修改后的1.jpg  .php:get方式传参，同样修改hex值为[0x20][0x00]，发包，发现代码被成功解析。</p>
+<p><img src="14.png"></p>
+<p><img src="15.png"></p>
+<p><img src="16.png"></p>
+<p>注意，[0x20]是空格，[0x00]是\0，这两个字符都不需要编码</p>
+<p>漏洞防御：</p>
+<ol>
+<li><p>设置security.limit_extensions = .php</p>
+</li>
+<li><p>升级Nginx</p>
+</li>
+</ol>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%AD%E9%97%B4%E4%BB%B6%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E-%E9%85%8D%E5%90%88%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%B5%8B%E8%AF%95"><span class="toc-number">1.</span> <span class="toc-text">中间件解析漏洞+配合文件上传测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#IIS6-0"><span class="toc-number">1.1.</span> <span class="toc-text">IIS6.0</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#apache"><span class="toc-number">1.2.</span> <span class="toc-text">apache</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Apache%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.2.1.</span> <span class="toc-text">Apache解析漏洞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Apache%E9%85%8D%E7%BD%AE%E5%AE%89%E5%85%A8%EF%BC%88Apache-HTTPD-%E5%A4%9A%E5%90%8E%E7%BC%80%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E%EF%BC%89"><span class="toc-number">1.2.2.</span> <span class="toc-text">Apache配置安全（Apache HTTPD 多后缀解析漏洞）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Apache-HTTPD-%E6%8D%A2%E8%A1%8C%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E%EF%BC%88CVE-2017-15715%EF%BC%89"><span class="toc-number">1.2.3.</span> <span class="toc-text">Apache HTTPD 换行解析漏洞（CVE-2017-15715）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nginx"><span class="toc-number">1.3.</span> <span class="toc-text">nginx</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#nginx%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="toc-number">1.3.1.</span> <span class="toc-text">nginx解析漏洞复现</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#nginx%E6%96%87%E4%BB%B6%E5%90%8D%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E%EF%BC%88CVE-2013-4547%EF%BC%89"><span class="toc-number">1.3.2.</span> <span class="toc-text">nginx文件名逻辑漏洞（CVE-2013-4547）</span></a></li></ol></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

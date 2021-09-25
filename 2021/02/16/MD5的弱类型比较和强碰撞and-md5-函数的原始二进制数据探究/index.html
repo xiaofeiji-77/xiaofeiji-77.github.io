@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MD5的弱类型比较和强碰撞and md5()函数的原始二进制数据探究 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="前言关于PHP中== 和===的用法：
+
+===是恒等计算符，同时检查表达式的值与类型； ==是比较运算符，不会检查条件表达式的类型。
+PHP使用==比较数字和字符串时，将字符串转换为数字后与数字进,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">MD5的弱类型比较和强碰撞and md5()函数的原始二进制数据探究</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">MD5的弱类型比较和强碰撞and md5()函数的原始二进制数据探究</h1>
+        <div class="stuff">
+            <span>二月 16, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/MD5%E5%BC%BA%E5%BC%B1%E7%B1%BB%E5%9E%8B/" rel="tag">MD5强弱类型</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>关于PHP中== 和===的用法：</p>
+<ul>
+<li>===是恒等计算符，同时检查表达式的值与类型； ==是比较运算符，不会检查条件表达式的类型。</li>
+<li>PHP使用==比较数字和字符串时，将字符串转换为数字后与数字进行比较：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">字符串以数字开头：取前面的数字；</span><br><span class="line"> 字符串不以数字开头：<span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>PHP在处理哈希字符串时，会利用”!=”或”==”来对哈希值进行比较，它把每一个以”0E”开头的哈希值都解释为0.</p>
+<p>所以如果两个不同的密码经过哈希以后，其哈希值都是以”0E”开头的，那么PHP将会认为他们相同，都是0。</p>
+</li>
+</ul>
+<h5 id="比较"><a href="#比较" class="headerlink" title="==比较"></a>==比较</h5><h6 id="解法一"><a href="#解法一" class="headerlink" title="解法一"></a>解法一</h6><p>由于md5不能加密数组，在加密数组是会返回NULL，因此，我们可以传入两个数组进行md5缺陷绕过。</p>
+<h6 id="解法二"><a href="#解法二" class="headerlink" title="解法二"></a>解法二</h6><p>可以传入两个md5加密后是0e开头的字符串，这个0e开头的字符串，后面只能为纯数字，这样PHP在进行科学计算法时才会将它转化为0.</p>
+<ul>
+<li>脚本</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;?<span class="function">php</span></span><br><span class="line"><span class="function"><span class="title">for</span><span class="params">($a = <span class="number">1</span>; $a &lt;= <span class="number">100000000</span>; $a++)</span> </span>&#123;</span><br><span class="line">   $md5 = strtr(md5($a),<span class="string">&#x27;cxhp&#x27;</span>, <span class="string">&#x27;0123&#x27;</span>);</span><br><span class="line">   <span class="keyword">if</span>(preg_match(<span class="string">&#x27;/^0e\d+$/&#x27;</span>, $md5)) &#123;</span><br><span class="line">      echo $a;</span><br><span class="line">      echo <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">      echo $md5;</span><br><span class="line">      echo <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>一些值</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">QNKCDZO</span><br><span class="line"><span class="number">0e830400451993494058024219903391</span></span><br><span class="line"> </span><br><span class="line">s878926199a</span><br><span class="line"><span class="number">0e545993274517709034328855841020</span></span><br><span class="line"> </span><br><span class="line">s155964671a</span><br><span class="line"><span class="number">0e342768416822451524974117254469</span></span><br><span class="line"> </span><br><span class="line">s214587387a</span><br><span class="line"><span class="number">0e848240448830537924465865611904</span></span><br><span class="line"> </span><br><span class="line">s214587387a</span><br><span class="line"><span class="number">0e848240448830537924465865611904</span></span><br><span class="line"> </span><br><span class="line">s878926199a</span><br><span class="line"><span class="number">0e545993274517709034328855841020</span></span><br><span class="line"> </span><br><span class="line">s1091221200a</span><br><span class="line"><span class="number">0e940624217856561557816327384675</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="比较-1"><a href="#比较-1" class="headerlink" title="===比较"></a>===比较</h5><h6 id="解法一-1"><a href="#解法一-1" class="headerlink" title="解法一"></a>解法一</h6><p>也可以通过md5缺陷绕过传入两个数组来做，但不能在使用0e开头的字符串，因为===是md5的强碰撞，进行了严格的过滤。</p>
+<h6 id="解法二-1"><a href="#解法二-1" class="headerlink" title="解法二"></a>解法二</h6><p>使用md5加密后两个完全相等的字符串来绕过。</p>
+<p>我们可以使用快速MD5碰撞生成器来构建两个MD5一样，但是内容完全不一样的字符。</p>
+<p>程序：<a target="_blank" rel="noopener" href="http://www.win.tue.nl/hashclash/fastcoll_v1.0.0.5.exe.zip">http://www.win.tue.nl/hashclash/fastcoll_v1.0.0.5.exe.zip</a></p>
+<p>源码：<a target="_blank" rel="noopener" href="http://www.win.tue.nl/hashclash/fastcoll_v1.0.0.5_source.zip">http://www.win.tue.nl/hashclash/fastcoll_v1.0.0.5_source.zip</a></p>
+<h6 id="构造"><a href="#构造" class="headerlink" title="构造"></a>构造</h6><p>创建一个文本文件，写入任意的文件内容，命名为ywj.txt （源文件）</p>
+<p>运行fastcoll输出以下参数。-p 是源文件，-o是输出文件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fastcoll_v1<span class="number">.0</span><span class="number">.0</span><span class="number">.5</span>.exe -p ywj.txt -o <span class="number">1.</span>txt <span class="number">2.</span>txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="start1.jpg" alt="1"></p>
+<h6 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h6><p>对生产的1.txt和2.txt文件进行测试.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;?<span class="function">php </span></span><br><span class="line"><span class="function">function  <span class="title">readmyfile</span><span class="params">($path)</span></span>&#123;</span><br><span class="line">    $fh = fopen($path, <span class="string">&quot;rb&quot;</span>);</span><br><span class="line">    $data = fread($fh, filesize($path));</span><br><span class="line">    fclose($fh);</span><br><span class="line">    <span class="keyword">return</span> $data;</span><br><span class="line">&#125;</span><br><span class="line">echo <span class="string">&#x27;二进制md5加密 &#x27;</span>. md5( (readmyfile(<span class="string">&quot;1.txt&quot;</span>)));</span><br><span class="line">echo <span class="string">&quot;&lt;/br&gt;&quot;</span>;</span><br><span class="line">echo  <span class="string">&#x27;url编码 &#x27;</span>. urlencode(readmyfile(<span class="string">&quot;1.txt&quot;</span>));</span><br><span class="line">echo <span class="string">&quot;&lt;/br&gt;&quot;</span>;</span><br><span class="line">echo <span class="string">&#x27;二进制md5加密 &#x27;</span>.md5( (readmyfile(<span class="string">&quot;2.txt&quot;</span>)));</span><br><span class="line">echo <span class="string">&quot;&lt;/br&gt;&quot;</span>;</span><br><span class="line">echo  <span class="string">&#x27;url编码 &#x27;</span>.  urlencode(readmyfile(<span class="string">&quot;2.txt&quot;</span>));</span><br><span class="line">echo <span class="string">&quot;&lt;/br&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">二进制md5加密 8e4ef6c69a337c0de0208455ee69a416</span><br><span class="line"> </span><br><span class="line">url编码 <span class="number">1</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%A3njn%FD%1A%CB%3A%29Wr%02En%CE%<span class="number">89</span>%9A%E3%8EF%F1%BE%E9%EE3%0E%<span class="number">82</span>%2A%<span class="number">95</span>%<span class="number">23</span>%<span class="number">0D</span>%FA%CE%1C%F2%C4P%C2%B7s%<span class="number">0F</span>%C8t%F28%FAU%AD%2C%EB%<span class="number">1D</span>%D8%D2%<span class="number">00</span>%8C%3B%FCN%C9b4%DB%AC%<span class="number">17</span>%A8%BF%3Fh%84i%F4%1E%B5Q%7B%FC%B9RuJ%<span class="number">60</span>%B4%0D7%F9%F9%<span class="number">00</span>%1E%C1%1B%<span class="number">16</span>%C9M%2A%<span class="number">7D</span>%B2%BBoW%<span class="number">02</span>%<span class="number">7D</span>%<span class="number">8F</span>%<span class="number">7F</span>%C0qT%D0%CF%3A%9DFH%F1%<span class="number">25</span>%AC%DF%FA%C4G%27uW%CFNB%E7%EF%B0</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">二进制md5加密 8e4ef6c69a337c0de0208455ee69a416</span><br><span class="line"> </span><br><span class="line">url编码 <span class="number">1</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%<span class="number">00</span>%A3njn%FD%1A%CB%3A%29Wr%02En%CE%<span class="number">89</span>%9A%E3%8E%C6%F1%BE%E9%EE3%0E%<span class="number">82</span>%2A%<span class="number">95</span>%<span class="number">23</span>%<span class="number">0D</span>%FA%CE%1C%F2%C4P%C2%B7s%<span class="number">0F</span>%C8t%F28zV%AD%2C%EB%<span class="number">1D</span>%D8%D2%<span class="number">00</span>%8C%3B%FCN%C9%E24%DB%AC%<span class="number">17</span>%A8%BF%3Fh%84i%F4%1E%B5Q%7B%FC%B9RuJ%<span class="number">60</span>%B4%<span class="number">0D</span>%B7%F9%F9%<span class="number">00</span>%1E%C1%1B%<span class="number">16</span>%C9M%2A%<span class="number">7D</span>%B2%BBoW%<span class="number">02</span>%<span class="number">7D</span>%<span class="number">8F</span>%<span class="number">7F</span>%C0qT%D0%CF%3A%1DFH%F1%<span class="number">25</span>%AC%DF%FA%C4G%27uW%CF%CEB%E7%EF%B0</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，1.txt和2.txt二进制md5加密后的结果完全相同。由于1.txt和2.txt文件中含有不可见字符，所以需要将其url编码后使用。可以看到url编码后的两个字符串不完全相同，满足我们输入两个不同参数的需要。</p>
+<p><img src="start2.png" alt="2"></p>
+<p>当题目限制不能传入数组，只能传入字符串时，就只能采用解法2.</p>
+<p>原文传送门：    <a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_38154820/article/details/113750318">https://blog.csdn.net/qq_38154820/article/details/113750318</a></p>
+<h5 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h5><p><strong>BUUCTF__[BJDCTF2020]Easy MD5</strong></p>
+<ul>
+<li>一开始进入看到查询框就还以为是SQL注入，输入万能密码、1、单引号啥的都没啥反应，明明在看到是get传参password嘛，还是没啥头绪，就翻一下wp，emmm 是藏在消息头里的SQL语句。</li>
+</ul>
+<p><img src="md5-1.png" alt="3"></p>
+<p>解题的关键还在于SQL语句password=md5($pass,true)的理解。</p>
+<p>如下：</p>
+<p>md5(string, raw) raw 可选，默认为false</p>
+<p>true:返回16字符2进制格式</p>
+<p>false:返回32字符16进制格式</p>
+<p>简单来说就是 true将16进制的md5转化为字符了,如果某一字符串的md5恰好能够产生如’or ’之类的注入语句，就可以进行注入了。</p>
+<p>提供一个字符串：ffifdyop</p>
+<p>md5加密后的值为：276f722736c95d99e921722cf9ed621c</p>
+<p>转成字符串后： ‘or’6  (关于这一步骤的具体内容会在本文章的最后作为补充。)</p>
+<p>就是说password=md5($pass,true)返回的是字符串，而输入ffifdyop查询之后就会执行SQL语句：select * from ‘admin’ where password=’ ‘or ‘6’</p>
+<ul>
+<li>之后返回如下页面，查看源码，知道是一个<strong>弱类型</strong>的比较，get方式构造payload绕过：**?a[]=1&amp;b[]=2**</li>
+</ul>
+<p>​           md5不能处理数组，遇到数组不报错但是会将其转变成NULL，null=null。所以采用md5缺陷绕过。</p>
+<p><img src="md5-2.png" alt="4"></p>
+<p>​       当然也可以采用上述的解法二运用0e开头的md5值相同的字符串进行传参。</p>
+<p>如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">?a=QNKCDZO&amp;b=<span class="number">240610708</span></span><br><span class="line">?a=QNKCDZO&amp;b=s155964671a</span><br><span class="line">?a=s878926199a&amp;b=s155964671a</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>得到一个新的页面，代码审计，POST方式，传param1和param2两个参数，这两个参数还不能相等，但是md5转换后的值还要相等（0e开头），md5碰撞的强类型比较，依然可以采用md5数组绕过，当然解法二中运用字符串也是可以的。</li>
+</ul>
+<p>构造payload如下：param1[]=1&amp;param2[]=2</p>
+<p><img src="md5-3.png" alt="5"></p>
+<hr>
+<h5 id="一些关于快速md5碰撞生成器的补充"><a href="#一些关于快速md5碰撞生成器的补充" class="headerlink" title="一些关于快速md5碰撞生成器的补充"></a>一些关于快速md5碰撞生成器的补充</h5><p><strong>使用fastcoll进行md5碰撞：</strong></p>
+<ol>
+<li>生成两个文件：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fastcoll_v1<span class="number">.0</span><span class="number">.0</span><span class="number">.5</span>.exe -p C:\windows\notepad.exe -o D:\notepad1.exe D:\notepad2.exe</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><img src="md5-4.png" alt="6"></li>
+</ol>
+<ul>
+<li>在winhex中对比发现文件内容不一样：</li>
+</ul>
+<p><img src="2.png" alt="7"></p>
+<p><img src="1.png" alt="8"></p>
+<ul>
+<li>使用 certutil 命令查看一下md5；</li>
+</ul>
+<p><img src="00.png" alt="9"></p>
+<ol start="3">
+<li>发现文件虽然内容不一样，但是md5值是一样的，说明了用 md5 做文件校验并不安全。</li>
+</ol>
+<p><strong>两个程序文件的MD5一致，却又都能正常运行，并且可以做完全不同的事情：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="comment">//www.win.tue.nl/hashclash/SoftIntCodeSign/HelloWorld-colliding.exe</span></span><br><span class="line">http:<span class="comment">//www.win.tue.nl/hashclash/SoftIntCodeSign/GoodbyeWorld-colliding.exe</span></span><br></pre></td></tr></table></figure>
+
+<p>这两个程序会在屏幕上打印出不同的字符，但是它们的MD5都是一致的。</p>
+<p><img src="0.png" alt="10"></p>
+<p><strong>使用领域</strong></p>
+<p>在安全领域，已经推荐sha256和sha512了，sha1已经倾向于不推荐，md5可以认为已经被破解。</p>
+<p>目前MD5被广泛应用于数据完整性校验、数据（消息）摘要、数据加密等；<br>目前SHA1的应用较为广泛，主要应用于CA和数字证书中，另外在目前互联网中流行的BT软件中，也是使用SHA1来进行文件校验的。</p>
+<ul>
+<li>MD5、SHA1虽然被发现存在缺陷（碰撞），但在近几年内，仍然可以大量使用</li>
+<li>SHA256/384/512 的速度较慢，可以用于少量数据摘要，目前不适合用于大文件校验</li>
+</ul>
+<hr>
+<h5 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h5><h6 id="PHP中md5-函数如何对字符串进行加密"><a href="#PHP中md5-函数如何对字符串进行加密" class="headerlink" title="PHP中md5()函数如何对字符串进行加密"></a>PHP中md5()函数如何对字符串进行加密</h6><p>php的md5()具有输出原始二进制数据的特性。</p>
+<p>md5()语法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">md5(string, raw) raw 可选，默认为<span class="keyword">false</span></span><br><span class="line"><span class="keyword">true</span>:返回<span class="number">16</span>字符<span class="number">2</span>进制格式</span><br><span class="line"><span class="keyword">false</span>:返回<span class="number">32</span>字符<span class="number">16</span>进制格式</span><br></pre></td></tr></table></figure>
+
+<p>通过使用php的md5(“ffifdyop”,true)输出其加密后的原始二进制数据得到目标字符串.</p>
+<p>原始二进制数据不是指100111这些二进制数据，而是原始字符串转换成ascii码后组成的字符串。</p>
+<ol>
+<li><p>使用md5(“ffifdyop”)进行加密<br> 通过加密后将会得到之后的32位16进制字符串:276f722736c95d99e921722cf9ed621c</p>
+</li>
+<li><p>将32位16进制字符串按照2个字符为一组切割成为16组16进制的字符串<br> 切割成27,6f,72,27,36,c9,5d,99,e9,21,72,2c,f9,ed,62,1c</p>
+</li>
+<li><p>将每一组16进制的数值转换成2进制 100111,1101111,1110010,100111,110110,11001001,1011101,10011001,11101001,100001,1110010,101100,11111001,11101101,1100010,11100</p>
+</li>
+<li><p>将每一组2进制数值转换称为10进制数值<br> 39,111,114,39,54,201,93,153,233,33,114,44,249,237,98,28</p>
+</li>
+<li><p>最后对照如下的ASCII码表即可翻译的出最终的原始二进制字符串.</p>
+</li>
+</ol>
+<p><img src="end.png" alt="11"></p>
+<p>以前四组为例39=&gt;’,111=&gt;o,114=&gt;r,39=&gt;’,最终的组成’or’这一个字符串.</p>
+<h6 id="md5-函数主体原文："><a href="#md5-函数主体原文：" class="headerlink" title="md5()函数主体原文："></a>md5()函数主体原文：</h6><p><a target="_blank" rel="noopener" href="https://www.7gugu.com/2020/01/15/%E6%8E%A2%E7%A9%B6php%E7%9A%84md5%E5%87%BD%E6%95%B0%E8%BE%93%E5%87%BA%E7%9A%84%E5%8E%9F%E5%A7%8B%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E6%8D%AE%E6%98%AF%E5%95%A5/">https://www.7gugu.com/2020/01/15/%E6%8E%A2%E7%A9%B6php%E7%9A%84md5%E5%87%BD%E6%95%B0%E8%BE%93%E5%87%BA%E7%9A%84%E5%8E%9F%E5%A7%8B%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E6%8D%AE%E6%98%AF%E5%95%A5/</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%AF%94%E8%BE%83"><span class="toc-number">2.</span> <span class="toc-text">&#x3D;&#x3D;比较</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%E4%B8%80"><span class="toc-number">2.1.</span> <span class="toc-text">解法一</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%E4%BA%8C"><span class="toc-number">2.2.</span> <span class="toc-text">解法二</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%AF%94%E8%BE%83-1"><span class="toc-number">3.</span> <span class="toc-text">&#x3D;&#x3D;&#x3D;比较</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%E4%B8%80-1"><span class="toc-number">3.1.</span> <span class="toc-text">解法一</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E8%A7%A3%E6%B3%95%E4%BA%8C-1"><span class="toc-number">3.2.</span> <span class="toc-text">解法二</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%9E%84%E9%80%A0"><span class="toc-number">3.3.</span> <span class="toc-text">构造</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">3.4.</span> <span class="toc-text">测试</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BE%8B%E9%A2%98"><span class="toc-number">4.</span> <span class="toc-text">例题</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8E%E5%BF%AB%E9%80%9Fmd5%E7%A2%B0%E6%92%9E%E7%94%9F%E6%88%90%E5%99%A8%E7%9A%84%E8%A1%A5%E5%85%85"><span class="toc-number">5.</span> <span class="toc-text">一些关于快速md5碰撞生成器的补充</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">6.</span> <span class="toc-text">写在最后</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#PHP%E4%B8%ADmd5-%E5%87%BD%E6%95%B0%E5%A6%82%E4%BD%95%E5%AF%B9%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%BF%9B%E8%A1%8C%E5%8A%A0%E5%AF%86"><span class="toc-number">6.1.</span> <span class="toc-text">PHP中md5()函数如何对字符串进行加密</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#md5-%E5%87%BD%E6%95%B0%E4%B8%BB%E4%BD%93%E5%8E%9F%E6%96%87%EF%BC%9A"><span class="toc-number">6.2.</span> <span class="toc-text">md5()函数主体原文：</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

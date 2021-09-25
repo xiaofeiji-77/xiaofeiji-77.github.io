@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ctfshow-web入门信息收集篇 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="web5源码泄露：.phps
+web7 web8网站备份文件后缀:
+a) 代码版本控制的文件泄露：
+.git
+git 是一个开源的分布式版本控制系统https://git-scm.com/
+在运行 ,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">ctfshow-web入门信息收集篇</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">ctfshow-web入门信息收集篇</h1>
+        <div class="stuff">
+            <span>八月 08, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/ctfshow%E5%88%B7%E9%A2%98/" rel="tag">ctfshow刷题</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="web5"><a href="#web5" class="headerlink" title="web5"></a><strong>web5</strong></h3><p>源码泄露：.phps</p>
+<h3 id="web7-web8"><a href="#web7-web8" class="headerlink" title="web7 web8"></a><strong>web7 web8</strong></h3><p>网站备份文件后缀:</p>
+<p>a) 代码版本控制的文件泄露：</p>
+<p>.git</p>
+<p>git 是一个开源的分布式版本控制系统<a target="_blank" rel="noopener" href="https://git-scm.com/">https://git-scm.com/</a></p>
+<p>在运行 git init初始化代码库的时候，会在当前目录下面产生一个.git的隐藏目录，用来记录代码的变更记录等等。</p>
+<p>在发布代码的时候，把.git这个目录没有删除，直接发布了。使用这个文件，可以用来恢复源代码。</p>
+<p>.svn</p>
+<p>SVN（subversion）是源代码版本管理软件。是一个开放源码的版本控制系统</p>
+<p>svn同样在项目根目录下会创建一个名为.svn的隐藏文件夹, 包含了所有分支commit信息和代码记录.</p>
+<p>b)  .swp .~ .bak .bash_history</p>
+<h3 id="web9"><a href="#web9" class="headerlink" title="web9"></a>web9</h3><p><strong>发现网页有个错别字？赶紧在生产环境vim改下，不好，死机了</strong></p>
+<p>vim缓存文件：</p>
+<p>在使用vim时会创建临时缓存文件，关闭vim时缓存文件则会被删除，当vim异常退出后，因为未处理缓存文件，导致可以通过缓存文件恢复原始文件内容</p>
+<p>以 index.php 为例：第一次产生的交换文件名为 <strong>.index.php.swp</strong></p>
+<p>再次意外退出后，将会产生名为 <strong>.index.php.swo</strong> 的交换文件</p>
+<p>第三次产生的交换文件则为 <strong>.index.php.swn</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/anweilx/p/12420708.html">https://www.cnblogs.com/anweilx/p/12420708.html</a></p>
+<p>ctf-wscan扫一下，得到index.php.wsp，访问得到flag。</p>
+<h3 id="web11"><a href="#web11" class="headerlink" title="web11"></a>web11</h3><p><strong>域名其实也可以隐藏信息，比如ctfshow.com 就隐藏了一条信息</strong></p>
+<p>dns域名解析：</p>
+<p>A (Address) 记录   是用来指定主机名（或域名）对应的IP地址记录。</p>
+<p>别名(CNAME)记录  这种记录允许您将多个名字映射到同一台计算机。</p>
+<p>MX（Mail Exchanger）记录   是邮件交换记录，它指向一个邮件服务器，用于电子邮件系统发邮件时根据 收信人的地址后缀来定位邮件服务器。</p>
+<p>TXT 记录   一般指为某个主机名或域名设置的说明。</p>
+<p>NS记录    ns记录全称为Name Server 是一种域名服务器记录，用来明确当前你的域名是由哪个DNS服务器来进行解析的。这里的NS记录只对子域名生效。</p>
+<p><a target="_blank" rel="noopener" href="https://www.zhongjie.com/help/173.html">https://www.zhongjie.com/help/173.html</a></p>
+<h3 id="web14"><a href="#web14" class="headerlink" title="web14"></a>web14</h3><p><strong>有时候源码里面就能不经意间泄露重要(editor)的信息,默认配置害死人</strong></p>
+<p>同样使用ctf-wscan扫，得到/editor/，访问得到一个编辑器页面。</p>
+<p>编辑器中有上传图片、插入文件、flash等功能，点击发现都存在一个文件/图片空间，可以查看到根目录。</p>
+<p>寻找flag，首先还是查看了/var，/var目录主要针对常态性变动文件，包括缓存（cache）、登录文件（logfile）以及某些软件运行所产生的文件，包括程序文件（lock file，run file），或者例如Mysql数据库的文件等。进去发现www：</p>
+<p>接着找到了html——&gt;nothinghere（跟editor属于同一层目录，解释了最后直接访问url/nothinghere/fl000g.txt的原因）——&gt;fl000g.txt</p>
+<p>访问：url/nothinghere/fl000g.txt</p>
+<p>得到flag。</p>
+<p><img src="1.png"></p>
+<h3 id="web15"><a href="#web15" class="headerlink" title="web15"></a>web15</h3><p><strong>公开的信息比如邮箱，可能造成信息泄露，产生严重后果</strong></p>
+<p>​      目录扫描得到admin/，访问尝试admin登录，返回密码错误。</p>
+<p>点击忘记密码，需要输入所在地。然后想到题目说和邮箱有关，结果一直在网上找通过QQ邮箱找所在地balabala的，我寻思这么搜这不是社工嘛，看着也不太对哇。后来一想去qq上搜了一下那个邮箱的QQ号，发现个人信息的所在地是西安（一开始我还以为这QQ号是假的来着），得到密码admin7789，登录后台得到flag。</p>
+<h3 id="web16"><a href="#web16" class="headerlink" title="web16"></a>web16</h3><p><strong>对于测试用的探针，使用完毕后要及时删除，可能会造成信息泄露</strong></p>
+<p><em>php探针</em>是用来探测空间、服务器运行状况和PHP信息用的，探针可以实时查看服务器硬盘资源、内存占用、网卡流量、系统负载、服务器时间等信息。</p>
+<p>下载：<a target="_blank" rel="noopener" href="http://www.yahei.net/tz/tz.zip">http://www.yahei.net/tz/tz.zip</a></p>
+<p>在URL添加/tz.php，雅黑探针，查看phpinfo，寻找flag。</p>
+<h3 id="web17"><a href="#web17" class="headerlink" title="web17"></a>web17</h3><p><strong>透过重重缓存，查找到ctfer.com的真实IP，提交flag{IP地址}</strong> </p>
+<p>hint:直接ping <a target="_blank" rel="noopener" href="http://www.ctfshow.com/">www.ctfshow.com</a> 获得flag</p>
+<p>•ping命令主要的功能是用来检测网络的连通情况和分析网络速度。</p>
+<p>•ping发送一个ICMP回声请求消息给目的地并报告是否收到所希望的ICMP回声应答。它是用来检查网络是否通畅或者网络连接速度的命令。</p>
+<p>•原理：网络上的机器都有唯一确定的IP地址，我们给目标IP地址发送一个数据包，对方就要返回一个同样大小的数据包，根据返回的数据包我们可以确定目标主机的存在，可以初步判断目标主机的操作系统等。</p>
+<p><img src="2.png"></p>
+<h3 id="web18"><a href="#web18" class="headerlink" title="web18"></a>web18</h3><p><strong>不要着急，休息，休息一会儿，玩101分给你flag</strong></p>
+<p>熟悉的游戏关卡题，打开查看源码，发现有一个js/Flappy_js.js文件，所以去到调试器查看游戏的js代码文件，翻看代码，在代码中找到和flag相关的一小段代码：</p>
+<p><img src="3.png"></p>
+<p>如果分数大于100，则返回一段uncode解码的内容，一开始我还没有直接就想到\u这个编码，而是去执行这个代码相关的函数，也可以把分数刷到101分，但是每次执行只能加一分，而且结果的返回也是一瞬间的，后来想到了这个编码，就去试了一下：</p>
+<p><img src="4.png"></p>
+<p>提示去110.php（皮爱吃皮？？？），得到flag。</p>
+<h3 id="web19"><a href="#web19" class="headerlink" title="web19"></a>web19</h3><p><strong>密钥什么的，就不要放在前端了</strong></p>
+<p>查看源码，发现用户名和密码都已经给出来了</p>
+<p><img src="5.png"></p>
+<p>对用户名和密码进行post传参提交即可。（直接在输入框输入的话，通过抓包发现，密码会被加密）</p>
+<p>hackbar进行post提交：</p>
+<p>username=admin&amp;pazzword=a599ac85a73384ee3219fa684296eaa62667238d608efa81837030bd1ce1bf04</p>
+<p>得到flag。</p>
+<h3 id="web20"><a href="#web20" class="headerlink" title="web20"></a>web20</h3><p><strong>mdb文件是早期asp+access构架的数据库文件，文件泄露相当于数据库被脱裤了。</strong></p>
+<p>   在ASP＋Access应用系统中，如果获得或者猜到Access数据库的存储路径和数据库名，则该数据库就可以被下载到本地。</p>
+<p>access数据库：Access是一个既可以只用来存放数据的数据库，也可以作为一个客户端开发工具来进行数据库应用系统开发。</p>
+<p>Access的对象有表、查询、窗体、报表、页、宏和模块，以上对象都存放在后缀为（.mdb或.accdb）的数据库文件中，便于用户的操作和管理。</p>
+<p>直接在URL处添加hint所给出的路径，/db/db.mdb，访问下载.mdb文件，全局搜索flag得到答案。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#web5"><span class="toc-number">1.</span> <span class="toc-text">web5</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web7-web8"><span class="toc-number">2.</span> <span class="toc-text">web7 web8</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web9"><span class="toc-number">3.</span> <span class="toc-text">web9</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web11"><span class="toc-number">4.</span> <span class="toc-text">web11</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web14"><span class="toc-number">5.</span> <span class="toc-text">web14</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web15"><span class="toc-number">6.</span> <span class="toc-text">web15</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web16"><span class="toc-number">7.</span> <span class="toc-text">web16</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web17"><span class="toc-number">8.</span> <span class="toc-text">web17</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web18"><span class="toc-number">9.</span> <span class="toc-text">web18</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web19"><span class="toc-number">10.</span> <span class="toc-text">web19</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web20"><span class="toc-number">11.</span> <span class="toc-text">web20</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

