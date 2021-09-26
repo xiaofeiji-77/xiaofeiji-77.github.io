@@ -72,26 +72,26 @@
             <p><em>这个时候，你首先需要一颗镇定且会马上再进一遍博客的心，发现还是空白，这个时候，你就需要，尝试一下如下操作</em></p>
 <h5 id="1-首先，先在本地检查一下Hexo的安装是否正确。"><a href="#1-首先，先在本地检查一下Hexo的安装是否正确。" class="headerlink" title="1.首先，先在本地检查一下Hexo的安装是否正确。"></a>1.首先，先在本地检查一下Hexo的安装是否正确。</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在hexo的目录下，运行hexo s</span><br></pre></td></tr></table></figure>
 
-<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153100010.png" alt="图一"></p>
+<p><img src="1.png"></p>
 <p>然后查看一下<a href="http://localhost:4000，如果能正常进入，那就顺利地进入第二步的检测。如果你发现，转了很久的小圈圈还是没转出来，就返回去看一下刚才输入hexo">http://localhost:4000，如果能正常进入，那就顺利地进入第二步的检测。如果你发现，转了很久的小圈圈还是没转出来，就返回去看一下刚才输入hexo</a> s后的界面，然后我看到了这样的报错，</p>
-<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153635250.png" alt="图二"></p>
+<p><img src="2.png"></p>
 <p>但是最后看到还是然后查看，</p>
-<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153658495.png" alt="图三"></p>
+<p><img src="3.png"></p>
 <p>我一开始什么都没管，就直接查看了，发现，又转了好久的小圈圈还是没转出来，我就去百度了一下上面的报错，说是主题配置失败，查看了一下别人的做法，可能是在修改主题下的配置文件时可能出现了错误，一开始我还去翻了一遍代码，“没有错呀”，（嘤嘤嘤）,然后发现了一个可以检查yml代码的网页，我就去检查了一下，发现：</p>
-<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153721312.png" alt="图四"></p>
+<p><img src="4.png"></p>
 <p>报错了，文件代码16行的第二个字符存在缩进,我立马回vscode看了一眼，哦~多了一个空格。</p>
 <p><a target="_blank" rel="noopener" href="http://www.bejson.com/validators/yaml_editor/(yml%E5%9C%A8%E7%BA%BF%E6%A0%A1%E9%AA%8C%E5%99%A8)">http://www.bejson.com/validators/yaml_editor/(yml在线校验器)</a></p>
 <p>于是我删掉空格，重新hexo s了一遍，结果又发现：</p>
-<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153742332.png" alt="图五"></p>
+<p><img src="5.png"></p>
 <p>报错了，我又百度翻译了一下(此处深深感慨xiaofeiji英语知识的匮乏)</p>
 <p>说是4000端口被占用了，可能是我一开始一直启用<a href="http://localhost:4000的缘故。">http://localhost:4000的缘故。</a></p>
 <p>然后我get到了一个解决的方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">打开cmd,执行 netstat -nao</span><br><span class="line">可以查看到本地地址还有外部地址的活动连接情况以及pid进程的程序(如下图)</span><br><span class="line">然后找到了我所对应的<span class="number">4000</span>端口及其pid所对应的进程，</span><br><span class="line"> 执行taskkill /pid (对应的值)      即可终止占用该端口的程序。</span><br></pre></td></tr></table></figure>
 
-<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153819093.png" alt="图六"></p>
+<p><img src="6.png"></p>
 <p>解决完了这个问题，再来一次hexo s的查看，查看对应本地网页，发现成功进入了，证明hexo得到了正确的对待(安装)。接下来，第二步：</p>
 <h5 id="2-可以先hexo-clean-再-hexo-g-d-，检查一下是否成功部署上了github。"><a href="#2-可以先hexo-clean-再-hexo-g-d-，检查一下是否成功部署上了github。" class="headerlink" title="2. 可以先hexo clean 再 hexo g -d ，检查一下是否成功部署上了github。"></a>2. 可以先hexo clean 再 hexo g -d ，检查一下是否成功部署上了github。</h5><p><em>(hexo clean 表示先清除一下缓存，不然可能会导致 hexo g -d的部署失败)</em></p>
-<p><img src="%E5%8D%9A%E5%AE%A2%E7%A9%BA%E7%99%BD%E9%A1%B5.assets/image-20210124153839333.png" alt="图七"></p>
+<p><img src="7.png"></p>
 <p>看到类似这样的信息，就证明成功了。</p>
 <p>然后，我就顺利地打开了我的博客。但是，其实我的整个寻找正确操作的过程和心路历程还是及其艰辛的。(深深地 叹气)</p>
 <p>如果到了这一步还没有成功的话咧，就请查看一下我的参照文章：</p>
