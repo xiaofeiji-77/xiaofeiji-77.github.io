@@ -5,12 +5,15 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>xiaofeiji&#39;s Blog - 理想细碎，要勇敢出航。</title>
+    <title>信安作业-1 - xiaofeiji&#39;s Blog</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
     <meta name="keywords" content="Xiaofeiji,"> 
-    
+    <meta name="description" content="1    PE盘的制作略；
+2   等保2.0参考文章：https://blog.csdn.net/qq_43045241/article/details/108082423
+3   Search
+,"> 
     <meta name="author" content="John Doe"> 
     <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
     <link rel="icon" href="/img/favicon.jpg"> 
@@ -37,27 +40,92 @@
 <body class="loading">
     <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
     <div id="loader"></div>
-    <div id="single" class="page">
-    <div id="top">
-        <a class="iconfont icon-left image-icon" href="javascript:history.back()"></a>
-    </div>
-    <div class="section">
-        <div class="article">
-            <div class="main">
-                <div class="content">
-                
-                    <div class="set">		
-  <h2>标签</h2>
-  <a href="/tags/MD5%E5%BC%BA%E5%BC%B1%E7%B1%BB%E5%9E%8B/" style="font-size: 14px; color: #9e9e9e">MD5强弱类型</a> <a href="/tags/POP%E9%93%BE%E6%9E%84%E9%80%A0/" style="font-size: 14px; color: #9e9e9e">POP链构造</a> <a href="/tags/RCE/" style="font-size: 14px; color: #9e9e9e">RCE</a> <a href="/tags/bugku%E5%88%B7%E9%A2%98%E4%B9%8B%E6%97%85/" style="font-size: 14px; color: #9e9e9e">bugku刷题之旅</a> <a href="/tags/buuctf%E5%88%B7%E9%A2%98%E4%B9%8B%E6%97%85/" style="font-size: 14px; color: #9e9e9e">buuctf刷题之旅</a> <a href="/tags/ctfshow%E5%88%B7%E9%A2%98/" style="font-size: 36px; color: #808080">ctfshow刷题</a> <a href="/tags/ssti/" style="font-size: 14px; color: #9e9e9e">ssti</a> <a href="/tags/xiaofeiji-s-%E5%B0%8F%E4%BD%9C%E6%96%87/" style="font-size: 14px; color: #9e9e9e">xiaofeiji's 小作文</a> <a href="/tags/%E4%BD%9C%E4%B8%9A/" style="font-size: 14px; color: #9e9e9e">作业</a> <a href="/tags/%E5%85%B3%E4%BA%8E%E5%8D%9A%E5%AE%A2/" style="font-size: 14px; color: #9e9e9e">关于博客</a> <a href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/" style="font-size: 14px; color: #9e9e9e">反序列化漏洞</a> <a href="/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E8%A7%A3%E9%A2%98%E6%96%B0%E7%9F%A5/" style="font-size: 14px; color: #9e9e9e">反序列化解题新知</a> <a href="/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/" style="font-size: 14px; color: #9e9e9e">命令执行</a> <a href="/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E8%A7%A3%E9%A2%98/" style="font-size: 14px; color: #9e9e9e">命令执行解题</a> <a href="/tags/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/" style="font-size: 14px; color: #9e9e9e">文件上传</a> <a href="/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/" style="font-size: 25px; color: #8f8f8f">文件包含漏洞</a> <a href="/tags/%E6%97%A0%E5%AD%97%E6%AF%8D%E6%95%B0%E5%AD%97rce/" style="font-size: 14px; color: #9e9e9e">无字母数字rce</a> <a href="/tags/%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5/" style="font-size: 14px; color: #9e9e9e">模板注入</a> <a href="/tags/%E6%AF%94%E8%B5%9Bwp/" style="font-size: 14px; color: #9e9e9e">比赛wp</a> <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" style="font-size: 14px; color: #9e9e9e">漏洞复现</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 14px; color: #9e9e9e">笔记</a> <a href="/tags/%E9%A2%98%E7%9B%AE%E5%A4%8D%E7%8E%B0/" style="font-size: 14px; color: #9e9e9e">题目复现</a>
-</div>
-
-                
-                </div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">信安作业-1</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
             </div>
+            <div id="qr"></div>
         </div>
     </div>
+    <div class="scrollbar"></div>
 </div>
 
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">信安作业-1</h1>
+        <div class="stuff">
+            <span>十月 11, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BD%9C%E4%B8%9A/" rel="tag">作业</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="1-PE盘的制作"><a href="#1-PE盘的制作" class="headerlink" title="1    PE盘的制作"></a>1    PE盘的制作</h3><p>略；</p>
+<h3 id="2-等保2-0"><a href="#2-等保2-0" class="headerlink" title="2   等保2.0"></a>2   等保2.0</h3><p>参考文章：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43045241/article/details/108082423">https://blog.csdn.net/qq_43045241/article/details/108082423</a></p>
+<h3 id="3-Search"><a href="#3-Search" class="headerlink" title="3   Search"></a>3   Search</h3><p><img src="3.jpg"></p>
+<ul>
+<li><p>找到所给出图片的拍摄位置。</p>
+</li>
+<li><p>一开始通过百度对图片中的关键字进行搜索，识图寻找，寻找GPS定位信息均无果。在网上查找方法：</p>
+</li>
+</ul>
+<p><img src="1.png"></p>
+<ul>
+<li>按照提示，将图片拖入谷歌的图片查找，输入图片中可以看到的关键词：erbang alaf restaurant </li>
+</ul>
+<p><img src="2.png"></p>
+<p><img src="3.png"></p>
+<ul>
+<li>成功找到完整的店名：gerbang alaf restaurant 和地址：</li>
+</ul>
+<p><img src="4.png"></p>
+<ul>
+<li>定位在：Level 6, Bangunan TH, Damansara Uptown 3, Jalan SS21/39, 47400 Petaling Jaya，是马来西亚的一家麦当劳店。</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-PE%E7%9B%98%E7%9A%84%E5%88%B6%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">1    PE盘的制作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%AD%89%E4%BF%9D2-0"><span class="toc-number">2.</span> <span class="toc-text">2   等保2.0</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-Search"><span class="toc-number">3.</span> <span class="toc-text">3   Search</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
    
 </body>
 
