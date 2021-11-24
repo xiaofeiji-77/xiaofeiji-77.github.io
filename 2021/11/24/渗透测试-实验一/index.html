@@ -127,141 +127,40 @@
 <p>Android 获取方法：Android： 拨号*#<em>#4636#</em>#*进入手机信息工程模式后查看</p>
 <p>iphone获取方法：iPhone：拨号*3001#12345#*进入FieldTest</p>
 <p>Serving Cell info–&gt;LAC=Tracking Area Code –&gt;cellid = Cell identity</p>
-<p>若不能获取，用右图信息。</p>
+<p>若不能获取，用下图信息。</p>
 <p><img src="wps31E0.tmp.jpg" alt="img"> </p>
 <p>截图你查询到的位置信息。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31E1.tmp.png" alt="img"></td>
-</tr>
-</tbody></table>
+<p>  <img src="wps31E1.tmp.png" alt="img"></p>
 <ol start="3">
 <li>编码解码</li>
 </ol>
 <p>将Z29vZCBnb29kIHN0dWR5IQ==解码。截图。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31E2.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
+<p>  <img src="wps31E2.tmp.jpg" alt="img"></p>
 <ol start="4">
 <li>地址信息</li>
 </ol>
 <p>4.1内网中捕获到一个以太帧，源MAC地址为：98-CA-33-02-27-B5；目的IP地址为：202.193.64.34，回答问题：该用户使用的什么品牌的设备，访问的是什么网站？并附截图。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31F3.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
+<p><img src="wps31F3.tmp.jpg" alt="img"></p>
 <p><strong>设备：苹果   网站：桂林电子科技大学</strong></p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31F4.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31F5.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
+<p>   <img src="wps31F4.tmp.jpg" alt="img"></p>
+<p>   <img src="wps31F5.tmp.jpg" alt="img"></p>
 <p>4.2 访问<a href="https://whatismyipaddress.com得到MyIP信息，利用ipconfig(Windows)或ifconfig(Linux)查看本机IP地址，两者值相同吗？如果不相同的话，说明原因。">https://whatismyipaddress.com得到MyIP信息，利用ipconfig(Windows)或ifconfig(Linux)查看本机IP地址，两者值相同吗？如果不相同的话，说明原因。</a></p>
 <p><strong>答：不相同，访问上述网站得到的是公网的ip，而ipconfig查询得到的是内网的ip地址。</strong></p>
 <ol start="5">
 <li>NMAP使用（两位同学配合完成）</li>
 </ol>
 <p>5.1利用NMAP（攻击方）扫描发现Metasploitable2（靶机，需下载虚拟机镜像）IP地址，同时Wireshark捕获报文，分析NMAP扫描发现该主机的工作原理，即报文交互情况；</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31F6.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31F7.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
+<p><img src="wps31F6.tmp.jpg" alt="img"> </p>
+<p><img src="wps31F7.tmp.jpg" alt="img"> </p>
 <p>利用nmap -sP的命令对网段存活靶机进行探测。</p>
 <p><strong>-sP使用ping命令进行扫描。Wireshark抓包中可以看到，在同一个局域网内，主机想要发送icmp报文之前，需要获取到目标机的Mac地址，就需要先通过arp广播请求对应的mac地址，对应被请求到的ip地址的目标机会回应一个arp响应报文，其中携带了自己的MAC地址，因此在wireshark抓包中可以看到，先有了大量arp的请求报文和响应报文，等到获取到对应机各自的mac地址之后，开始正式发送icmp报文进行数据传输。-sP命令通过ping扫描，然后显示出在线的主机。使用该选项扫描可以轻易获取目标信息而不会被轻易发现。</strong></p>
 <p>扫描靶机端口开放情况。并附截图。说明其中四个端口（知名端口）提供的服务，查阅资料，简要说明该服务的功能。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31F8.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
+<p>  <img src="wps31F8.tmp.jpg" alt="img"></p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">21端口：FTP是File Transfer Protocol（文件传输协议）的英文缩写，用于Internet上的控制文件的双向传输。</span><br><span class="line"></span><br><span class="line">22端口：通过SSH连接可以远程管理Linux等设备，默认linuxssh端口是22端口。</span><br><span class="line">SSH 是建立在应用层和传输层基础上的一种安全协议。</span><br><span class="line">SSH传输数据是加密的，可以有效防止传输过程被截取数据保障安全。</span><br><span class="line">SSH的数据是经过压缩的，所以可以加快传输的速度。</span><br><span class="line"></span><br><span class="line">23端口：Telnet协议是 [TCP/IP协议族](http://baike.baidu.com/view/2221037.htm)中的一员，是Internet远程登陆服务的标准协议和主要方式。23端口主要用于Telnet（远程登录）服务，所有传输的数据都是明文传输。</span><br><span class="line"></span><br><span class="line">25端口：邮件服务用的是SMTP协议。</span><br><span class="line">SMTP（C/S模型）：简单邮件传输协议（太简单，仅仅就是负责把邮件从发送方传输到接收方）至于邮件内部的格式，邮件如何储存，以及邮件系统应以多快的速度来发送邮件，都未作出规定。</span><br></pre></td></tr></table></figure>
 
 
 
-
-
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31F9.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
+<p><img src="wps31F9.tmp.jpg" alt="img"></p>
 <p>5.2利用NMAP扫描Metasploitable2的操作系统类型，并附截图。</p>
 <p><strong>操作系统类型：Linux 2.6.x</strong></p>
 <p><strong>Nmap 命令：-O 对主机操作系统进行探测。</strong></p>
@@ -269,18 +168,7 @@
 <p><strong>Host is up：表示该主机存活</strong></p>
 <p><strong>Runing: 主机操作系统信息</strong></p>
 <p><strong>Os details: 操作系统版本信息</strong></p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31FA.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
+<p> <img src="wps31FA.tmp.jpg" alt="img"></p>
 <p>5.3 利用NMAP穷举 Metasploitable2上dvwa的登录账号和密码。</p>
 <p><strong>输入命令：</strong></p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -p-80 --script=http-form-brute --script-args=http-form-brute.path=/dvwa/login.php 192.168.169.149</span><br></pre></td></tr></table></figure>
@@ -293,69 +181,27 @@
 <ol start="6">
 <li></li>
 <li><p>1 利用ZoomEye搜索一个西门子公司工控设备，并描述其可能存在的安全问题。</p>
+<p><img src="wps31FB.tmp.jpg" alt="img"></p>
 </li>
 </ol>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps31FB.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
 <p><img src="wps320B.tmp.jpg" alt="img"> </p>
 <p><strong>西门子5940-005 T1E1路由器存在弱口令，可以登录后台进行进一步的渗透测试。</strong></p>
 <p> 6.2 利用FOFA查找MySQL服务器。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps320C.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
+<p>   <img src="wps320C.tmp.jpg" alt="img"></p>
 <ol start="7">
 <li>Winhex简单数据恢复与取证</li>
 </ol>
 <p>7.1 elephant.jpg不能打开了，利用WinHex修复，说明修复过程。（分析jpg文件格式）</p>
 <p><strong>jpg格式文件头：FFD8FF</strong></p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps320D.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
+<p>  <img src="wps320D.tmp.jpg" alt="img"></p>
 <p><img src="wps320E.tmp.jpg" alt="img"> </p>
 <p>7.2 笑脸背后的阴霾：图片smile有什么隐藏信息。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody><tr>
-<td></td>
-<td><img src="wps320F.tmp.jpg" alt="img"></td>
-</tr>
-</tbody></table>
+<p>  <img src="wps320F.tmp.jpg" alt="img"></p>
 <p>7.3 尝试使用数据恢复软件恢复你的U盘中曾经删除的文件。</p>
-<p>8、实验小结</p>
-<p>在本次实验中，知道一些Google 的搜索语法，比如site:网站，filetype:文件类型等，能准确快速地定位到所需信息；了解了一些nmap扫描存活主机命令使用的协议，在wireshark中对其进行捕获；还有一些nmap脚本的用法。了解了一些关于手机定位的基本信息，和常见的端口服务等。</p>
+<ol start="8">
+<li>实验小结</li>
+</ol>
+<p><strong>在本次实验中，知道一些Google 的搜索语法，比如site:网站，filetype:文件类型等，能准确快速地定位到所需信息；了解了一些nmap扫描存活主机命令使用的协议，在wireshark中对其进行捕获；还有一些nmap脚本的用法。了解了一些关于手机定位的基本信息，和常见的端口服务等。</strong></p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
             <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
