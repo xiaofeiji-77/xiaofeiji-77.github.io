@@ -1,0 +1,471 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>渗透测试-实验一 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="实验一 网络扫描与网络侦察说明：红色部分无需写入实验报告。实验完成后形成实验报告电子版。
+（这typora换颜色还得一个个改，我就懒得换了，就是实验原理部分）
+实验目的理解网络扫描、网络侦察的作用；,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">渗透测试-实验一</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">渗透测试-实验一</h1>
+        <div class="stuff">
+            <span>十一月 24, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E8%AF%BE%E4%BD%9C%E4%B8%9A/" rel="tag">渗透测试课作业</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="实验一-网络扫描与网络侦察"><a href="#实验一-网络扫描与网络侦察" class="headerlink" title="实验一 网络扫描与网络侦察"></a><strong>实验一 网络扫描与网络侦察</strong></h3><p>说明：红色部分无需写入实验报告。实验完成后形成实验报告电子版。</p>
+<p>（这typora换颜色还得一个个改，我就懒得换了，就是实验原理部分）</p>
+<h4 id="实验目的"><a href="#实验目的" class="headerlink" title="实验目的"></a>实验目的</h4><p>理解网络扫描、网络侦察的作用；通过搭建网络渗透测试平台，了解并熟悉常用搜索引擎、扫描工具的应用，通过信息收集为下一步渗透工作打下基础。</p>
+<h5 id="系统环境"><a href="#系统环境" class="headerlink" title="系统环境"></a>系统环境</h5><p>Kali Linux 2、Windows</p>
+<h5 id="网络环境"><a href="#网络环境" class="headerlink" title="网络环境"></a>网络环境</h5><p>交换网络结构</p>
+<h5 id="实验工具"><a href="#实验工具" class="headerlink" title="实验工具"></a>实验工具</h5><p> Metasploitable2（需自行下载虚拟机镜像）；Nmap（Kali）；WinHex、数据恢复软件等</p>
+<h4 id="实验原理"><a href="#实验原理" class="headerlink" title="实验原理"></a>实验原理</h4><ol>
+<li>网络扫描与网络侦察的目的</li>
+</ol>
+<p>黑客在进行一次完整的攻击之前除了确定攻击目标之外，最主要的工作就是收集尽量多的关于攻击目标的信息。这些信息主要包括目标的操作系统类型及版本、目标提供哪些服务、各服务的类型、版本以及相关的社会信息。</p>
+<p>攻击者搜集目标信息一般采用七个基本的步骤：</p>
+<p>（1） 找到初始信息，比如一个IP地址或者一个域名；</p>
+<p>（2） 找到网络地址范围，或者子网掩码；</p>
+<p>（3） 找到活动机器；</p>
+<p>（4） 找到开放端口和入口点；</p>
+<p>（5） 弄清操作系统；</p>
+<p>（6） 弄清每个端口运行的是哪种服务；</p>
+<p>（7） 找到目标可能存在的漏洞。</p>
+<ol start="2">
+<li>Google Hacking（或baidu）</li>
+</ol>
+<p>Google Hacking 是利用谷歌搜索的强大，来在浩瀚的互联网中搜索到我们需要的信息。轻量级的搜索可以搜素出一些遗留后门，不想被发现的后台入口，中量级的搜索出一些用户信息泄露，源代码泄露，未授权访问等等，重量级的则可能是mdb文件下载，CMS 未被锁定install页面，网站配置密码，php远程文件包含漏洞等重要信息。</p>
+<ol start="3">
+<li>BASE64编码</li>
+</ol>
+<p><img src="1.png"></p>
+<p>BASE64是一种编码方式，通常用于把二进制数据编码为可写的字符形式的数据。</p>
+<p>编码后的数据是一个字符串，其中包含的字符为：A-Z、a-z、0-9、+、/共64个字符。（其实是65个字符，“=”是填充字符）。</p>
+<p>长度为3个字节(3<em>8)的数据经过Base64编码后就变为4个字节(4</em>6)。</p>
+<p><strong>如果数据的字节数不是<strong><strong>3</strong></strong>的倍数，则其位数就不是<strong><strong>6</strong></strong>的倍数，那么就不能精确地划分成<strong><strong>6</strong></strong>位的块。</strong>需在原数据后面添加1个或2个零值字节，使其字节数是3的倍数。</p>
+<p>字符串“Xue”经过Base64编码后变为“WHVl”。</p>
+<p><img src="wps31DB.tmp.jpg"> </p>
+<p>字符串“Xu”经过Base64编码后变为“WHU=”。</p>
+<p><img src="wps31DC.tmp.jpg"> </p>
+<p>字符串“X”经过Base64编码后变为“WA==”。</p>
+<p><img src="wps31DD.tmp.jpg" alt="img"> </p>
+<ol start="4">
+<li>Nmap</li>
+</ol>
+<p>Nmap是一个网络侦察和安全扫描程序，系统管理者和个人可以使用这个软件扫描大型的网络，获取哪台主机正在运行以及提供什么服务等信息。Nmap支持很多扫描技术，例如：UDP、TCP connect()、TCP SYN(半开扫描)、ftp代理(bounce攻击)、反向标志、ICMP、FIN、ACK扫描、圣诞树(Xmas Tree)、SYN扫描和null扫描。Nmap还提供了一些高级的特征，例如：通过TCP/IP协议栈特征探测操作系统类型，秘密扫描，动态延时和重传计算，并行扫描，通过并行ping扫描探测关闭的主机，诱饵扫描，避开端口过滤检测，直接RPC扫描(无须端口映射)，碎片扫描，以及灵活的目标和端口设定。</p>
+<p>Nmap运行通常会得到被扫描主机端口的列表。Nmap总会给出well known端口的服务名(如果可能)、端口号、状态和协议等信息。每个端口的状态有：open、filtered、unfiltered。open状态意味着目标主机能够在这个端口使用accept()系统调用接受连接。filtered状态表示：防火墙、包过滤和其它的网络安全软件掩盖了这个端口，禁止Nmap探测其是否打开。unfiltered表示：这个端口关闭，并且没有防火墙/包过滤软件来隔离nmap的探测企图。通常情况下，端口的状态基本都是unfiltered状态，只有在大多数被扫描的端口处于filtered状态下，才会显示处于unfiltered状态的端口。</p>
+<p>根据使用的功能选项，Nmap也可以报告远程主机的下列特征：使用的操作系统、TCP序列、运行绑定到每个端口上的应用程序的用户名、DNS名、主机地址是否是欺骗地址、以及其它一些东西。</p>
+<ol start="5">
+<li>WinHex</li>
+</ol>
+<p>WinHex  是一款以通用的 16 进制编辑器为核心，专门用来对付计算机取证、数据恢复、低级数据处理、以及 IT 安全性、各种日常紧急情况的高级工具： 用来检查和修复各种文件、恢复删除文件、硬盘损坏、数码相机卡损坏造成的数据丢失等。</p>
+<h4 id="实验步骤"><a href="#实验步骤" class="headerlink" title="实验步骤"></a>实验步骤</h4><p>1-4题为被扫描，利用搜索引擎或相关网站</p>
+<ol>
+<li>用搜索引擎Google或百度搜索麻省理工学院网站中文件名包含“network security”的pdf文档，截图搜索得到的页面。</li>
+</ol>
+<p><img src="wps31DF.tmp.jpg" alt="img"> </p>
+<p> <img src="wps31DE.tmp.jpg" alt="img"></p>
+<ol start="2">
+<li>手机位置定位。通过LAC（Location Area Code，位置区域码）和CID（Cell Identity，基站编号，是个16位的数据（范围是0到65535）可以查询手机接入的基站的位置，从而初步确定手机用户的位置。</li>
+</ol>
+<p>获取自己手机的LAC和CID：</p>
+<p>Android 获取方法：Android： 拨号*#<em>#4636#</em>#*进入手机信息工程模式后查看</p>
+<p>iphone获取方法：iPhone：拨号*3001#12345#*进入FieldTest</p>
+<p>Serving Cell info–&gt;LAC=Tracking Area Code –&gt;cellid = Cell identity</p>
+<p>若不能获取，用右图信息。</p>
+<p><img src="wps31E0.tmp.jpg" alt="img"> </p>
+<p>截图你查询到的位置信息。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31E1.tmp.png" alt="img"></td>
+</tr>
+</tbody></table>
+<ol start="3">
+<li>编码解码</li>
+</ol>
+<p>将Z29vZCBnb29kIHN0dWR5IQ==解码。截图。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31E2.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<ol start="4">
+<li>地址信息</li>
+</ol>
+<p>4.1内网中捕获到一个以太帧，源MAC地址为：98-CA-33-02-27-B5；目的IP地址为：202.193.64.34，回答问题：该用户使用的什么品牌的设备，访问的是什么网站？并附截图。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31F3.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<p><strong>设备：苹果   网站：桂林电子科技大学</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31F4.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31F5.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<p>4.2 访问<a href="https://whatismyipaddress.com得到MyIP信息，利用ipconfig(Windows)或ifconfig(Linux)查看本机IP地址，两者值相同吗？如果不相同的话，说明原因。">https://whatismyipaddress.com得到MyIP信息，利用ipconfig(Windows)或ifconfig(Linux)查看本机IP地址，两者值相同吗？如果不相同的话，说明原因。</a></p>
+<p><strong>答：不相同，访问上述网站得到的是公网的ip，而ipconfig查询得到的是内网的ip地址。</strong></p>
+<ol start="5">
+<li>NMAP使用（两位同学配合完成）</li>
+</ol>
+<p>5.1利用NMAP（攻击方）扫描发现Metasploitable2（靶机，需下载虚拟机镜像）IP地址，同时Wireshark捕获报文，分析NMAP扫描发现该主机的工作原理，即报文交互情况；</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31F6.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31F7.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<p>利用nmap -sP的命令对网段存活靶机进行探测。</p>
+<p><strong>-sP使用ping命令进行扫描。Wireshark抓包中可以看到，在同一个局域网内，主机想要发送icmp报文之前，需要获取到目标机的Mac地址，就需要先通过arp广播请求对应的mac地址，对应被请求到的ip地址的目标机会回应一个arp响应报文，其中携带了自己的MAC地址，因此在wireshark抓包中可以看到，先有了大量arp的请求报文和响应报文，等到获取到对应机各自的mac地址之后，开始正式发送icmp报文进行数据传输。-sP命令通过ping扫描，然后显示出在线的主机。使用该选项扫描可以轻易获取目标信息而不会被轻易发现。</strong></p>
+<p>扫描靶机端口开放情况。并附截图。说明其中四个端口（知名端口）提供的服务，查阅资料，简要说明该服务的功能。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31F8.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">21端口：FTP是File Transfer Protocol（文件传输协议）的英文缩写，用于Internet上的控制文件的双向传输。</span><br><span class="line"></span><br><span class="line">22端口：通过SSH连接可以远程管理Linux等设备，默认linuxssh端口是22端口。</span><br><span class="line">SSH 是建立在应用层和传输层基础上的一种安全协议。</span><br><span class="line">SSH传输数据是加密的，可以有效防止传输过程被截取数据保障安全。</span><br><span class="line">SSH的数据是经过压缩的，所以可以加快传输的速度。</span><br><span class="line"></span><br><span class="line">23端口：Telnet协议是 [TCP/IP协议族](http://baike.baidu.com/view/2221037.htm)中的一员，是Internet远程登陆服务的标准协议和主要方式。23端口主要用于Telnet（远程登录）服务，所有传输的数据都是明文传输。</span><br><span class="line"></span><br><span class="line">25端口：邮件服务用的是SMTP协议。</span><br><span class="line">SMTP（C/S模型）：简单邮件传输协议（太简单，仅仅就是负责把邮件从发送方传输到接收方）至于邮件内部的格式，邮件如何储存，以及邮件系统应以多快的速度来发送邮件，都未作出规定。</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31F9.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<p>5.2利用NMAP扫描Metasploitable2的操作系统类型，并附截图。</p>
+<p><strong>操作系统类型：Linux 2.6.x</strong></p>
+<p><strong>Nmap 命令：-O 对主机操作系统进行探测。</strong></p>
+<p><strong>扫描结果：</strong></p>
+<p><strong>Host is up：表示该主机存活</strong></p>
+<p><strong>Runing: 主机操作系统信息</strong></p>
+<p><strong>Os details: 操作系统版本信息</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31FA.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<p>5.3 利用NMAP穷举 Metasploitable2上dvwa的登录账号和密码。</p>
+<p><strong>输入命令：</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -p-80 --script=http-form-brute --script-args=http-form-brute.path=/dvwa/login.php 192.168.169.149</span><br></pre></td></tr></table></figure>
+
+
+
+<p>5.4 查阅资料，永恒之蓝-WannaCry蠕虫利用漏洞的相关信息。</p>
+<p><strong>该蠕虫病毒会通过远程服务器和自身爬虫功能收集局域网内的IP列表，然后对其中的多个服务端口发起攻击，包括RPC服务(135端口)、SQLServer服务(1433端口)、FTP服务(21端口)，同时还会通过 “永恒之蓝”漏洞，入侵445端口，攻击电脑。</strong></p>
+<p><strong>该变种通过与C&amp;C服务器进行通讯以及内置的爬虫功能获取目标的IP地址及端口，对RPC服务(135端口)、SQLServer服务(1433端口)、FTP服务(21端口)进行爆破，使用永恒之蓝漏洞对445端口进行入侵，如果入侵或爆破成功则执行脚本从C&amp;C服务器上下载初始样本，初始样本经过多重释放，最终运行Worm/Sharp蠕虫。</strong></p>
+<ol start="6">
+<li></li>
+<li><p>1 利用ZoomEye搜索一个西门子公司工控设备，并描述其可能存在的安全问题。</p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps31FB.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<p><img src="wps320B.tmp.jpg" alt="img"> </p>
+<p><strong>西门子5940-005 T1E1路由器存在弱口令，可以登录后台进行进一步的渗透测试。</strong></p>
+<p> 6.2 利用FOFA查找MySQL服务器。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps320C.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<ol start="7">
+<li>Winhex简单数据恢复与取证</li>
+</ol>
+<p>7.1 elephant.jpg不能打开了，利用WinHex修复，说明修复过程。（分析jpg文件格式）</p>
+<p><strong>jpg格式文件头：FFD8FF</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps320D.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<p><img src="wps320E.tmp.jpg" alt="img"> </p>
+<p>7.2 笑脸背后的阴霾：图片smile有什么隐藏信息。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><img src="wps320F.tmp.jpg" alt="img"></td>
+</tr>
+</tbody></table>
+<p>7.3 尝试使用数据恢复软件恢复你的U盘中曾经删除的文件。</p>
+<p>8、实验小结</p>
+<p>在本次实验中，知道一些Google 的搜索语法，比如site:网站，filetype:文件类型等，能准确快速地定位到所需信息；了解了一些nmap扫描存活主机命令使用的协议，在wireshark中对其进行捕获；还有一些nmap脚本的用法。了解了一些关于手机定位的基本信息，和常见的端口服务等。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E4%B8%80-%E7%BD%91%E7%BB%9C%E6%89%AB%E6%8F%8F%E4%B8%8E%E7%BD%91%E7%BB%9C%E4%BE%A6%E5%AF%9F"><span class="toc-number">1.</span> <span class="toc-text">实验一 网络扫描与网络侦察</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%9B%AE%E7%9A%84"><span class="toc-number">1.1.</span> <span class="toc-text">实验目的</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.1.</span> <span class="toc-text">系统环境</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.2.</span> <span class="toc-text">网络环境</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%B7%A5%E5%85%B7"><span class="toc-number">1.1.3.</span> <span class="toc-text">实验工具</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E5%8E%9F%E7%90%86"><span class="toc-number">1.2.</span> <span class="toc-text">实验原理</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.3.</span> <span class="toc-text">实验步骤</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
