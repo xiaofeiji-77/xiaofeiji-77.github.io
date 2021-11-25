@@ -112,16 +112,39 @@ DeDeCMSV5.7SP2 正式版
 <h3 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h3><h4 id="下面依照第一个payload进行简单分析："><a href="#下面依照第一个payload进行简单分析：" class="headerlink" title="下面依照第一个payload进行简单分析："></a>下面依照第一个payload进行简单分析：</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1/dedecms5.7/member/resetpassword.php?dopost=safequestion&amp;safequestion=0.0&amp;safeanswer=&amp;id=3</span><br></pre></td></tr></table></figure>
 
 <p><img src="clipboard-1637763443863.png" alt="img"></p>
-<ul>
-<li>```html<br>首先是menber/resetpassword.php的75行，在重设密码的过程中，如果提交的$dopost参数等于safequestion，就会将对应用户输入的安全问题和答案跟所设置的进行对比，如果输入的问题和答案与之前设置的一致，则进入第三个if语句的内部，调用sn()函数。因为在用户中，没有设置安全问题的用户的$safequestion的值默认为0:<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">![img](clipboard-1637763461522.png)</span><br><span class="line"></span><br><span class="line">``` html</span><br><span class="line">当输入的$safequestion也为0 的时候，$row[&#x27;safequestion&#x27;] == $safequestion成立，达到调用sn()函数的目的，代码往下执行。但是在php代码中，如果我们直接输入0，则该变量显示为空：</span><br></pre></td></tr></table></figure></li>
-</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">首先是menber/resetpassword.php的75行，在重设密码的过程中，如果提交的$dopost参数等于safequestion，就会将对应用户输入的安全问题和答案跟所设置的进行对比，如果输入的问题和答案与之前设置的一致，则进入第三个if语句的内部，调用sn()函数。</span><br><span class="line"></span><br><span class="line">因为在用户中，没有设置安全问题的用户的$safequestion的值默认为0:</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="clipboard-1637763461522.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当输入的$safequestion也为0 的时候，$row[&#x27;safequestion&#x27;] == $safequestion成立，达到调用sn()函数的目的，代码往下执行。但是在php代码中，如果我们直接输入0，则该变量显示为空：</span><br></pre></td></tr></table></figure>
+
+
+
 <p><img src="clipboard-1637763476689.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> 变量为空的话，会使得 if(empty($safequestion)) $safequestion = &#x27;&#x27;;成立，无法进入if($row[&#x27;safequestion&#x27;] == $safequestion &amp;&amp; $row[&#x27;safeanswer&#x27;] == $safeanswer)这个if分支。</span><br><span class="line"></span><br><span class="line">但是如果我们输入的是0.0，则变量不为空。</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="clipboard-1637763486251.png" alt="img"></p>
 <ul>
-<li>``` html<ul>
-<li>变量为空的话，会使得 if(empty($safequestion)) $safequestion = ‘’;成立，无法进入if($row[‘safequestion’] == $safequestion &amp;&amp; $row[‘safeanswer’] == $safeanswer)这个iif分支。</li>
+<li>并且$row[‘safequestion’] == $safequestion判断使用的是弱比较，弱比较中会将数字其他类型转化为int类型进行比较。（弱比较判断不细说）</li>
 </ul>
-但是如果我们输入的是0.0，则变量不为空。<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">![img](clipboard-1637763486251.png)</span><br><span class="line"></span><br><span class="line">- 并且$row[&#x27;safequestion&#x27;] == $safequestion判断使用的是弱比较，弱比较中会将数字其他类型转化为int类型进行比较。（弱比较判断不细说）</span><br><span class="line"></span><br><span class="line">![img](clipboard-1637763502665.png)</span><br><span class="line"></span><br><span class="line">- 因此我们考虑让$safequestion=0.0绕过。$row[&#x27;safequestion&#x27;] == $safequestion成立，右边$row[&#x27;safeanswer&#x27;] == $safeanswer本就为空，不用处理。</span><br><span class="line"></span><br><span class="line">- **在这里我们要注意到调用sn()函数时默认的send值为N。继续跟进sn()函数，看看用法：**</span><br><span class="line"></span><br><span class="line">- **member/inc.pwd.functions.php的150行：**</span><br><span class="line"></span><br><span class="line">![img](clipboard-1637763502666.png)</span><br><span class="line"></span><br><span class="line">- ```html</span><br><span class="line">  先查询了临时密码表，第一个if语句为判断临时密码是否存在，不存在就发送邮件，第二个语句为判断临时密码是否过期。因为我们是第一次输入密码，因此临时密码不存在，进入第一个if判断。</span><br></pre></td></tr></table></figure></li>
+<p><img src="clipboard-1637763502665.png" alt="img"></p>
+<ul>
+<li>因此我们考虑让$safequestion=0.0绕过。$row[‘safequestion’] == $safequestion成立，右边$row[‘safeanswer’] == $safeanswer本就为空，不用处理。</li>
 </ul>
+<ul>
+<li><strong>在这里我们要注意到调用sn()函数时默认的send值为N。继续跟进sn()函数，看看用法：</strong></li>
+<li><strong>member/inc.pwd.functions.php的150行：</strong></li>
+</ul>
+<p><img src="clipboard-1637763502666.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">先查询了临时密码表，第一个if语句为判断临时密码是否存在，不存在就发送邮件，第二个语句为判断临时密码是否过期。因为我们是第一次输入密码，因此临时密码不存在，进入第一个if判断。</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <ul>
 <li>跟进newmail()函数，</li>
 </ul>
