@@ -138,7 +138,7 @@ DeDeCMSV5.7SP2 正式版
 <li><strong>在这里我们要注意到调用sn()函数时默认的send值为N。继续跟进sn()函数，看看用法：</strong></li>
 <li><strong>member/inc.pwd.functions.php的150行：</strong></li>
 </ul>
-<p><img src="clipboard-1637763502666.png" alt="img"></p>
+<p><img src="1.png" alt="img"></p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">先查询了临时密码表，第一个if语句为判断临时密码是否存在，不存在就发送邮件，第二个语句为判断临时密码是否过期。因为我们是第一次输入密码，因此临时密码不存在，进入第一个if判断。</span><br></pre></td></tr></table></figure>
 
 
@@ -148,7 +148,7 @@ DeDeCMSV5.7SP2 正式版
 <ul>
 <li>跟进newmail()函数，</li>
 </ul>
-<p><img src="clipboard-1637763502666.png" alt="img"></p>
+<p><img src="2.png" alt="img"></p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">random()生成一个八位随机数，因为在sn()函数中设置了type为INSERT，因此进入第一个if判断。将随机生成数进行md5加密，把密码插入到临时密码表中。因为调用sn()函数时默认的send值为N，因此进入 else if ($send == &#x27;N&#x27;)   ，不发送邮件，直接调用ShowMsg函数，跳转到$cfg_basehost.$cfg_memberurl.&quot;/resetpassword.php?dopost=getpasswd<span class="symbol">&amp;amp;</span>id=&quot;.$mid.&quot;<span class="symbol">&amp;amp;</span>key=&quot;.$randval这个页面上。</span><br></pre></td></tr></table></figure>
 
 
@@ -156,7 +156,7 @@ DeDeCMSV5.7SP2 正式版
 <ul>
 <li>根据参数$mid再进行查看：跳转页面仍然是resetpassword.php，dopost=getpasswd，跟进查看：</li>
 </ul>
-<p><img src="clipboard-1637763502666.png" alt="img"></p>
+<p><img src="3.png" alt="img"></p>
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这里再次通过mid查询了该用户的临时密码是否存在，不存在就会返回登录页面。存在则进入if(empty($setp))，第一个if先判断了临时密码时间是否为过期，不过期的话执行require_once(dirname(__FILE__).&quot;/templets/resetpassword2.htm&quot;); 跳转到/templets/resetpassword2.html。这个就是重置密码的页面了。</span><br></pre></td></tr></table></figure>
 
 
