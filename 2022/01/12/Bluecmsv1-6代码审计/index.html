@@ -91,6 +91,7 @@
 
 
 
+<hr>
 <h4 id="宽字节注入"><a href="#宽字节注入" class="headerlink" title="宽字节注入"></a>宽字节注入</h4><p>由于代码比较旧，代码使用的是gbk编码，因此存在较多宽字节注入。</p>
 <p>宽字节注入的原理，尽管代码没有对单引号进行转义，在存在宽字节注入的地方，插入数据库的单引号会被自动使用反斜杠进行转义。如果参数是字符串类型，当我们传入的参数为%df’时，因为gbk是多字节编码，两个字节代表一个汉字，所以%df和后面的\也就是%5c变成了一个汉字“運”，而’逃逸了出来（’運’ ‘）。</p>
 <h5 id="前台注册页面"><a href="#前台注册页面" class="headerlink" title="前台注册页面"></a><strong>前台注册页面</strong></h5><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">insert处存在宽字节注入：</span><br><span class="line">  <span class="variable">$email</span>参数没有过滤。</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;INSERT INTO &quot;</span>.table(<span class="string">&#x27;user&#x27;</span>).<span class="string">&quot; (user_id, user_name, pwd, email, reg_time, last_login_time) VALUES (&#x27;&#x27;, &#x27;<span class="subst">$user_name</span>&#x27;, md5(&#x27;<span class="subst">$pwd</span>&#x27;), &#x27;<span class="subst">$email</span>&#x27;, &#x27;<span class="subst">$timestamp</span>&#x27;, &#x27;<span class="subst">$timestamp</span>&#x27;)&quot;</span>;</span><br><span class="line"></span><br><span class="line">payload：</span><br><span class="line">%df<span class="string">&#x27;,1,1),(1000,0x7a79717a7971,md5(123456),(select database()),1,1)#</span></span><br><span class="line"><span class="string">username为字符串，规避单引号，使用十六进制编码形式。</span></span><br></pre></td></tr></table></figure>
@@ -117,6 +118,7 @@
 <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">SELECT COUNT(*) AS num FROM blue_user WHERE user_name=&#x27;wwww&#x27; and pwd=md5(&#x27;123456%df&#x27;)or 1=1#&#x27;)</span><br><span class="line"></span><br><span class="line">SELECT COUNT(*) AS num FROM blue_user WHERE user_name=&#x27;wwww&#x27; and pwd=md5(&#x27;123456運&#x27;)or 1=1#&#x27;)</span><br></pre></td></tr></table></figure>
 
 <p>能实现前台任意用户登录。</p>
+<hr>
 <h4 id="数字型注入"><a href="#数字型注入" class="headerlink" title="数字型注入"></a>数字型注入</h4><h5 id="ad-js-php"><a href="#ad-js-php" class="headerlink" title="ad_js.php"></a><strong>ad_js.php</strong></h5><p>参数$ad_id没有进行过滤，仅是使用GET接收时进行了转义，由于id为数字，因此可以直接构造数字型的注入，使用union联合查询爆破数据库名等信息。</p>
 <p><img src="clipboard-1641960087001.png" alt="img"></p>
 <img src="clipboard-1641960101047.png" alt="img" style="zoom:67%;" />
@@ -159,12 +161,14 @@
 <h5 id="publish-php"><a href="#publish-php" class="headerlink" title="publish.php"></a>publish.php</h5><p><strong>$online_ip参数未过滤，存在SQL注入。</strong></p>
 <p><img src="clipboard-1641960317080.png" alt="img"></p>
 <p>使用的也是getip()，注入方法一样，就不细写了。</p>
+<hr>
 <h4 id="XSS"><a href="#XSS" class="headerlink" title="XSS"></a>XSS</h4><h5 id="user-php-更新个人资料：生日、邮箱等信息未进行参数过滤，存在xss"><a href="#user-php-更新个人资料：生日、邮箱等信息未进行参数过滤，存在xss" class="headerlink" title="user.php:更新个人资料：生日、邮箱等信息未进行参数过滤，存在xss"></a>user.php:更新个人资料：生日、邮箱等信息未进行参数过滤，存在xss</h5><p>从代码接收的参数可以看到，更新资料处的参数除了$address外均没有进行HTML实体化的过滤，其中一部分数据在修改后会回显在页面上。因此可以通过邮箱、生日等注入点构造xss的弹窗形式。</p>
 <p><img src="clipboard-1641960449419.png" alt="img"></p>
 <p><img src="clipboard-1641960464735.png" alt="img"></p>
 <img src="clipboard-1641960473489.png" alt="img" style="zoom: 50%;" />
 
 <p>登录后台发现也会弹出页面，为存储型xss。</p>
+<hr>
 <h4 id="任意文件删除"><a href="#任意文件删除" class="headerlink" title="任意文件删除"></a><strong>任意文件删除</strong></h4><h5 id="user-php"><a href="#user-php" class="headerlink" title="user.php"></a>user.php</h5><img src="clipboard-1641960525229.png" alt="img" style="zoom: 67%;" />
 
 <p>在文件根目录下生成一个2.txt文件，在修改个人资料的地方进行抓包修改图片路径名称，并且当face_pic1为空的时候成立：</p>
@@ -199,8 +203,7 @@
 
 
 
-
-
+<hr>
 <h4 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含"></a>文件包含</h4><h5 id="后台admin-tpl-manage-php"><a href="#后台admin-tpl-manage-php" class="headerlink" title="后台admin/tpl_manage.php"></a><strong>后台admin/tpl_manage.php</strong></h5><p><strong>任意文件读取 上传一句话木马 getshell：</strong></p>
 <p>在模板修改处可以打开本地的HTML等文件进行修改并保存，通过目录穿越的方式可以成功读取到PHP文件。</p>
 <img src="clipboard-1641960721206.png" alt="img" style="zoom:67%;" />
@@ -220,6 +223,7 @@
 <h5 id="前台user-php"><a href="#前台user-php" class="headerlink" title="前台user.php"></a>前台user.php</h5><img src="clipboard-1641960804478.png" alt="img" style="zoom:67%;" />
 
 <p>这里的注入点结合修改个人资料处上传的图片马也getshell。</p>
+<hr>
 <h3 id="后序"><a href="#后序" class="headerlink" title="后序"></a>后序</h3><p>一开始是用seay扫出来然后一个个去排查，但是这样做过于繁琐，所以我后面就根据一个个功能点进行测试，根据敏感函数进行跟进。总体来说代码还是相对简单，虽然过程当中也有遇到很多的问题，但是也有在一个个函数去查去看，总体感觉还是挺不错的。但是对代码的整体分析还是需要多分析多看，在平时的练习中也需要多去留意函数的用法，希望能在不断跟着别人思路学习的同时也会有自己的一套方法。</p>
 
             <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
