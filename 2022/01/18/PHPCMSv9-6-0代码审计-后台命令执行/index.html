@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PHPCMSv9.6.0代码审计---后台命令执行 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="后台—命令执行modules/dbsource/data.php后台的模块—&amp;gt;数据源—&amp;gt;添加数据源调用处：
+127.0.0.1/phpcmsv9.6.0/index.php?m=dbso,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">PHPCMSv9.6.0代码审计---后台命令执行</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">PHPCMSv9.6.0代码审计---后台命令执行</h1>
+        <div class="stuff">
+            <span>一月 18, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%88%9D%E4%BD%93%E9%AA%8C/" rel="tag">代码审计初体验</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="后台—命令执行"><a href="#后台—命令执行" class="headerlink" title="后台—命令执行"></a>后台—命令执行</h3><h4 id="modules-dbsource-data-php"><a href="#modules-dbsource-data-php" class="headerlink" title="modules/dbsource/data.php"></a>modules/dbsource/data.php</h4><p>后台的模块—&gt;数据源—&gt;添加数据源调用处：</p>
+<p>127.0.0.1/phpcmsv9.6.0/index.php?m=dbsource&amp;c=data&amp;a=add</p>
+<p><img src="clipboard.png" alt="img"></p>
+<p>自定义SQL处：</p>
+<p><img src="clipboard-1642518107080.png" alt="img"></p>
+<p><img src="clipboard-1642518114356.png" alt="img"></p>
+<p><img src="image-20220118230316840.png" alt="image-20220118230316840"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当选择自定义SQL的调用方法时，满足$type=1 &amp;&amp; $dis_type=3的情况，即调用方式为自定义SQL且输出方式为js时</span><br></pre></td></tr></table></figure>
+
+<p>​      此时传入参数存在的情况下，参数tpye data name dis_type cache num template通过post传参，如果没有caches/cahces_template/dbsource这个文件夹，就会在对应的路径下自动创建php文件，并且可写入文件的内容的参数可控（$template）。</p>
+<p><img src="image-20220118230638397.png" alt="image-20220118230638397"></p>
+<p><img src="clipboard-1642518284155.png" alt="img"></p>
+<p>可以看到内容成功写入，但是没有办法直接访问。因为没有定义常量IN_PHPCMS，直接访问文件时，输出No permission resources后代码执行结束。exit()直接退出，没有办法执行后面的代码。</p>
+<p><strong>因此尝试去寻找文件包含的点，如果存在文件包含，可以通过文件包含漏洞执行命令。</strong></p>
+<p>全局搜索：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CACHE_PATH.&#x27;caches_template&#x27;.DIRECTORY_SEPARATOR.&#x27;dbsource&#x27;.DIRECTORY_SEPARATOR;</span><br></pre></td></tr></table></figure>
+
+<p>因为需要找到可以包含该固定文件的点，所以全局搜索了一下这个路径：</p>
+<p><img src="clipboard-1642518423409.png" alt="img"></p>
+<p>在同文件夹下找到一个函数：(modules/dbsourse/)</p>
+<img src="clipboard-1642518447606.png" alt="img" style="zoom:80%;" />
+
+<p>该函数存在对应文件路径。当传输$id时，如果文件路不存在，则创建对应文件，并将可控参数$str写入文件中，返回文件的路径caches/cahces_template/dbsource/$id.php。</p>
+<p>接下来看看哪些地方调用了这个函数：</p>
+<img src="clipboard-1642518460351.png" alt="img" style="zoom:80%;" />
+
+<p>可以看到在和一开始的modules/dbsourse/data.php同文件夹下的call.php中调用了这个函数，且存在文件包含的关键函数include，尝试跟进查看：</p>
+<img src="clipboard-1642518471051.png" alt="img" style="zoom:80%;" />
+
+
+
+<p>从44行开始，是调用template_url()函数的_format()函数定义：</p>
+<p>当$type=3时，调用template_url()函数，返回我们需要的路径，通过include形成文件包含；</p>
+<p>将文件包含执行的结果通过format_js方法的document.write()函数打印到浏览器的页面上。</p>
+<p>这里可以查看format_js()函数的定义，查看函数的执行过程。（见补充）</p>
+<p>​        到这里，我们已经找到了能执行template_url()的函数_format()，再继续查看哪些地方调用了_format()函数，找到可以执行触发的点：</p>
+<p><img src="clipboard-1642518499605.png" alt="img"></p>
+<p>在同一文件下的第40行，存在函数的调用，向上找到定义处(第9行-第42行)：</p>
+<p>(自行加了一些注释，就不贴图了)</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">get</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="variable">$id</span> = <span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>]) &amp;&amp; intval(<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>]) ? intval(<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>]) : <span class="keyword">exit</span>();  <span class="comment">//获取id值--get</span></span><br><span class="line">		<span class="keyword">if</span> (<span class="variable">$data</span> = <span class="keyword">$this</span>-&gt;db-&gt;get_one(<span class="keyword">array</span>(<span class="string">&#x27;id&#x27;</span>=&gt;<span class="variable">$id</span>))) &#123;  <span class="comment">//将获取到的id的正行内容赋值给$data，如果存在，则进行下面语句</span></span><br><span class="line">			<span class="keyword">if</span> (!<span class="variable">$str</span> = tpl_cache(<span class="string">&#x27;dbsource_&#x27;</span>.<span class="variable">$id</span>,<span class="variable">$data</span>[<span class="string">&#x27;cache&#x27;</span>])) &#123;    <span class="comment">//tpl_cache返回false，条件成立.</span></span><br><span class="line">				<span class="keyword">if</span> (<span class="variable">$data</span>[<span class="string">&#x27;type&#x27;</span>] == <span class="number">1</span>) &#123; <span class="comment">//自定义SQL调用</span></span><br><span class="line">					<span class="variable">$get_db</span> = pc_base::load_model(<span class="string">&quot;get_model&quot;</span>);</span><br><span class="line">					<span class="variable">$sql</span> = <span class="variable">$data</span>[<span class="string">&#x27;data&#x27;</span>].(!<span class="keyword">empty</span>(<span class="variable">$data</span>[<span class="string">&#x27;num&#x27;</span>]) ? <span class="string">&quot; LIMIT <span class="subst">$data</span>[num]&quot;</span> : <span class="string">&#x27;&#x27;</span>);<span class="comment">//如果num的值不为空则去num拼接为：data limit num;赋值给$sql</span></span><br><span class="line">                   <span class="comment">// echo $sql;   //自增加代码，方便调试;输出 $data limit $num；</span></span><br><span class="line">					<span class="variable">$r</span>= <span class="variable">$get_db</span>-&gt;query(<span class="variable">$sql</span>);   <span class="comment">//返回SQL语句查询的结果; true/false</span></span><br><span class="line">					<span class="keyword">while</span>((<span class="variable">$s</span> = <span class="variable">$get_db</span>-&gt;fetch_next()) != <span class="literal">false</span>) &#123;</span><br><span class="line">						<span class="variable">$str</span>[] = <span class="variable">$s</span>;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					<span class="variable">$filepath</span> = PC_PATH.<span class="string">&#x27;modules&#x27;</span>.DIRECTORY_SEPARATOR.<span class="variable">$data</span>[<span class="string">&#x27;module&#x27;</span>].DIRECTORY_SEPARATOR.<span class="string">&#x27;classes&#x27;</span>.DIRECTORY_SEPARATOR.<span class="variable">$data</span>[<span class="string">&#x27;module&#x27;</span>].<span class="string">&#x27;_tag.class.php&#x27;</span>;</span><br><span class="line">					<span class="keyword">if</span> (file_exists(<span class="variable">$filepath</span>)) &#123;</span><br><span class="line">						<span class="variable">$pc_tag</span> = pc_base::load_app_class(<span class="variable">$data</span>[<span class="string">&#x27;module&#x27;</span>].<span class="string">&#x27;_tag&#x27;</span>, <span class="variable">$data</span>[<span class="string">&#x27;module&#x27;</span>]); </span><br><span class="line">						<span class="keyword">if</span> (!method_exists(<span class="variable">$pc_tag</span>, <span class="variable">$data</span>[<span class="string">&#x27;action&#x27;</span>])) &#123;</span><br><span class="line">							<span class="keyword">exit</span>();</span><br><span class="line">						&#125;</span><br><span class="line">						<span class="variable">$sql</span> = string2array(<span class="variable">$data</span>[<span class="string">&#x27;data&#x27;</span>]);</span><br><span class="line">						<span class="variable">$sql</span>[<span class="string">&#x27;action&#x27;</span>] = <span class="variable">$data</span>[<span class="string">&#x27;action&#x27;</span>];</span><br><span class="line">						<span class="variable">$sql</span>[<span class="string">&#x27;limit&#x27;</span>] = <span class="variable">$data</span>[<span class="string">&#x27;num&#x27;</span>];</span><br><span class="line">						<span class="keyword">unset</span>(<span class="variable">$data</span>[<span class="string">&#x27;num&#x27;</span>]);</span><br><span class="line">						<span class="variable">$str</span>  = <span class="variable">$pc_tag</span>-&gt;&#123;<span class="variable">$data</span>[<span class="string">&#x27;action&#x27;</span>]&#125;(<span class="variable">$sql</span>);</span><br><span class="line">						</span><br><span class="line">					&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						<span class="keyword">exit</span>();</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="keyword">if</span> (<span class="variable">$data</span>[<span class="string">&#x27;cache&#x27;</span>]) setcache(<span class="string">&#x27;dbsource_&#x27;</span>.<span class="variable">$id</span>, <span class="variable">$str</span>, <span class="string">&#x27;tpl_data&#x27;</span>);</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">echo</span> <span class="keyword">$this</span>-&gt;_format(<span class="variable">$data</span>[<span class="string">&#x27;id&#x27;</span>], <span class="variable">$str</span>, <span class="variable">$data</span>[<span class="string">&#x27;dis_type&#x27;</span>]);  <span class="comment">//输出_format($data[&#x27;id&#x27;], $str, $data[&#x27;dis_type&#x27;]);的执行结果</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>该函数的执行过程为：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">当获取到的id值存在的话，将获取到的对应id值的整行数据赋值给$data数组,tpl_cache返回false，条件成立向下执行。</span><br><span class="line"></span><br><span class="line">当$data[type&#x27;]等于1时，调用方式为自定义SQL调用，当num的值不为空的时候拼接成$data limit $num赋值为$sql;</span><br><span class="line"></span><br><span class="line">然后输出_format($data[&#x27;id&#x27;], $str, $data[&#x27;dis_type&#x27;]);的执行结果。</span><br><span class="line"></span><br><span class="line">因此，当我们通过get方式传入存在的id值时，执行get()函数，就能调用_format()函数，因此$type即dis_type，满足case等于3的情况，通过format_js()输出文件包含后的结果。</span><br></pre></td></tr></table></figure>
+
+
+
+<p>​         这里再通过template_url($id)进行追踪值理清前后关系：</p>
+<p>回到一开始的modules/dbsourse/data.php中解释参数的含义：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CACHE_PATH.&#x27;caches_template&#x27;.DIRECTORY_SEPARATOR.&#x27;dbsource&#x27;.DIRECTORY_SEPARATOR.$id.&#x27;.php&#x27;;</span><br><span class="line"></span><br><span class="line">data.php中的$id即为数据库中的id值，对应生成的文件的名字，前后含义一致（前:data.php;后:call.php--&gt;get()）;</span><br><span class="line"></span><br><span class="line">data.php中的$dis_type=3即输出方式为js，满足前后利用的$dis_type=3的条件；</span><br><span class="line"></span><br><span class="line">data.php中的$str即为$template，如果写入命令执行的代码，可以通过format_js()中的document.weite()将执行的结果返回在浏览器页面中；</span><br><span class="line"></span><br><span class="line">$data即为接收到的自定义SQL的内容值，对应get()函数用到的$data[data]值。</span><br></pre></td></tr></table></figure>
+
+
+
+<p>(补充)这里补充说明format_js()执行的过程：</p>
+<p><img src="clipboard-1642518678241.png" alt="img"></p>
+<p>format_js()函数将传入的内容$html通过document.write()返回在页面上。</p>
+<p>document.write($string);</p>
+<p>会将页面清空，输出变量$string的值。</p>
+<p><img src="clipboard-1642518694144.png" alt="img"></p>
+<p>因此在该函数的调用中，会将文件包含的文件中的执行结果($html)返回到页面中。</p>
+<p>但是这里存在一个问题，在get()函数的执行中，</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$r= $get_db-&gt;query($sql);  //返回SQL语句查询的结果; true/false</span><br><span class="line">$sql=$data limit $num;</span><br><span class="line"></span><br><span class="line">必须绕过$data limit $num，否则的话语句执行错误会返回一个报错界面，代码无法执行。（报错代码的显示，我们可以构造报错语句执行报错注入）</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="clipboard-1642518731765.png" alt="img"></p>
+<p><img src="clipboard-1642518782252.png" alt="img"></p>
+<p>绕过的方法就是构造正确的SQL语句：</p>
+<p><img src="clipboard-1642518790817.png" alt="img"></p>
+<p>构造select 语句：</p>
+<img src="clipboard-1642518798755.png" alt="img" style="zoom:80%;" />
+
+
+
+<p>因此我们可以将data的值构造成带有select即可：</p>
+<p>select 1等。</p>
+<p>补充说明：</p>
+<p>select直接加数字时，可以不写后面的表名，那么它输出的内容就是我们select后的数字。</p>
+<p>这时如果我们写的一串数字就是一个数组（或1个行向量），这时select实际上没有向任何一个数据库查询数据，即查询命令不指向任何数据库的表。返回值就是我们输入的这个数组，这时它是个1行n列的表，表的属性名和值都是我们输入的数组：（内容来自：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/xxzl20171025/p/12624682.html%EF%BC%89">https://www.cnblogs.com/xxzl20171025/p/12624682.html）</a></p>
+<p><img src="clipboard-1642518813606.png" alt="img"></p>
+<p>通过data.php页面的写入：每次写入的时候$name都需要改</p>
+<p><img src="clipboard-1642518828086.png" alt="img"></p>
+<p>命令执行结果：(call.php—&gt;get()函数触发)</p>
+<img src="clipboard-1642518841815.png" alt="img" style="zoom:80%;" />
+
+
+
+<p>还可以查看目录信息：</p>
+<p><img src="clipboard-1642518849172.png" alt="img"></p>
+<hr>
+<h3 id="后台—SQL注入"><a href="#后台—SQL注入" class="headerlink" title="后台—SQL注入"></a>后台—SQL注入</h3><p>这里补充一下上面提到的SQL注入问题，从报错的语句中我们可以尝试进行报错注入：</p>
+<p>通过$data构造SQL语句：</p>
+<p><img src="image-20220118231713947.png" alt="image-20220118231713947"></p>
+<p>可以看到成功执行了语句。</p>
+<p>也可以查到表名等信息。</p>
+<p><img src="clipboard-1642519074003.png" alt="img"></p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Zlirving_/article/details/113572457">https://blog.csdn.net/Zlirving_/article/details/113572457</a></p>
+<h3 id="后序"><a href="#后序" class="headerlink" title="后序"></a>后序</h3><p>​        phpcms的代码相对来说会更加复杂的一点，符合MVC的架构，也有尝试根据功能点和抓到的数据包找对应的文件和函数，但是自己能想到的点还是很少的，因此文章也是参照别人的博客进行了一个自己的梳理和分析。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8E%E5%8F%B0%E2%80%94%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C"><span class="toc-number">1.</span> <span class="toc-text">后台—命令执行</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#modules-dbsource-data-php"><span class="toc-number">1.1.</span> <span class="toc-text">modules&#x2F;dbsource&#x2F;data.php</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8E%E5%8F%B0%E2%80%94SQL%E6%B3%A8%E5%85%A5"><span class="toc-number">2.</span> <span class="toc-text">后台—SQL注入</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">2.1.</span> <span class="toc-text">参考文章</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8E%E5%BA%8F"><span class="toc-number">3.</span> <span class="toc-text">后序</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
