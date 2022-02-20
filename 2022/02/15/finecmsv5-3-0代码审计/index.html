@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>finecmsv5.3.0代码审计 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="前言关于finecmsv5.3.0的几个xss的复现。一开始自己去看这个代码的话，mvc架构代码，找到主文件夹和路由参数，但是整体结合功能点看下来自己还是审不出来什么点，有一个前端的任意文件上传，但,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">finecmsv5.3.0代码审计</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">finecmsv5.3.0代码审计</h1>
+        <div class="stuff">
+            <span>二月 15, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>关于finecmsv5.3.0的几个xss的复现。一开始自己去看这个代码的话，mvc架构代码，找到主文件夹和路由参数，但是整体结合功能点看下来自己还是审不出来什么点，有一个前端的任意文件上传，但是存在于2.几的版本，所以还是参考别人的文章自己做了过程分析和记录。</p>
+<h3 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h3><h4 id="finecms-system-core-Log-php"><a href="#finecms-system-core-Log-php" class="headerlink" title="finecms\system\core\Log.php"></a>finecms\system\core\Log.php</h4><p>在log文件下有一个write_log方法，</p>
+<p><img src="clipboard.png" alt="img"></p>
+<p>从218行开始，可以看到$msg参数没有经过任何过滤直接通过fwrite函数写入到文件$fp中。全局搜索哪里调用了该函数。</p>
+<p><img src="clipboard-1645369798447.png" alt="img"></p>
+<p>在/finecms/system/core/Common.php中有一个log_message函数，调用了write_log函数写入数据。</p>
+<p><img src="clipboard-1645369808176.png" alt="img"></p>
+<p>再继续全局查看log_message函数的调用:</p>
+<p><img src="clipboard-1645369824775.png" alt="img"></p>
+<p>该函数的调用点很多，我们找到有参数传入的地方一个个查看，找到/finecms/system/core/Exceptions.php文件有一个show_404方法，用于做404界面的输出。</p>
+<p><img src="clipboard-1645369833241.png" alt="img"></p>
+<p>再查找show_404方法的调用点：</p>
+<p>找到/finecms/system/core/CodeIgniter.php文件查看：</p>
+<p>通过$class和$method设置路由参数，在文件中设置了$RTR用于实例化路由并设置路由。通过查看代码，我们发现$class代表的是路由设置中的c，也就是文件名的参数，$method代表的是方法名：</p>
+<p><img src="clipboard-1645369876397.png" alt="img"></p>
+<p><img src="clipboard-1645369884270.png" alt="img"></p>
+<p>当$class和$method没有被定义的时候，$e404为false，此时就会执行show_404方法，从而调用log_message，最终调用write_log写入数据到日志文件中，输出404的错误页面提示。</p>
+<p><img src="clipboard-1645369895106.png" alt="img"></p>
+<p>因此我们尝试使用不存在的路由变量进行前台的xss注入：</p>
+<p><img src="clipboard-1645369904849.png" alt="img"></p>
+<p>再登录后台查看错误日志，弹出111：</p>
+<p><img src="clipboard-1645369913619.png" alt="img"></p>
+<p>证明此处存在存储型的xss。</p>
+<p>再结合xss平台盲打cookie就可以得到后台的cookie进行后台登录。</p>
+<h4 id="finecms-dayrui-controllers-Install-php"><a href="#finecms-dayrui-controllers-Install-php" class="headerlink" title="finecms/dayrui/controllers/Install.php"></a>finecms/dayrui/controllers/Install.php</h4><p>安装程序时的第三步，存在参数可控，追踪$data的来源:</p>
+<p><img src="clipboard-1645369935470.png" alt="img"></p>
+<p>在代码上方75行处，通过post函数传入参数：</p>
+<p><img src="clipboard-1645370029527.png" alt="img"></p>
+<p>跟进post函数查看：</p>
+<p>/finecms/system/core/Input.php：</p>
+<p><img src="clipboard-1645370044841.png" alt="img"></p>
+<p>继续跟进_fetch_from_array()函数：在同一文件下，</p>
+<p><img src="clipboard-1645370053176.png" alt="img"></p>
+<p>该函数的输出中，</p>
+<p><img src="clipboard-1645370061529.png" alt="img"></p>
+<p>如果$xss_clean为真的话，调用security里面的xss_clean函数进行xss检测。xss_clean是一个过滤函数，这里$xss_clean默认的值为false，在finecms\dayrui\config\config.php文件中能找到这个全局变量：</p>
+<p><img src="clipboard-1645370072207.png" alt="img"></p>
+<p>也就是说这里传入的数据是没有经过xss检测过滤的。因此我们考虑在一开始的$data可控数据中写入代码执行命令。这里选择的参数是dbprefix，其他参数是唯一固定的，也可以是dbname处。</p>
+<p>在此处写入PHP代码getshell，注意一下前后闭合即可。</p>
+<p><img src="clipboard-1645370083293.png" alt="img"></p>
+<p>能成功执行并写入文件：</p>
+<p><img src="clipboard-1645370095859.png" alt="img"></p>
+<p>如果global_xss_filtering的全局变量默认为true，那么我们跟进xss_clean函数的具体写法:</p>
+<p><img src="clipboard-1645370108589.png" alt="img"></p>
+<p>过滤了大量的命令执行关键字、符号，但是单引号没有被过滤，因此可以采用类似system/()/(‘whoami’)的方式绕过关键字的过滤。这里是直接参考别人的写法的点。</p>
+<p><img src="clipboard-1645370116614.png" alt="img"></p>
+<h4 id="finecms-dayrui-controllers-admin-Site-php"><a href="#finecms-dayrui-controllers-admin-Site-php" class="headerlink" title="finecms/dayrui/controllers/admin/Site.php"></a>finecms/dayrui/controllers/admin/Site.php</h4><p>在该文件中，如果存在post提交的数据，$_data接收post方法处理过的参数值，如果domain字段即域名没有被使用，则通过update将该字段的值更新到site数据库中。</p>
+<p>这里存在cache函数，跟进查看函数定义：</p>
+<p><img src="clipboard-1645370128662.png" alt="img"></p>
+<p>在finecms\dayrui\models\Tag_model.php中，$data变量从get_site_data函数中获取，返回的是一个数组值。在338行$t[‘domain’] &amp;&amp; $domain[$t[‘domain’]] = $id中，为$domain这个数组变量增加了一个$t[‘domain’]变量的键名，也就是上方domain字段的域名值。</p>
+<p><img src="clipboard-1645370159036.png" alt="img"></p>
+<p>在最后$domain经过to_require_one函数处理，跟进函数进行查看：</p>
+<p><img src="clipboard-1645370169678.png" alt="img"></p>
+<p>利用传入的 $var值，所以执行最后的else语句，to_require_one()函数不会对键名进行检测和过滤，刚好这个键名字段也是我们可以控制输入的值（也就是上方传入的$t[‘domain’]，也就是我们可控的可以插入数据库中的域名domain字段），因此存在可以利用的点，而_format_value函数会对值进行关键字的过滤。</p>
+<p><img src="clipboard-1645370200732.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POST /admin.php?c=site&amp;m=index&amp;func=assert&amp;evil=system(&#x27;whoami&#x27;)</span><br><span class="line"></span><br><span class="line">ids=1&amp;data[name]=FineCMS2&amp;data[domain]=127.0.0.1&#x27;=&gt;1).die($_GET[&#x27;func&#x27;]($_GET[&#x27;evil&#x27;])//</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="clipboard-1645370209514.png" alt="img"></p>
+<p>如果直接写入system函数的话，其中的括号会被编码掉：</p>
+<p><img src="clipboard-1645370226665.png" alt="img"></p>
+<p><img src="clipboard-1645370238372.png" alt="img"></p>
+<p>原文中的payload是这样写的：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ids[]=1&amp;data[1][name]=FineCMS&amp;data[1][domain]=127.0.0.1&#x27;=&gt;1).die($_GET[&#x27;func&#x27;]($_GET[&#x27;evil&#x27;])//</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h4 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h4><p><a target="_blank" rel="noopener" href="https://www.freebuf.com/sectool/164411.html">https://www.freebuf.com/sectool/164411.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/sectool/165269.html">https://www.freebuf.com/sectool/165269.html</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">过程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#finecms-system-core-Log-php"><span class="toc-number">2.1.</span> <span class="toc-text">finecms\system\core\Log.php</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#finecms-dayrui-controllers-Install-php"><span class="toc-number">2.2.</span> <span class="toc-text">finecms&#x2F;dayrui&#x2F;controllers&#x2F;Install.php</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#finecms-dayrui-controllers-admin-Site-php"><span class="toc-number">2.3.</span> <span class="toc-text">finecms&#x2F;dayrui&#x2F;controllers&#x2F;admin&#x2F;Site.php</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">2.4.</span> <span class="toc-text">参考文章</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
