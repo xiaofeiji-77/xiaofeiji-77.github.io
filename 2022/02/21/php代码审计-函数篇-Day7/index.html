@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>php代码审计-函数篇_Day7 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="parse_str函数缺陷关于函数parse_str — 将字符串解析成多个变量
+
+parse_str的作用就是解析字符串并且注册成变量，它在注册变量之前不会验证当前变量是否存在，所以会直接覆盖掉当,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">php代码审计-函数篇_Day7</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">php代码审计-函数篇_Day7</h1>
+        <div class="stuff">
+            <span>二月 21, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0/" rel="tag">代码审计-关于函数</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="parse-str函数缺陷"><a href="#parse-str函数缺陷" class="headerlink" title="parse_str函数缺陷"></a>parse_str函数缺陷</h3><h4 id="关于函数"><a href="#关于函数" class="headerlink" title="关于函数"></a>关于函数</h4><p>parse_str — 将字符串解析成多个变量</p>
+<p><img src="clipboard.png" alt="img"></p>
+<p>parse_str的作用就是解析字符串并且注册成变量，它在注册变量之前不会验证当前变量是否存在，所以会直接覆盖掉当前作用域中原有的变量。</p>
+<p><img src="clipboard-1645444573882.png" alt="img"></p>
+<h4 id="漏洞分析：DedeCMS5-6"><a href="#漏洞分析：DedeCMS5-6" class="headerlink" title="漏洞分析：DedeCMS5.6"></a>漏洞分析：DedeCMS5.6</h4><p>member/buy_action.php：</p>
+<p><img src="clipboard-1645444599474.png" alt="img"></p>
+<p>在该文件中第17行，存在一个parse_str函数，跟进查看一下这里的代码：</p>
+<p>首先是使用mchStrCode函数将$pd_encode参数进行解密，然后将解密后的结果存放到$mch_Post中以数组形式保存，之后的遍历语句，使用了两个$$符，在这里明显存在变量覆盖的点。</p>
+<p>跟进函数mchStrCode查看其过程：</p>
+<p><img src="clipboard-1645444628062.png" alt="img"></p>
+<p>其中,key的获取是通过取$_SERVER[“HTTP_USER_AGENT”]和$GLOBALS[‘cfg_cookie_encode’]连接字符的第8-18位。其中ua我们是可以获取到的，但是cfg_cookie_encode我们没法拿到。在这里跳到文件install/index.php:</p>
+<p><img src="clipboard-1645444637408.png" alt="img"></p>
+<p>这里的$rnd_cookieEncode变量就是cfg_cookie_encode，但是该变量的加密过程比较复杂且数据量太大，这里看看能不能绕过去。</p>
+<p>在member/buy_action.php文件中有一处利用mchStrCode函数加密的地方：</p>
+<p><img src="clipboard-1645444651656.png" alt="img"></p>
+<p>这里通过$_REQUEST接收参数，使用mchStrCode函数加密$pr_encode参数后将其=置换为空格，赋值给$pr_encode变量，而$pr_verify变量则是有cfg_cookie_encode经过md5加密后转化的值，因此我们也无法直接获取到cfg_cookie_encode，在这里发现buy_action_payment.html页面，点进可以看到页面会返回$pr_encode和$pr_verify变量的值：</p>
+<p>member/templets/buy_action_payment.htm:</p>
+<p><img src="clipboard-1645444662315.png" alt="img"></p>
+<p>而$pr_encode也是我们可控的值。</p>
+<p>因此我们可以利用这个分支语句，传入所需变量值以及构造的SQL语句值，得到mchStrCode函数加密的值，在页面源码中拿到$pr_encode和$pr_verify变量的值，然后进入到一开始的分支判断中，利用parse_str函数会注册变量的特性，导致变量覆盖，然后将数据带入到SQL语句中。</p>
+<p>那么SQL语句的构造点是在哪里呢？</p>
+<p><img src="clipboard-1645444671311.png" alt="img"></p>
+<p>在这个地方有一个#@__，通过追踪变量得到定义：</p>
+<p><img src="clipboard-1645444687176.png" alt="img"></p>
+<p>因此我们可以通过$cfg_dbprefix进行构造SQL语句带入到SQL查询语句中，产生SQL注入。而这里利用的点就是一开始经过parse_str函数处理之后的地方：</p>
+<p><img src="clipboard-1645444697806.png" alt="img"></p>
+<p>因此我们可以利用$cfg_dbprefix传入恶意构造SQL语句经过函数加密后获取$pr_encode和$pr_verify变量的值，然后再经过函数解密，经过parse_str函数注册变量导致的变量覆盖，将参数的值传入到SQL语句中，造成SQL注入。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">payload：</span><br><span class="line"></span><br><span class="line">/buy_action.php?product=card&amp;pid=1&amp;a=1%26cfg_dbprefix=dede_member_operation WHERE 1=@&#x27;/!12345union/ select 1,2,3,4,5,6,7,8,9,10 FROM (SELECT COUNT(),CONCAT( (SELECT pwd FROM dede6_member LIMIT 0,1),FLOOR(RAND(0)2))x FROM INFORMATION_SCHEMA.CHARACTER_SETS GROUP BY x)a %23</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>首先传入product和pid是为了先进入分支获取$pr_encode和$pr_verify变量的值，而传入$a是为了构造%26。</p>
+<p>这里是因为include/common.inc.php 文件对用户提交的内容进行了过滤：</p>
+<p><img src="clipboard-1645444712653.png" alt="img"></p>
+<p>凡是$REQUEST提交的参数，变量中以cfg_和GLOBALS开头的参数都会被过滤掉。</p>
+<p>这个问题的解决就利用到了 $REQUEST 内容与 parse_str 函数内容的差异特性。</p>
+<p>当我们url传入[a=1&amp;b=2%26c=3]时， 通过$REQUEST 传入解析得到的内容就是 [a=1，b=2%26c=3] 。</p>
+<p>而 parse_str 函数会针对传入进来的数据进行解码，所以当我们传入[a=1&amp;b=2%26c=3]时，解析后的内容就变成了[a=1，b=2，c=3]。</p>
+<p>因此我们使用这个特性传入变量a构造$REQUEST不会解析的%26用来连接cfg_dbprefix从而绕过了上述的过滤，然后再将其传入parse_str 函数时，能解析到%26，变成a=1&amp;cfg_dbprefix。</p>
+<p>获取到$pr_encode和$pr_verify的值：</p>
+<p><img src="clipboard-1645444753642.png" alt="img"></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">payload：</span><br><span class="line"></span><br><span class="line">/buy_action.php?pd_encode=SBQJABRXRw4FAEIBFEdaB1xXHgdbVUdXVVQ5BVIVQFJVChlbXAMCAT5ZVl4EBEI6XUdWEQASUQkIRDZ8dmEjQQFYchAcQlBUC1JTEQ9dXF1JQUMAXlJQF0FXFFRKV00AHwZKVxxSHg8fWk1XCEYgNi55Exs1JHwgcWMTIC4zdjJOTU13fH0lIGRNEh9gJi0jezJGFBZQE3U0Ln1FVlJXBlc5VQMLBgRGE38vLHkxEgcfUkhKfiopKzMcYXIoJRhVGwUaShlGfjQpKUF9fXUpM30kZn58LT41ey4jKSAacHsnM3EmZnJhPDIjbDVGIzN7ZmNGI2lFSh5SQ0I&amp;pd_verify=4b22fd44b746fe3af76a25a0cf57eb88</span><br></pre></td></tr></table></figure>
+
+<p>但是自己的复现没有成功，我也不知道是哪里出了问题，啊不写啦。</p>
+<h5 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h5><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_37711941/article/details/89193169">https://blog.csdn.net/m0_37711941/article/details/89193169</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/hongriSec/PHP-Audit-Labs/blob/master/Part1/Day7/files/README.md">https://github.com/hongriSec/PHP-Audit-Labs/blob/master/Part1/Day7/files/README.md</a></p>
+<h4 id="ctf题"><a href="#ctf题" class="headerlink" title="ctf题"></a>ctf题</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//index.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$a</span> = “hongri”;</span><br><span class="line"><span class="variable">$id</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line">@parse_str(<span class="variable">$id</span>);</span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$a</span>[<span class="number">0</span>] != <span class="string">&#x27;QNKCDZO&#x27;</span> &amp;&amp; md5(<span class="variable">$a</span>[<span class="number">0</span>]) == md5(<span class="string">&#x27;QNKCDZO&#x27;</span>)) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&#x27;&lt;a href=&quot;uploadsomething.php&quot;&gt;flag is here&lt;/a&gt;&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">  </span><br><span class="line"> </span><br><span class="line"> <span class="comment">//uploadsomething.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">header(<span class="string">&quot;Content-type:text/html;charset=utf-8&quot;</span>);</span><br><span class="line"><span class="variable">$referer</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_REFERER&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$referer</span>)!== <span class="literal">false</span>) &#123;</span><br><span class="line">    <span class="variable">$savepath</span> = <span class="string">&quot;uploads/&quot;</span> . sha1(<span class="variable">$_SERVER</span>[<span class="string">&#x27;REMOTE_ADDR&#x27;</span>]) . <span class="string">&quot;/&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span> (!is_dir(<span class="variable">$savepath</span>)) &#123;</span><br><span class="line">        <span class="variable">$oldmask</span> = umask(<span class="number">0</span>);</span><br><span class="line">        mkdir(<span class="variable">$savepath</span>, <span class="number">0777</span>);</span><br><span class="line">        umask(<span class="variable">$oldmask</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> ((@<span class="variable">$_GET</span>[<span class="string">&#x27;filename&#x27;</span>]) &amp;&amp; (@<span class="variable">$_GET</span>[<span class="string">&#x27;content&#x27;</span>])) &#123;</span><br><span class="line">        <span class="comment">//$fp = fopen(&quot;$savepath&quot;.$_GET[&#x27;filename&#x27;], &#x27;w&#x27;);</span></span><br><span class="line">        <span class="variable">$content</span> = <span class="string">&#x27;HRCTF&#123;y0u_n4ed_f4st&#125;   by:l1nk3r&#x27;</span>;</span><br><span class="line">        file_put_contents(<span class="string">&quot;<span class="subst">$savepath</span>&quot;</span> . <span class="variable">$_GET</span>[<span class="string">&#x27;filename&#x27;</span>], <span class="variable">$content</span>);</span><br><span class="line">        <span class="variable">$msg</span> = <span class="string">&#x27;Flag is here,come on~ &#x27;</span> . <span class="variable">$savepath</span> . htmlspecialchars(<span class="variable">$_GET</span>[<span class="string">&#x27;filename&#x27;</span>]) . <span class="string">&quot;&quot;</span>;</span><br><span class="line">        usleep(<span class="number">100000</span>);</span><br><span class="line">        <span class="variable">$content</span> = <span class="string">&quot;Too slow!&quot;</span>;</span><br><span class="line">        file_put_contents(<span class="string">&quot;<span class="subst">$savepath</span>&quot;</span> . <span class="variable">$_GET</span>[<span class="string">&#x27;filename&#x27;</span>], <span class="variable">$content</span>);</span><br><span class="line">    &#125;</span><br><span class="line">   <span class="keyword">print</span> <span class="string">&lt;&lt;&lt;EOT</span></span><br><span class="line"><span class="string">&lt;form action=&quot;&quot; method=&quot;get&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;div class=&quot;form-group&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;label for=&quot;exampleInputEmail1&quot;&gt;Filename&lt;/label&gt;</span></span><br><span class="line"><span class="string">&lt;input type=&quot;text&quot; class=&quot;form-control&quot; name=&quot;filename&quot; id=&quot;exampleInputEmail1&quot; placeholder=&quot;Filename&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;/div&gt;</span></span><br><span class="line"><span class="string">&lt;div class=&quot;form-group&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;label for=&quot;exampleInputPassword1&quot;&gt;Content&lt;/label&gt;</span></span><br><span class="line"><span class="string">&lt;input type=&quot;text&quot; class=&quot;form-control&quot; name=&quot;content&quot; id=&quot;exampleInputPassword1&quot; placeholder=&quot;Contont&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;/div&gt;</span></span><br><span class="line"><span class="string">&lt;button type=&quot;submit&quot; class=&quot;btn btn-default&quot;&gt;Submit&lt;/button&gt;</span></span><br><span class="line"><span class="string">&lt;/form&gt;</span></span><br><span class="line"><span class="string">EOT</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&#x27;you can not see this page&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>当if ($a[0] != ‘QNKCDZO’ &amp;&amp; md5($a[0]) == md5(‘QNKCDZO’)) 这个判断语句成立的时候就会出现链接跳转，利用MD5碰撞，找一个md5之后值也是0e开头的即可，在弱比较类型中会将0e开头的值看成0，因此得以满足条件。这里传入$a[0]，因为id值的传入经过函数parse_str()，该函数会注册变量，我使用的是%26绕过：</p>
+<p><img src="clipboard-1645444863767.png" alt="img"></p>
+<p>点击链接跳转页面：</p>
+<p><img src="clipboard-1645444878727.png" alt="img"></p>
+<p><img src="clipboard-1645444885658.png" alt="img"></p>
+<p>文件会对referer头进行验证，直接访问文件的话会提示错误：</p>
+<p><img src="clipboard-1645444894938.png" alt="img"></p>
+<p>需要自行创建一个uploads文件夹，在代码中，当传入fllename和content时，会在uploads下生成一个文件夹，下面存放$filename为文件名的文件，内容却为Too slow! </p>
+<p>这里注意到有函数usleep()：</p>
+<p>usleep — 以指定的微秒数延迟执行</p>
+<p><img src="clipboard-1645444909701.png" alt="img"></p>
+<p>因此想要输出flag就需要利用到条件竞争，在100000微妙执行后输出Too slow之前访问到指定文件输出flag。</p>
+<p><img src="clipboard-1645444935615.png" alt="img"></p>
+<p><img src="clipboard-1645444951382.png" alt="img"></p>
+<p>使用burp抓包修改高线程：</p>
+<p><img src="clipboard-1645444958795.png" alt="img"></p>
+<p>使用200线程：</p>
+<p><img src="clipboard-1645444969368.png" alt="img"></p>
+<p>在执行start attack之前需要执行以下脚本一直访问uploads/4b84b15bff6ee5796152495a230e45e3d7e947d9/flag，</p>
+<p>利用条件竞争获取flag：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests <span class="keyword">as</span> r</span><br><span class="line">r1 = r.Session()</span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>):</span><br><span class="line">    r2 = r1.get(<span class="string">&quot;http://127.0.0.1/b.com/uploads/4b84b15bff6ee5796152495a230e45e3d7e947d9/flag&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(r2.text)</span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard-1645445056279.png" alt="img"></p>
+<h5 id="文章参考"><a href="#文章参考" class="headerlink" title="文章参考"></a>文章参考</h5><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zhangpen130/article/details/103965191">https://blog.csdn.net/zhangpen130/article/details/103965191</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#parse-str%E5%87%BD%E6%95%B0%E7%BC%BA%E9%99%B7"><span class="toc-number">1.</span> <span class="toc-text">parse_str函数缺陷</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E5%87%BD%E6%95%B0"><span class="toc-number">1.1.</span> <span class="toc-text">关于函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%EF%BC%9ADedeCMS5-6"><span class="toc-number">1.2.</span> <span class="toc-text">漏洞分析：DedeCMS5.6</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">1.2.1.</span> <span class="toc-text">参考文章</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ctf%E9%A2%98"><span class="toc-number">1.3.</span> <span class="toc-text">ctf题</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E5%8F%82%E8%80%83"><span class="toc-number">1.3.1.</span> <span class="toc-text">文章参考</span></a></li></ol></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
